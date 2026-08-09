@@ -1,6 +1,6 @@
 # IoV Broadcast Storm Mitigation
 
-**Trust-Aware Clustering and BLS Batch Authentication for Reliable Emergency Message Dissemination in the Internet of Vehicles**
+**Mitigation of the Broadcast Storm Problem for Reliable Emergency Message Dissemination in the Internet of Vehicles using Trust-Aware Clustering and Batch Authentication**
 
 A SUMO/TraCI-driven simulation platform that replaces naive emergency-alert flooding with trust-aware clustering, controlled Cluster-Head broadcasting, and real BLS12-381 batch authentication — built as an IEEE-style research prototype, not a toy demo.
 
