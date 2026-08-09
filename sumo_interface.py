@@ -122,6 +122,8 @@ def run_sumo_simulation(density=250, steps=200, use_gui=False, route_file=None):
     # Add Green RSU roadside tower polygons and POI markers to SUMO map
     add_visual_rsus_to_sumo(rsu_manager)
 
+    logger.print_banner("PHASES 1-6: VEHICLE GENERATION, CLASSIFICATION, CLUSTERING, TRUST & CH ELECTION ACTIVE")
+
     emergency_generated = False
 
     for step in range(steps):
@@ -184,6 +186,13 @@ def run_sumo_simulation(density=250, steps=200, use_gui=False, route_file=None):
         active_clusters_count, noise_count = cluster_manager.get_cluster_stats(clusters)
         stability_snapshot = stability_tracker.update(step, clusters, cluster_heads, vehicles)
 
+        if should_recluster:
+            cluster_sizes = {cid: len(members) for cid, members in clusters.items() if cid != -1}
+            logger.log(
+                f"[Clustering] Step {step}: Clusters Formed = {active_clusters_count} "
+                f"| Sizes = {cluster_sizes} | Noise Vehicles = {noise_count}"
+            )
+
         active_chs = {v.cluster: v.id for v in vehicles.values() if v.is_cluster_head and v.cluster != -1}
 
         # Step 6: Visual Colors & Highlights Enforcer (Phase 13)
@@ -199,6 +208,8 @@ def run_sumo_simulation(density=250, steps=200, use_gui=False, route_file=None):
                         traci.vehicle.highlight(vid, color=(255, 0, 0, 255), size=30.0)
                     elif v.is_forwarding:
                         traci.vehicle.highlight(vid, color=(255, 165, 0, 255), size=18.0)
+                    elif v.is_braking:
+                        traci.vehicle.highlight(vid, color=(255, 165, 0, 255), size=15.0)
                     elif v.is_cluster_head:
                         traci.vehicle.highlight(vid, color=(0, 0, 255, 255), size=12.0)
                 except Exception:
@@ -229,6 +240,16 @@ def run_sumo_simulation(density=250, steps=200, use_gui=False, route_file=None):
         if step == 50 and not emergency_generated and active_chs:
             emergency_generated = True
 
+            # Peek at the collision pair (read-only, same selection accident_manager will
+            # make internally) purely to log sample vehicle trust before the crash.
+            pre_lead_id, pre_follow_id = accident_manager.find_collision_pair(vehicles)
+            trust_watch_ids = [vid for vid in (pre_lead_id, pre_follow_id) if vid and vid in vehicles]
+            if trust_watch_ids:
+                logger.log(
+                    "\n[Trust Snapshot] Pre-Accident Trust: " +
+                    ", ".join(f"{vid}={vehicles[vid].trust:.2f}" for vid in trust_watch_ids)
+                )
+
             # Phase 7: Trigger 2-Vehicle Collision & Queue Congestion
             msg = accident_manager.trigger_accident(
                 vehicles=vehicles,
@@ -241,6 +262,12 @@ def run_sumo_simulation(density=250, steps=200, use_gui=False, route_file=None):
                 auth_manager.sign_emergency_broadcast(
                     msg, sender_vehicle_id=msg.sender, cluster_heads=active_chs, vehicles=vehicles
                 )
+
+                # Phase 8 & 9: Controlled fan-out broadcast across every active Cluster Head.
+                # This is the genuine duplicate-suppression demonstration: many CHs are within
+                # range of the same alert, but only the first relay is accepted -- every other
+                # CH that "hears" the identical message is correctly logged as a blocked duplicate.
+                broadcast_manager.broadcast(msg, active_chs, metrics=metrics)
 
                 # Phase 8, 9, 10, 11, 12: Route discovery, Controlled Broadcast, RSU Processing, Dissemination
                 route, ack = routing_engine.route_message(
@@ -257,6 +284,12 @@ def run_sumo_simulation(density=250, steps=200, use_gui=False, route_file=None):
 
                 metrics.record_bls_performance(auth_manager.get_summary())
 
+                if trust_watch_ids:
+                    logger.log(
+                        "[Trust Snapshot] Post-RSU-Verification Trust: " +
+                        ", ".join(f"{vid}={vehicles[vid].trust:.2f}" for vid in trust_watch_ids if vid in vehicles)
+                    )
+
     traci.close()
 
     # Priority 2: BLS individual-vs-batch performance benchmark (controlled synthetic sweep)
@@ -265,6 +298,7 @@ def run_sumo_simulation(density=250, steps=200, use_gui=False, route_file=None):
     auth_manager.save_benchmark_csv(benchmark_results, filepath="outputs/logs/bls_benchmark.csv")
 
     # Save metrics and generate IEEE graphs (Phase 15)
+    logger.print_banner("PHASE 15: METRICS COLLECTION & IEEE GRAPH GENERATION")
     metrics.show()
     csv_file = metrics.save_to_csv("outputs/logs/simulation_metrics.csv")
     metrics.save_to_csv("outputs/metrics.csv")

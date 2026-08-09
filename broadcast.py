@@ -49,7 +49,17 @@ class BroadcastManager:
 
     def broadcast_route(self, message, path, metrics=None):
         """
-        Controlled Dissemination along discovered multi-hop path.
+        Controlled Dissemination along a discovered, loop-free multi-hop path.
+
+        A path returned by RoutingEngine.find_route() cannot contain repeated
+        nodes (loop prevention), so every hop here is by construction a genuine,
+        distinct relay step for this message -- never a same-node re-delivery.
+        Duplicate *suppression* (the same alert reaching multiple Cluster Heads
+        and only being forwarded once) is a separate concern, demonstrated by
+        `broadcast()` (the controlled fan-out across active Cluster Heads) --
+        NOT here. Re-checking the message-level cache per hop previously made
+        every hop after the first look like a "blocked duplicate" even on a
+        message's first-ever trip through the network, which was misleading.
         """
         if self.logger:
             self.logger.log("\n" + "=" * 70)
@@ -57,15 +67,9 @@ class BroadcastManager:
             self.logger.log("=" * 70)
             self.logger.log(f"Path: {' -> '.join(path)}")
 
+        self.message_cache.add(message.message_id)
         for step in path:
-            if message.message_id in self.message_cache:
-                if metrics:
-                    metrics.duplicate_message()
-                if self.logger:
-                    self.logger.log(f"  └─> [Duplicate Blocked] Node '{step}' ignored duplicate message.")
-            else:
-                self.message_cache.add(message.message_id)
-                if metrics:
-                    metrics.forwarded_message()
-                if self.logger:
-                    self.logger.log(f"  └─> [Forwarded] Transmitted to node '{step}'")
+            if metrics:
+                metrics.forwarded_message()
+            if self.logger:
+                self.logger.log(f"  └─> [Forwarded] Transmitted to node '{step}'")

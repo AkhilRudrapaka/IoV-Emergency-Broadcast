@@ -100,7 +100,10 @@ class RSU:
         sender_id = getattr(message, 'sender', None)
 
         if self.logger:
-            self.logger.log(f"\n[RSU {self.rsu_id}] Ingress Queue: Received Message '{message.message_id}' from '{sender_id}'")
+            self.logger.log("\n" + "=" * 70)
+            self.logger.log("PHASE 10 & 11: RSU INGRESS - AUTHENTICATION & DECISION ENGINE")
+            self.logger.log("=" * 70)
+            self.logger.log(f"[RSU {self.rsu_id}] Ingress Queue: Received Message '{message.message_id}' from '{sender_id}'")
 
         # Step 1: Authentication
         valid_sender = self.verify_sender(sender_id, vehicles)
@@ -166,12 +169,24 @@ class RSU:
         # Step 4: Trust Update on Sender
         if vehicles and sender_id in vehicles:
             sender_veh = vehicles[sender_id]
+            old_trust = sender_veh.trust
             sender_veh.auth_successes += 1
             sender_veh.auth_attempts += 1
             sender_veh.trust = min(1.0, round(sender_veh.trust + 0.05, 2))
+            if self.logger:
+                self.logger.log(
+                    f"[RSU {self.rsu_id}] Trust Updated (Post-Verification): Vehicle {sender_id} "
+                    f"{old_trust:.2f} -> {sender_veh.trust:.2f} | Reason: Successful RSU Authentication"
+                )
 
         # Step 5: Send Acknowledgement (ACK)
         ack = self.send_acknowledgement(message)
+
+        if self.logger:
+            self.logger.log(
+                f"[RSU {self.rsu_id}] Authentication: PASS -> Decision: {decision} -> "
+                f"ACK Sent: '{ack['ack_id']}'"
+            )
 
         # Step 6: Phase 12 Dissemination to Nearby Vehicles & Traffic Control Center (TCC)
         self.disseminate_to_tcc_and_network(message, vehicles)

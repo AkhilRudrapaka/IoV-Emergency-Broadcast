@@ -195,6 +195,14 @@ class AccidentManager:
             self.active_accidents[str(follow_vid)] = accident_record
 
         if self.logger:
+            if affected_followers:
+                shown = affected_followers[:8]
+                affected_str = ", ".join(shown) + (
+                    f", +{len(affected_followers) - 8} more" if len(affected_followers) > 8 else ""
+                )
+            else:
+                affected_str = "None"
+
             self.logger.log("\n" + "=" * 70)
             self.logger.log("PHASE 7: TWO-VEHICLE CRASH COLLISION DETECTED")
             self.logger.log("=" * 70)
@@ -203,7 +211,7 @@ class AccidentManager:
                 f"  └─> Rear Crash Vehicle   : {follow_vid or 'N/A'} (COLLIDED RED)\n"
                 f"  └─> Crash Location       : ({v_lead.x:.2f}, {v_lead.y:.2f})\n"
                 f"  └─> Road Edge            : {target_edge or 'Urban Edge'}\n"
-                f"  └─> Traffic Congestion   : {len(affected_followers)} trailing vehicles braking in queue"
+                f"  └─> Traffic Congestion   : {len(affected_followers)} trailing vehicles braking in queue (ORANGE): {affected_str}"
             )
 
         return message
@@ -221,6 +229,7 @@ class AccidentManager:
                 new_speed = max(0.0, v.speed - decel)
                 v.speed = new_speed
                 affected.append(vid)
+                v.trigger_braking_highlight(duration_steps=20)
 
                 try:
                     if traci.isLoaded() and vid in traci.vehicle.getIDList():

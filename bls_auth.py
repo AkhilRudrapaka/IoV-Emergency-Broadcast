@@ -234,6 +234,7 @@ class AuthenticationManager:
             return message
 
         message.chain_signatures = []
+        t0 = time.perf_counter()
 
         sender_id = str(sender_vehicle_id)
         sender_kp = self.registry.get_or_create(sender_id)
@@ -254,10 +255,14 @@ class AuthenticationManager:
                 "signature": ch_sig, "public_key": ch_kp.public_key
             })
 
+        elapsed_ms = (time.perf_counter() - t0) * 1000.0
+
         if self.logger:
             self.logger.log(
-                f"[BLS Auth] Signed emergency broadcast '{message.message_id}' "
-                f"with {len(message.chain_signatures)} chain signature(s)."
+                f"[BLS Auth] Signed emergency broadcast '{message.message_id}' with "
+                f"{len(message.chain_signatures)} chain signature(s) "
+                f"(1 sender + {len(message.chain_signatures) - 1} active Cluster Head(s)) "
+                f"in {elapsed_ms:.2f} ms -- SUCCESS"
             )
 
         return message

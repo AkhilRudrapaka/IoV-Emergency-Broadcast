@@ -32,6 +32,8 @@ class Vehicle:
         self.is_accident = False
         self.is_forwarding = False
         self.forwarding_timer = 0
+        self.is_braking = False
+        self.braking_timer = 0
         self.is_malicious = False
         self.attack_type = None  # 'FAKE_ALERT', 'PACKET_DROP', 'FORGED_RECOMMENDATION'
         self.is_blacklisted = False
@@ -86,6 +88,12 @@ class Vehicle:
             if self.forwarding_timer == 0:
                 self.is_forwarding = False
 
+        # Decay temporary accident-congestion braking visual highlight
+        if self.braking_timer > 0:
+            self.braking_timer -= 1
+            if self.braking_timer == 0:
+                self.is_braking = False
+
     def velocity_vector(self):
         """
         Returns the (vx, vy) velocity vector decomposed from speed and heading.
@@ -118,12 +126,21 @@ class Vehicle:
         self.is_forwarding = True
         self.forwarding_timer = duration_steps
 
+    def trigger_braking_highlight(self, duration_steps=20):
+        """
+        Activates temporary ORANGE visual highlight for vehicles braking/queueing
+        due to a nearby accident (Phase 7 congestion propagation).
+        """
+        self.is_braking = True
+        self.braking_timer = duration_steps
+
     def get_color(self):
         """
         Returns RGBA color tuple according to Phase 13 SUMO visual standards:
         - Red (255, 0, 0, 255): Accident vehicle
         - Black (0, 0, 0, 255): Malicious / Blacklisted vehicle
-        - Orange (255, 165, 0, 255): Active Forwarding Cluster Head
+        - Orange (255, 165, 0, 255): Active Forwarding Cluster Head OR braking/queued
+          vehicle reacting to a nearby accident
         - Blue (0, 0, 255, 255): Cluster Head
         - Yellow (255, 255, 0, 255): Unknown / Unverified vehicle
         - White (255, 255, 255, 255): Trusted vehicle
@@ -132,8 +149,8 @@ class Vehicle:
             return (255, 0, 0, 255)       # Red: Collision site
         elif self.is_malicious or self.is_blacklisted or self.classification == "MALICIOUS":
             return (0, 0, 0, 255)         # Black: Malicious
-        elif self.is_forwarding:
-            return (255, 165, 0, 255)     # Orange: Active Dissemination
+        elif self.is_forwarding or self.is_braking:
+            return (255, 165, 0, 255)     # Orange: Active Dissemination / Accident Braking
         elif self.is_cluster_head:
             return (0, 0, 255, 255)       # Blue: Cluster Head
         elif self.classification == "UNKNOWN":
