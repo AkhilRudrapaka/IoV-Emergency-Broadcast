@@ -57,14 +57,15 @@ from authentication import verify_signature as legacy_verify_signature
 
 try:
     from config import (
-        AUTHENTICATION_MODE, BLS_TRUST_THRESHOLD, BLS_REJECT_LOW_TRUST,
-        BLS_BENCHMARK_BATCH_SIZES
+        AUTHENTICATION_MODE, BLS_TRUST_THRESHOLD, BLS_MID_TRUST_THRESHOLD,
+        BLS_BENCHMARK_BATCH_SIZES, MAX_CHAIN_SIGNERS
     )
 except ImportError:
     AUTHENTICATION_MODE = "bls_batch"
     BLS_TRUST_THRESHOLD = 0.7
-    BLS_REJECT_LOW_TRUST = False
+    BLS_MID_TRUST_THRESHOLD = 0.3
     BLS_BENCHMARK_BATCH_SIZES = [1, 2, 5, 10, 20]
+    MAX_CHAIN_SIGNERS = 14
 
 
 class BLSKeyPair:
@@ -198,15 +199,17 @@ class AuthenticationManager:
         "baseline"        - legacy SHA-256 placeholder (authentication.py), unchanged.
         "bls_individual" - every chain signature is BLS-verified independently, no
                             trust gating (ablation point: BLS without our optimization).
-        "bls_batch"       - proposed scheme: high-trust signers are aggregate-verified
-                            in one batch; low-trust signers are individually verified
-                            or rejected outright, per BLS_REJECT_LOW_TRUST.
+        "bls_batch"       - Report Algorithm 4's tiered verification: T>=0.7 signers
+                            are aggregate-verified in one batch; 0.3<=T<0.7 signers
+                            are individually verified; T<0.3 signers are rejected
+                            immediately with no verify attempt at all (real compute
+                            saved, not just a post-hoc rejection).
     """
 
-    def __init__(self, mode=None, trust_threshold=None, reject_low_trust=None, logger=None):
+    def __init__(self, mode=None, trust_threshold=None, mid_trust_threshold=None, logger=None):
         self.mode = mode or AUTHENTICATION_MODE
         self.trust_threshold = trust_threshold if trust_threshold is not None else BLS_TRUST_THRESHOLD
-        self.reject_low_trust = BLS_REJECT_LOW_TRUST if reject_low_trust is None else reject_low_trust
+        self.mid_trust_threshold = mid_trust_threshold if mid_trust_threshold is not None else BLS_MID_TRUST_THRESHOLD
         self.logger = logger
 
         self.registry = BLSKeyRegistry()
@@ -227,8 +230,11 @@ class AuthenticationManager:
     def sign_emergency_broadcast(self, message, sender_vehicle_id, cluster_heads, vehicles=None):
         """
         Populates `message.chain_signatures` with one BLS attestation from the sending
-        vehicle and one from every currently active Cluster Head. No-op outside BLS modes
-        (the SHA-256 `.signature` field set by `accident.py` is untouched either way).
+        vehicle and one from every currently active Cluster Head, capped at
+        MAX_CHAIN_SIGNERS total (Report S6: CH pre-screening limit, ~100ms deadline
+        / ~7ms per signature) -- when more CHs than that are active, only the
+        highest-trust ones co-sign. No-op outside BLS modes (the SHA-256
+        `.signature` field set by `accident.py` is untouched either way).
         """
         if self.mode not in ("bls_individual", "bls_batch"):
             return message
@@ -244,10 +250,14 @@ class AuthenticationManager:
             "signature": sender_sig, "public_key": sender_kp.public_key
         })
 
-        for ch_id in (cluster_heads or {}).values():
-            ch_id = str(ch_id)
-            if ch_id == sender_id:
-                continue  # sender already signed; skip a duplicate same-role entry
+        vehicles = vehicles or {}
+        ch_ids = [str(ch_id) for ch_id in (cluster_heads or {}).values() if str(ch_id) != sender_id]
+        max_co_signers = max(0, MAX_CHAIN_SIGNERS - 1)  # sender already counted
+        if len(ch_ids) > max_co_signers:
+            ch_ids.sort(key=lambda cid: vehicles[cid].trust if cid in vehicles else 0.0, reverse=True)
+            ch_ids = ch_ids[:max_co_signers]
+
+        for ch_id in ch_ids:
             ch_kp = self.registry.get_or_create(ch_id)
             ch_sig = self.bls.sign(self._build_payload(message, ch_id, "FORWARDING_CH"), ch_kp)
             message.chain_signatures.append({
@@ -267,9 +277,28 @@ class AuthenticationManager:
 
         return message
 
-    def verify_message(self, message, vehicles=None):
+    def _report_auth_event(self, signer_id, is_success, vehicles, trust_manager):
+        """
+        Feeds a real per-signer verification outcome into the trust model's
+        auth_attempts/auth_successes counters (Priority 2 <-> Priority 3 integration
+        point). No-op if no trust_manager was supplied (e.g. benchmark-only calls).
+        """
+        if not trust_manager or not vehicles:
+            return
+        vehicle = vehicles.get(str(signer_id))
+        if vehicle is not None:
+            trust_manager.update_behavior_event(vehicle, "AUTH", is_success=is_success)
+
+    def verify_message(self, message, vehicles=None, trust_manager=None):
         """
         Verifies an incoming emergency message per the configured mode.
+
+        Args:
+            trust_manager (trust.TrustManager, optional): when provided, every
+                signer's real verification outcome (sender and each co-signing CH)
+                is fed back into their observed auth_attempts/auth_successes via
+                update_behavior_event(), instead of trust.py's T_auth factor being
+                permanently unpopulated.
 
         Returns:
             (is_valid: bool, perf_dict: dict | None)
@@ -284,52 +313,66 @@ class AuthenticationManager:
         if self.mode not in ("bls_individual", "bls_batch") or not entries:
             result = legacy_verify_signature(message)
             self._record_result(result)
+            self._report_auth_event(message.sender, result, vehicles, trust_manager)
             return result, None
 
         if self.mode == "bls_individual":
             results = []
             for entry in entries:
                 payload = self._build_payload(message, entry["signer_id"], entry["role"])
-                results.append(self.bls.verify(payload, entry["signature"], entry["public_key"]))
+                ok = self.bls.verify(payload, entry["signature"], entry["public_key"])
+                results.append(ok)
+                self._report_auth_event(entry["signer_id"], ok, vehicles, trust_manager)
             overall = all(results)
             self._record_result(overall)
             return overall, self.bls.get_performance_summary()
 
-        # "bls_batch": trust-gated aggregate verification
-        high_trust, low_trust = [], []
+        # "bls_batch": Report Algorithm 4's unconditional 3-tier verification.
+        high_trust, mid_trust, rejected = [], [], []
         for entry in entries:
             vehicle = vehicles.get(entry["signer_id"])
             trust = vehicle.trust if vehicle is not None else 0.0
-            (high_trust if trust >= self.trust_threshold else low_trust).append(entry)
+            if trust >= self.trust_threshold:
+                high_trust.append(entry)
+            elif trust >= self.mid_trust_threshold:
+                mid_trust.append(entry)
+            else:
+                rejected.append(entry)
 
         high_trust_valid = True
         if high_trust:
             payloads = [self._build_payload(message, e["signer_id"], e["role"]) for e in high_trust]
             sigs = [e["signature"] for e in high_trust]
             pks = [e["public_key"] for e in high_trust]
-            high_trust_valid, _ = self.bls.verify_batch(payloads, sigs, pks)
+            high_trust_valid, per_item = self.bls.verify_batch(payloads, sigs, pks)
+            for entry, ok in zip(high_trust, per_item):
+                self._report_auth_event(entry["signer_id"], ok, vehicles, trust_manager)
 
-        low_trust_valid = True
-        if low_trust:
-            if self.reject_low_trust:
-                low_trust_valid = False
-                if self.logger:
-                    self.logger.log(
-                        f"[BLS Auth] Rejected {len(low_trust)} low-trust signer(s) outright "
-                        f"(BLS_REJECT_LOW_TRUST=True)."
-                    )
-            else:
-                for entry in low_trust:
-                    payload = self._build_payload(message, entry["signer_id"], entry["role"])
-                    if not self.bls.verify(payload, entry["signature"], entry["public_key"]):
-                        low_trust_valid = False
-                        break
+        mid_trust_valid = True
+        for entry in mid_trust:
+            payload = self._build_payload(message, entry["signer_id"], entry["role"])
+            ok = self.bls.verify(payload, entry["signature"], entry["public_key"])
+            self._report_auth_event(entry["signer_id"], ok, vehicles, trust_manager)
+            if not ok:
+                mid_trust_valid = False
 
-        overall = high_trust_valid and low_trust_valid
+        # T < 0.3: rejected immediately, no verify attempt at all -- real compute
+        # saved, and a blacklisted-trust signer's signature is never even checked.
+        rejected_valid = not rejected
+        if rejected:
+            for entry in rejected:
+                self._report_auth_event(entry["signer_id"], False, vehicles, trust_manager)
+            if self.logger:
+                self.logger.log(
+                    f"[BLS Auth] Rejected {len(rejected)} signer(s) outright (trust < {self.mid_trust_threshold})."
+                )
+
+        overall = high_trust_valid and mid_trust_valid and rejected_valid
         self._record_result(overall)
         perf = self.bls.get_performance_summary()
         perf["high_trust_count"] = len(high_trust)
-        perf["low_trust_count"] = len(low_trust)
+        perf["mid_trust_count"] = len(mid_trust)
+        perf["rejected_count"] = len(rejected)
         return overall, perf
 
     def _record_result(self, is_valid):

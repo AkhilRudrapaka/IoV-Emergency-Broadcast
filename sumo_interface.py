@@ -17,12 +17,13 @@ from metrics import Metrics
 from neighbor_discovery import NeighborManager
 from graphs import GraphGenerator
 from logger import SimulationLogger
-from utils import sumo_angle_to_radians
+from utils import sumo_angle_to_radians, compute_delay_ms
 from bls_auth import AuthenticationManager
+from ecdsa_auth import ECDSAAuthenticator
 
 try:
     from config import (
-        COMM_RANGE, DBSCAN_EPS, DBSCAN_MIN_SAMPLES,
+        COMM_RANGE, DBSCAN_EPS, DBSCAN_MIN_SAMPLES, MALICIOUS_RATIO,
         COLOR_TRUSTED, COLOR_UNKNOWN, COLOR_MALICIOUS,
         COLOR_CLUSTER_HEAD, COLOR_FORWARDING, COLOR_ACCIDENT, COLOR_RSU
     )
@@ -30,6 +31,7 @@ except ImportError:
     COMM_RANGE = 150.0
     DBSCAN_EPS = 80.0
     DBSCAN_MIN_SAMPLES = 2
+    MALICIOUS_RATIO = 0.15
 
 if "SUMO_HOME" in os.environ:
     tools = os.path.join(os.path.abspath(os.environ["SUMO_HOME"]), "tools")
@@ -83,13 +85,24 @@ def add_visual_rsus_to_sumo(rsu_manager):
             pass
 
 
-def run_sumo_simulation(density=250, steps=200, use_gui=False, route_file=None):
+def run_sumo_simulation(density=250, steps=200, use_gui=False, route_file=None, seed=None):
     """
     Orchestrates the complete IEEE IoV Simulation Pipeline across 15 Phases:
     Vehicle Verification -> Classification -> DBSCAN Clustering -> Trust Evaluation ->
     Cluster Head Selection -> 2-Vehicle Crash Simulation -> Duplicate Filtering -> Controlled Broadcast ->
     Multi-Hop Routing -> RSU Ingress Processing -> Decision Engine -> Analytics -> TCC Dissemination.
+
+    Args:
+        seed (int, optional): seeds Python's RNG (malicious-vehicle assignment/attack
+            type) so a specific run -- e.g. one that reliably shows a PACKET_DROP
+            Cluster Head getting caught on the emergency route -- is reproducible for
+            a live demo. SUMO's own vehicle spawn/route pattern is already
+            deterministic from the .rou.xml files; this only controls the
+            simulation-side randomness layered on top.
     """
+    if seed is not None:
+        random.seed(seed)
+
     sumo_binary = "sumo-gui" if use_gui else "sumo"
     cfg_file = "network/simulation.sumocfg"
     r_file = route_file or f"network/routes_{density}.rou.xml"
@@ -137,7 +150,7 @@ def run_sumo_simulation(density=250, steps=200, use_gui=False, route_file=None):
         for vid in ids:
             if vid not in vehicles:
                 v = Vehicle(vid)
-                if random.random() < 0.15:
+                if random.random() < MALICIOUS_RATIO:
                     v.is_malicious = True
                     v.attack_type = random.choice(["PACKET_DROP", "FAKE_ALERT", "FORGED_RECOMMENDATION"])
                 vehicles[vid] = v
@@ -267,7 +280,7 @@ def run_sumo_simulation(density=250, steps=200, use_gui=False, route_file=None):
                 # This is the genuine duplicate-suppression demonstration: many CHs are within
                 # range of the same alert, but only the first relay is accepted -- every other
                 # CH that "hears" the identical message is correctly logged as a blocked duplicate.
-                broadcast_manager.broadcast(msg, active_chs, metrics=metrics)
+                broadcast_manager.broadcast(msg, active_chs, vehicles=vehicles, trust_manager=trust_manager, metrics=metrics, clusters=clusters)
 
                 # Phase 8, 9, 10, 11, 12: Route discovery, Controlled Broadcast, RSU Processing, Dissemination
                 route, ack = routing_engine.route_message(
@@ -277,12 +290,20 @@ def run_sumo_simulation(density=250, steps=200, use_gui=False, route_file=None):
                     broadcast_manager=broadcast_manager,
                     rsu_manager=rsu_manager,
                     metrics=metrics,
-                    auth_manager=auth_manager
+                    auth_manager=auth_manager,
+                    trust_manager=trust_manager,
+                    clusters=clusters
                 )
+                bls_summary = auth_manager.get_summary()
                 if ack:
-                    metrics.record_delivery(delay_ms=15.0 + len(route) * 2.0)
+                    verify_ms = bls_summary.get("avg_batch_verify_time_ms") or bls_summary.get("avg_individual_verify_time_ms", 0.0)
+                    metrics.record_delivery(delay_ms=compute_delay_ms(
+                        hops=max(0, len(route) - 1),
+                        signature_bytes=bls_summary.get("signature_size_bytes", 0),
+                        verification_ms=verify_ms
+                    ))
 
-                metrics.record_bls_performance(auth_manager.get_summary())
+                metrics.record_bls_performance(bls_summary)
 
                 if trust_watch_ids:
                     logger.log(
@@ -297,6 +318,13 @@ def run_sumo_simulation(density=250, steps=200, use_gui=False, route_file=None):
     benchmark_results = auth_manager.run_performance_benchmark()
     auth_manager.save_benchmark_csv(benchmark_results, filepath="outputs/logs/bls_benchmark.csv")
 
+    # Algorithm 4 ablation: real ECDSA benchmark, directly comparable to the BLS one
+    # above (same batch sizes) -- no native aggregation, so no speedup/compression.
+    logger.print_banner("ALGORITHM 4 ABLATION: ECDSA BATCH AUTHENTICATION — PERFORMANCE BENCHMARK")
+    ecdsa_authenticator = ECDSAAuthenticator()
+    ecdsa_results = ecdsa_authenticator.run_performance_benchmark(logger=logger)
+    ecdsa_authenticator.save_benchmark_csv(ecdsa_results, filepath="outputs/logs/ecdsa_benchmark.csv")
+
     # Save metrics and generate IEEE graphs (Phase 15)
     logger.print_banner("PHASE 15: METRICS COLLECTION & IEEE GRAPH GENERATION")
     metrics.show()
@@ -309,4 +337,5 @@ def run_sumo_simulation(density=250, steps=200, use_gui=False, route_file=None):
 
 if __name__ == "__main__":
     gui_env = os.environ.get("SUMO_GUI", "0") == "1"
-    run_sumo_simulation(density=250, steps=200, use_gui=gui_env)
+    seed_env = os.environ.get("SUMO_SEED")
+    run_sumo_simulation(density=250, steps=200, use_gui=gui_env, seed=int(seed_env) if seed_env else None)

@@ -19,6 +19,7 @@ class Vehicle:
         self.heading = 0.0  # radians, standard math convention (0=+x axis, CCW)
         self.prev_x = 0.0
         self.prev_y = 0.0
+        self.prev_speed = 0.0  # for Speed Plausibility (Ts), Algorithm 1
 
         # Classification & Verification Attributes (Phase 3)
         self.classification = "UNKNOWN"  # 'TRUSTED', 'UNKNOWN', 'MALICIOUS'
@@ -27,6 +28,14 @@ class Vehicle:
         # Trust & Role Attributes
         self.trust = 0.5
         self.historical_trust = 0.5
+        # Persistent RSU trust assessment (Algorithm 1 RSU boost): nudged by rsu.py on
+        # each verification outcome, blended into calculate_trust() every call -- not
+        # a one-off mutation that gets overwritten by the next recomputation.
+        self.rsu_trust_assessment = 0.5
+        # Message Consistency (Tc): set when this vehicle sends/reports an emergency
+        # message (accident.py) -- claimed-vs-actual location error in meters.
+        self.location_consistency_error_m = 0.0
+        self.has_reported_message = False
         self.cluster = -1
         self.is_cluster_head = False
         self.is_accident = False
@@ -65,6 +74,7 @@ class Vehicle:
         """
         self.prev_x = self.x
         self.prev_y = self.y
+        self.prev_speed = self.speed
 
         new_x = float(position[0])
         new_y = float(position[1])
@@ -107,7 +117,7 @@ class Vehicle:
         - Trust >= 0.7 -> 'TRUSTED'
         - Trust < 0.7 -> 'UNKNOWN'
         """
-        if self.is_malicious or self.is_blacklisted or self.trust < 0.3:
+        if self.is_blacklisted or self.trust < 0.3:
             self.classification = "MALICIOUS"
             self.auth_state = False
         elif self.trust >= 0.7:
@@ -147,8 +157,8 @@ class Vehicle:
         """
         if self.is_accident:
             return (255, 0, 0, 255)       # Red: Collision site
-        elif self.is_malicious or self.is_blacklisted or self.classification == "MALICIOUS":
-            return (0, 0, 0, 255)         # Black: Malicious
+        elif self.classification == "MALICIOUS":
+            return (0, 0, 0, 255)         # Black: Malicious (as detected, not ground truth)
         elif self.is_forwarding or self.is_braking:
             return (255, 165, 0, 255)     # Orange: Active Dissemination / Accident Braking
         elif self.is_cluster_head:

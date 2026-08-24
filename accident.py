@@ -1,7 +1,13 @@
 import traci
 import math
+import random
 from messaging import EmergencyMessage
 from authentication import sign_message
+
+try:
+    from config import FAKE_ALERT_LOCATION_OFFSET_RANGE_M
+except ImportError:
+    FAKE_ALERT_LOCATION_OFFSET_RANGE_M = (200.0, 500.0)
 
 
 class AccidentManager:
@@ -31,7 +37,7 @@ class AccidentManager:
         Finds a realistic 2-vehicle pair (lead_vehicle, follow_vehicle) driving on the same road edge.
         """
         if not traci.isLoaded():
-            keys = list(vehicles.keys())
+            keys = [vid for vid in vehicles if not vehicles[vid].is_malicious]
             if len(keys) >= 2:
                 return keys[0], keys[1]
             elif keys:
@@ -68,7 +74,7 @@ class AccidentManager:
         if best_lead and best_follow:
             return best_lead, best_follow
 
-        keys = list(vehicles.keys())
+        keys = [vid for vid in vehicles if not vehicles[vid].is_malicious]
         if len(keys) >= 2:
             return keys[0], keys[1]
         elif keys:
@@ -170,9 +176,28 @@ class AccidentManager:
             brake_time=config["brake_time"]
         )
 
+        # Message Consistency (Tc, Algorithm 1): an honest sender reports its true
+        # location. A FAKE_ALERT attacker forges a claimed location offset from its
+        # real position -- a real, disclosed attack-simulation action (mirrors the
+        # existing PACKET_DROP behavior model in broadcast.py), not a fabricated
+        # detection result. The true offset is stored on the vehicle so trust.py can
+        # honestly observe it next time it computes Tc for this vehicle.
+        claimed_location = (v_lead.x, v_lead.y)
+        if getattr(v_lead, 'is_malicious', False) and getattr(v_lead, 'attack_type', None) == "FAKE_ALERT":
+            offset_m = random.uniform(*FAKE_ALERT_LOCATION_OFFSET_RANGE_M)
+            offset_angle = random.uniform(0, 2 * math.pi)
+            claimed_location = (
+                v_lead.x + offset_m * math.cos(offset_angle),
+                v_lead.y + offset_m * math.sin(offset_angle)
+            )
+            v_lead.location_consistency_error_m = offset_m
+        else:
+            v_lead.location_consistency_error_m = 0.0
+        v_lead.has_reported_message = True
+
         message = EmergencyMessage(
             sender=lead_vid,
-            location=(v_lead.x, v_lead.y),
+            location=claimed_location,
             severity=severity
         )
         message.ttl = config["ttl"]

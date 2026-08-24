@@ -15,6 +15,7 @@ def main():
     parser.add_argument("--density", type=int, default=250, help="Vehicle density (50, 100, 200, 300, 500)")
     parser.add_argument("--steps", type=int, default=200, help="Simulation step count")
     parser.add_argument("--eval-only", action="store_true", help="Run comparative benchmark evaluation only")
+    parser.add_argument("--seed", type=int, default=None, help="Seed for reproducible malicious-vehicle assignment (demo rehearsal)")
     args = parser.parse_args()
 
     print("=" * 80)
@@ -30,13 +31,13 @@ def main():
     if not args.eval_only:
         # Step 2: Run End-to-End Simulation with Real-Time Terminal & GUI Visualization (Phases 1-14)
         gui_flag = args.gui or (os.environ.get("SUMO_GUI", "0") == "1")
-        print(f"\n[Step 2/3] Running End-to-End SUMO Simulation (Density={args.density}, GUI={gui_flag})...")
-        run_sumo_simulation(density=args.density, steps=args.steps, use_gui=gui_flag)
+        print(f"\n[Step 2/3] Running End-to-End SUMO Simulation (Density={args.density}, GUI={gui_flag}, Seed={args.seed})...")
+        run_sumo_simulation(density=args.density, steps=args.steps, use_gui=gui_flag, seed=args.seed)
 
     # Step 3: Run Full Comparative Experimental Suite & Generate Graphs (Phase 15)
     print("\n[Step 3/3] Executing Comparative Evaluation & Generating IEEE Analytical Graphs...")
     comparison_engine = ComparisonEngine(output_dir=LOGS_DIR)
-    summary_md, csv_file = comparison_engine.run_all_comparisons(densities=VEHICLE_DENSITIES, runs=2)
+    summary_md, csv_file = comparison_engine.run_all_comparisons(densities=VEHICLE_DENSITIES, runs=5, steps=100)
 
     graph_gen = GraphGenerator(output_dir=GRAPHS_DIR)
     metrics_csv = os.path.join(LOGS_DIR, "simulation_metrics.csv")

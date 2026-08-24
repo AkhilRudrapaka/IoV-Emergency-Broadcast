@@ -4,7 +4,7 @@ import traci
 from authentication import verify_signature
 
 try:
-    from config import RSU_LOCATIONS
+    from config import RSU_LOCATIONS, RSU_TRUST_NUDGE
 except ImportError:
     RSU_LOCATIONS = {
         "RSU_NORTH": (400.0, 750.0),
@@ -13,6 +13,7 @@ except ImportError:
         "RSU_WEST": (50.0, 400.0),
         "RSU_CENTER": (400.0, 400.0)
     }
+    RSU_TRUST_NUDGE = 0.05
 
 
 class RSU:
@@ -83,7 +84,7 @@ class RSU:
             return True
         return isinstance(sender_id, str) and len(sender_id) > 0
 
-    def receive_and_process_message(self, message, vehicles=None, cluster_heads=None, authenticator=None, metrics=None, auth_manager=None):
+    def receive_and_process_message(self, message, vehicles=None, cluster_heads=None, authenticator=None, metrics=None, auth_manager=None, trust_manager=None):
         """
         Phase 11 RSU Processing Pipeline:
         Ingress Queue -> Authentication -> Decision Engine -> Analytics -> Trust Update -> Dissemination.
@@ -94,6 +95,9 @@ class RSU:
                 BLS individual/batch verification and trust-gating — instead of the
                 original SHA-256/no-signature-present check below. When omitted (the
                 default), behavior is exactly as before Priority 2.
+            trust_manager (trust.TrustManager, optional): forwarded to auth_manager so
+                every signer's real verification outcome updates their observed
+                auth_attempts/auth_successes counters (Priority 3 integration point).
         """
         self.packets_received += 1
         self.trigger_flash(15)
@@ -110,7 +114,7 @@ class RSU:
         bls_perf = None
 
         if auth_manager is not None:
-            valid_signature, bls_perf = auth_manager.verify_message(message, vehicles)
+            valid_signature, bls_perf = auth_manager.verify_message(message, vehicles, trust_manager=trust_manager)
         elif hasattr(message, 'signature') and message.signature:
             if authenticator:
                 valid_signature = authenticator.verify_signature(message)
@@ -142,6 +146,8 @@ class RSU:
                 "ack_sent": False
             }
             self.received_log.append(log_entry)
+            if trust_manager and vehicles and sender_id in vehicles:
+                trust_manager.apply_rsu_feedback(vehicles[sender_id], is_success=False, nudge=RSU_TRUST_NUDGE)
             if self.logger:
                 self.logger.log(f"[RSU {self.rsu_id}] Authentication: FAIL | Decision: {decision}")
             return None
@@ -166,17 +172,19 @@ class RSU:
         }
         self.received_log.append(log_entry)
 
-        # Step 4: Trust Update on Sender
-        if vehicles and sender_id in vehicles:
+        # Step 4: RSU Trust Feedback (Algorithm 1 RSU boost, Report CRITICAL S10.2).
+        # Nudges the *persistent* vehicle.rsu_trust_assessment input, which
+        # calculate_trust() blends in (0.80*vehicle + 0.20*RSU) on every subsequent
+        # call -- unlike a direct vehicle.trust mutation, this survives to the next
+        # step instead of being silently overwritten by the next recomputation.
+        if vehicles and sender_id in vehicles and trust_manager:
             sender_veh = vehicles[sender_id]
-            old_trust = sender_veh.trust
-            sender_veh.auth_successes += 1
-            sender_veh.auth_attempts += 1
-            sender_veh.trust = min(1.0, round(sender_veh.trust + 0.05, 2))
+            old_assessment = sender_veh.rsu_trust_assessment
+            new_assessment = trust_manager.apply_rsu_feedback(sender_veh, is_success=True, nudge=RSU_TRUST_NUDGE)
             if self.logger:
                 self.logger.log(
-                    f"[RSU {self.rsu_id}] Trust Updated (Post-Verification): Vehicle {sender_id} "
-                    f"{old_trust:.2f} -> {sender_veh.trust:.2f} | Reason: Successful RSU Authentication"
+                    f"[RSU {self.rsu_id}] RSU Trust Assessment Updated: Vehicle {sender_id} "
+                    f"{old_assessment:.2f} -> {new_assessment:.2f} | Reason: Successful RSU Authentication"
                 )
 
         # Step 5: Send Acknowledgement (ACK)
@@ -229,8 +237,23 @@ class RSUManager:
     def __init__(self, logger=None, deploy_default_rsus=True):
         self.logger = logger
         self.rsus = {}
+        # Cross-RSU/cross-CH event dedup (HIGH priority, Report S10.2): the same
+        # accident UUID reported via multiple Cluster Heads or delivered to more
+        # than one RSU must be verified only once.
+        self.processed_message_ids = set()
+        self.processed_acks = {}
         if deploy_default_rsus:
             self.deploy_default_network()
+
+    def is_duplicate_event(self, message_id):
+        return message_id in self.processed_message_ids
+
+    def record_processed_event(self, message_id, ack):
+        self.processed_message_ids.add(message_id)
+        self.processed_acks[message_id] = ack
+
+    def get_cached_ack(self, message_id):
+        return self.processed_acks.get(message_id)
 
     def deploy_default_network(self):
         for rsu_id, pos in RSU_LOCATIONS.items():

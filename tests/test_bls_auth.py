@@ -72,7 +72,7 @@ class TestAuthenticationManagerModes(unittest.TestCase):
         self.vehicles = {
             "v1": self._make_vehicle("v1", trust=0.9),
             "v2": self._make_vehicle("v2", trust=0.85),
-            "v3": self._make_vehicle("v3", trust=0.2),  # low-trust
+            "v3": self._make_vehicle("v3", trust=0.5),  # mid-trust (0.3 <= T < 0.7)
         }
         self.cluster_heads = {0: "v2", 1: "v3"}
 
@@ -111,6 +111,27 @@ class TestAuthenticationManagerModes(unittest.TestCase):
         self.assertIn(("v2", "FORWARDING_CH"), roles)
         self.assertIn(("v3", "FORWARDING_CH"), roles)
 
+    def test_max_chain_signers_cap_prefers_highest_trust(self):
+        # Report S6: CH pre-screening limit (~14 signers, 100ms deadline / ~7ms per
+        # signature). With more active CHs than the cap allows, only the
+        # highest-trust ones (plus the sender) get to co-sign.
+        vehicles = {"v1": self._make_vehicle("v1", trust=0.9)}
+        cluster_heads = {}
+        for i in range(20):
+            vid = f"ch{i}"
+            vehicles[vid] = self._make_vehicle(vid, trust=round(0.5 + i * 0.01, 2))
+            cluster_heads[i] = vid
+
+        mgr = AuthenticationManager(mode="bls_batch")
+        msg = EmergencyMessage(sender="v1", location=(0.0, 0.0), severity="HIGH")
+        mgr.sign_emergency_broadcast(msg, sender_vehicle_id="v1", cluster_heads=cluster_heads, vehicles=vehicles)
+
+        self.assertEqual(len(msg.chain_signatures), 14)  # sender + 13 highest-trust CHs
+        signer_ids = {e["signer_id"] for e in msg.chain_signatures}
+        self.assertIn("v1", signer_ids)
+        self.assertIn("ch19", signer_ids)  # highest trust (0.69)
+        self.assertNotIn("ch0", signer_ids)  # lowest trust (0.50), should be excluded
+
     def test_bls_individual_mode_validates_correctly(self):
         mgr = AuthenticationManager(mode="bls_individual")
         mgr.sign_emergency_broadcast(
@@ -125,8 +146,10 @@ class TestAuthenticationManagerModes(unittest.TestCase):
         ok2, _ = mgr.verify_message(self.msg, self.vehicles)
         self.assertFalse(ok2)
 
-    def test_bls_batch_mode_trust_gating_individually_verifies_low_trust(self):
-        mgr = AuthenticationManager(mode="bls_batch", trust_threshold=0.7, reject_low_trust=False)
+    def test_bls_batch_mode_trust_gating_individually_verifies_mid_trust(self):
+        # Report Algorithm 4's 3-tier verification: 0.3 <= T < 0.7 -> individual
+        # verify (not aggregate-batched with the high-trust signers).
+        mgr = AuthenticationManager(mode="bls_batch", trust_threshold=0.7)
         mgr.sign_emergency_broadcast(
             self.msg, sender_vehicle_id="v1", cluster_heads=self.cluster_heads, vehicles=self.vehicles
         )
@@ -134,19 +157,32 @@ class TestAuthenticationManagerModes(unittest.TestCase):
         ok, perf = mgr.verify_message(self.msg, self.vehicles)
         self.assertTrue(ok)
         self.assertEqual(perf["high_trust_count"], 2)  # v1 (SENDER), v2 (CH)
-        self.assertEqual(perf["low_trust_count"], 1)   # v3 (CH)
+        self.assertEqual(perf["mid_trust_count"], 1)   # v3 (CH)
+        self.assertEqual(perf["rejected_count"], 0)
 
-    def test_bls_batch_mode_rejects_low_trust_when_configured(self):
-        mgr = AuthenticationManager(mode="bls_batch", trust_threshold=0.7, reject_low_trust=True)
+    def test_bls_batch_mode_rejects_sub_030_trust_unconditionally(self):
+        # Report Algorithm 4: T < 0.3 is rejected immediately, no verify attempt,
+        # unconditionally (no configuration flag needed).
+        vehicles = dict(self.vehicles)
+        vehicles["v4"] = self._make_vehicle("v4", trust=0.2)
+        cluster_heads = dict(self.cluster_heads)
+        cluster_heads[2] = "v4"
+
+        mgr = AuthenticationManager(mode="bls_batch", trust_threshold=0.7)
         mgr.sign_emergency_broadcast(
-            self.msg, sender_vehicle_id="v1", cluster_heads=self.cluster_heads, vehicles=self.vehicles
+            self.msg, sender_vehicle_id="v1", cluster_heads=cluster_heads, vehicles=vehicles
         )
 
-        ok, _ = mgr.verify_message(self.msg, self.vehicles)
-        self.assertFalse(ok)  # low-trust v3 rejected outright -> overall auth fails
+        verifies_before = mgr.bls.individual_verify_time_samples[:]
+        ok, perf = mgr.verify_message(self.msg, vehicles)
+        self.assertFalse(ok)  # rejected signer -> overall auth fails
+        self.assertEqual(perf["rejected_count"], 1)
+        # No verify attempt at all was made for the rejected signer specifically:
+        # only v3 (mid-trust) should have added an individual-verify sample.
+        self.assertEqual(len(mgr.bls.individual_verify_time_samples) - len(verifies_before), 1)
 
     def test_bls_batch_mode_detects_tampering(self):
-        mgr = AuthenticationManager(mode="bls_batch", trust_threshold=0.7, reject_low_trust=False)
+        mgr = AuthenticationManager(mode="bls_batch", trust_threshold=0.7)
         mgr.sign_emergency_broadcast(
             self.msg, sender_vehicle_id="v1", cluster_heads=self.cluster_heads, vehicles=self.vehicles
         )

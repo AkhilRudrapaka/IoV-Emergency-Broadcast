@@ -77,8 +77,11 @@ class Metrics:
 
     @property
     def avg_delay_ms(self):
+        # 0.0, not a plausible-looking placeholder value: no message has actually
+        # been delivered yet (or ever, e.g. a mid-route drop), so there is no
+        # latency to report -- distinct from a real measurement, not disguised as one.
         if not self.delay_samples:
-            return 12.5
+            return 0.0
         return sum(self.delay_samples) / len(self.delay_samples)
 
     @property
