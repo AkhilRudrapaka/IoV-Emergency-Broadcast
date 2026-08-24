@@ -1,5 +1,26 @@
 import math
 
+try:
+    from config import V2V_DATA_RATE_BPS, BASE_MESSAGE_SIZE_BYTES, PER_HOP_PROCESSING_MS
+except ImportError:
+    V2V_DATA_RATE_BPS = 6_000_000
+    BASE_MESSAGE_SIZE_BYTES = 300
+    PER_HOP_PROCESSING_MS = 1.0
+
+
+def compute_delay_ms(hops, signature_bytes=0, verification_ms=0.0):
+    """
+    Analytic end-to-end delay: per-hop 802.11p-typical transmission + processing
+    time, plus real measured cryptographic verification time. Shared by both the
+    PROPOSED and FLOODING arms of the evaluation harness so any delay difference
+    between them comes from real per-run quantities (hop count, signature size,
+    measured verify time), not from independently tuned per-algorithm constants.
+    """
+    message_bits = (BASE_MESSAGE_SIZE_BYTES + signature_bytes) * 8
+    transmission_ms = (message_bits / V2V_DATA_RATE_BPS) * 1000.0
+    return max(1, hops) * (transmission_ms + PER_HOP_PROCESSING_MS) + verification_ms
+
+
 def euclidean_distance(pos1, pos2):
     """
     Calculates Euclidean distance between two 2D point coordinates (x, y).

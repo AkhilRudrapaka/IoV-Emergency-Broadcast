@@ -3,102 +3,137 @@ import math
 
 try:
     from config import (
-        TRUST_INITIAL, TRUST_MIN, TRUST_MAX, TRUST_BLACKLIST_THRESHOLD,
-        TRUST_WEIGHT_FWD, TRUST_WEIGHT_AUTH, TRUST_WEIGHT_PDR,
-        TRUST_WEIGHT_HIST, TRUST_WEIGHT_REC, TRUST_EMA_ALPHA
+        TRUST_INITIAL, TRUST_MIN, TRUST_MAX, TRUST_BLACKLIST_THRESHOLD, TRUST_THRESHOLD_TRUSTED,
+        TRUST_WEIGHT_FWD, TRUST_WEIGHT_CONSISTENCY, TRUST_WEIGHT_SPEED, TRUST_WEIGHT_HIST,
+        TRUST_EMA_ALPHA, TRUST_EMA_CURRENT_WEIGHT,
+        RSU_TRUST_BLEND_VEHICLE_WEIGHT, RSU_TRUST_BLEND_RSU_WEIGHT,
+        MAX_SPEED_DELTA_PER_STEP_MPS, MAX_SPEED_MPS, MESSAGE_LOCATION_TOLERANCE_M
     )
+    NEUTRAL_TRUST = TRUST_INITIAL
 except ImportError:
     TRUST_INITIAL = 0.5
     TRUST_MIN = 0.0
     TRUST_MAX = 1.0
     TRUST_BLACKLIST_THRESHOLD = 0.3
+    TRUST_THRESHOLD_TRUSTED = 0.7
     TRUST_WEIGHT_FWD = 0.30
-    TRUST_WEIGHT_AUTH = 0.25
-    TRUST_WEIGHT_PDR = 0.20
-    TRUST_WEIGHT_HIST = 0.15
-    TRUST_WEIGHT_REC = 0.10
-    TRUST_EMA_ALPHA = 0.7
+    TRUST_WEIGHT_CONSISTENCY = 0.25
+    TRUST_WEIGHT_SPEED = 0.20
+    TRUST_WEIGHT_HIST = 0.25
+    TRUST_EMA_ALPHA = 0.85
+    TRUST_EMA_CURRENT_WEIGHT = 0.15
+    RSU_TRUST_BLEND_VEHICLE_WEIGHT = 0.80
+    RSU_TRUST_BLEND_RSU_WEIGHT = 0.20
+    MAX_SPEED_DELTA_PER_STEP_MPS = 4.5
+    MAX_SPEED_MPS = 22.0
+    MESSAGE_LOCATION_TOLERANCE_M = 50.0
+    NEUTRAL_TRUST = TRUST_INITIAL
 
 
 class TrustManager:
     """
-    Behavior-Based Trust Evaluation & Dynamic Node Classification Manager.
-    Calculates composite trust scores using Exponential Moving Average (EMA)
-    and enforces dynamic blacklisting and classification transitions.
+    Bayesian Trust Model (Algorithm 1): behavior-based trust from four weighted
+    factors -- Forwarding Behaviour (Tf), Message Consistency (Tc), Speed
+    Plausibility (Ts), and EMA-decayed Historical Trust (Th) -- plus a persistent
+    RSU-assessment blend.
+
+    Tf is real and event-driven (update_behavior_event(), fed by broadcast.py/
+    bls_auth.py). Tc and Ts are computed from real per-step simulation state
+    (claimed-vs-actual message location; kinematic speed-change plausibility) using
+    this session's standard-VANET-trust-literature interpretation of the factor
+    names -- no external formula for them was available (see config.py), so treat
+    their exact thresholds as provisional pending the source report.
+
+    is_malicious/attack_type are simulation-only ground truth used to decide what a
+    simulated attacker's real actions look like (broadcast.py's PACKET_DROP,
+    accident.py's FAKE_ALERT location forgery); they are never read here.
     """
 
     def __init__(self, logger=None):
         self.alpha = TRUST_EMA_ALPHA
+        self.current_weight = TRUST_EMA_CURRENT_WEIGHT
         self.logger = logger
 
     def calculate_trust(self, vehicle, vehicles=None):
         """
-        Calculates behavior-based trust score for a vehicle:
-        T_total = w_fwd*T_fwd + w_auth*T_auth + w_pdr*T_pdr + w_hist*T_hist + w_rec*T_rec
-
-        Evaluates behavior counters, applies penalty for malicious behavior,
-        updates historical trust (EMA), updates classification, and enforces dynamic blacklisting.
+        t_current = (0.30*Tf + 0.25*Tc + 0.20*Ts) / 0.75
+        New_Th    = 0.85*Old_Th + 0.15*t_current
+        Trust(v)  = 0.30*Tf + 0.25*Tc + 0.20*Ts + 0.25*Th
+        Final     = 0.80*Trust(v) + 0.20*rsu_trust_assessment
         """
         old_trust = vehicle.trust
 
-        # If node is malicious, simulate degraded behavior counters
-        if vehicle.is_malicious:
-            if vehicle.attack_type == "PACKET_DROP":
-                vehicle.successful_forwards = max(0, vehicle.successful_forwards - 2)
-            elif vehicle.attack_type == "FAKE_ALERT":
-                vehicle.auth_successes = max(0, vehicle.auth_successes - 2)
-
-        # 1. Forwarding Trust (T_fwd)
+        # 1. Forwarding Behaviour (Tf) -- real, event-driven. A vehicle with zero
+        # observed interactions this run is honestly "unknown," not pre-scored.
         if vehicle.forward_attempts > 0:
             t_fwd = max(0.0, min(1.0, vehicle.successful_forwards / vehicle.forward_attempts))
         else:
-            t_fwd = 0.15 if (vehicle.is_malicious and vehicle.attack_type == "PACKET_DROP") else 0.85
+            t_fwd = NEUTRAL_TRUST
 
-        # 2. Authentication Success Trust (T_auth)
-        if vehicle.auth_attempts > 0:
-            t_auth = max(0.0, min(1.0, vehicle.auth_successes / vehicle.auth_attempts))
+        # 2. Message Consistency (Tc) -- claimed-vs-actual location error at the
+        # moment this vehicle last sent/reported an emergency message (set by
+        # accident.py). No message reported yet this run -> neutral default.
+        if vehicle.has_reported_message:
+            if vehicle.location_consistency_error_m <= MESSAGE_LOCATION_TOLERANCE_M:
+                t_c = 1.0
+            else:
+                excess = vehicle.location_consistency_error_m - MESSAGE_LOCATION_TOLERANCE_M
+                t_c = max(0.0, 1.0 - excess / MESSAGE_LOCATION_TOLERANCE_M)
         else:
-            t_auth = 0.10 if (vehicle.is_malicious and vehicle.attack_type == "FAKE_ALERT") else 0.95
+            t_c = NEUTRAL_TRUST
 
-        # 3. Packet Delivery Ratio Trust (T_pdr)
-        if vehicle.total_received > 0:
-            t_pdr = max(0.0, min(1.0, vehicle.successful_forwards / vehicle.total_received))
+        # 3. Speed Plausibility (Ts) -- kinematic feasibility: is this step's speed
+        # change within a physically realistic bound (matches the SUMO vType's own
+        # decel bound, network/routes*.xml), and is speed within maxSpeed?
+        if vehicle.speed > MAX_SPEED_MPS:
+            t_s = max(0.0, 1.0 - (vehicle.speed - MAX_SPEED_MPS) / MAX_SPEED_MPS)
         else:
-            t_pdr = 0.25 if vehicle.is_malicious else 0.90
+            speed_delta = abs(vehicle.speed - vehicle.prev_speed)
+            if speed_delta <= MAX_SPEED_DELTA_PER_STEP_MPS:
+                t_s = 1.0
+            else:
+                excess = speed_delta - MAX_SPEED_DELTA_PER_STEP_MPS
+                t_s = max(0.0, 1.0 - excess / MAX_SPEED_DELTA_PER_STEP_MPS)
 
-        # 4. Neighbor Recommendation Trust (T_rec)
-        t_rec = self._calculate_recommendations(vehicle, vehicles)
-
-        # Immediate component score
+        # Immediate component score, normalized over the three non-historical weights
         t_current = (
             TRUST_WEIGHT_FWD * t_fwd +
-            TRUST_WEIGHT_AUTH * t_auth +
-            TRUST_WEIGHT_PDR * t_pdr +
-            TRUST_WEIGHT_REC * t_rec
-        ) / (TRUST_WEIGHT_FWD + TRUST_WEIGHT_AUTH + TRUST_WEIGHT_PDR + TRUST_WEIGHT_REC)
+            TRUST_WEIGHT_CONSISTENCY * t_c +
+            TRUST_WEIGHT_SPEED * t_s
+        ) / (TRUST_WEIGHT_FWD + TRUST_WEIGHT_CONSISTENCY + TRUST_WEIGHT_SPEED)
 
-        # 5. Historical Trust (T_hist) via Exponential Moving Average (EMA)
-        t_hist = self.alpha * vehicle.historical_trust + (1.0 - self.alpha) * t_current
-        vehicle.historical_trust = t_hist
+        # 4. Historical Trust (Th) via EMA decay
+        t_h = self.alpha * vehicle.historical_trust + self.current_weight * t_current
+        vehicle.historical_trust = t_h
 
-        # Overall composite trust calculation
         composite_trust = (
             TRUST_WEIGHT_FWD * t_fwd +
-            TRUST_WEIGHT_AUTH * t_auth +
-            TRUST_WEIGHT_PDR * t_pdr +
-            TRUST_WEIGHT_HIST * t_hist +
-            TRUST_WEIGHT_REC * t_rec
+            TRUST_WEIGHT_CONSISTENCY * t_c +
+            TRUST_WEIGHT_SPEED * t_s +
+            TRUST_WEIGHT_HIST * t_h
         )
 
-        final_trust = max(TRUST_MIN, min(TRUST_MAX, round(composite_trust, 2)))
+        # RSU boost: a persistent blend (vehicle.rsu_trust_assessment is nudged by
+        # rsu.py on each verification outcome and carried across steps), not a
+        # one-off mutation that the next calculate_trust() call would silently erase.
+        final_trust_raw = (
+            RSU_TRUST_BLEND_VEHICLE_WEIGHT * composite_trust +
+            RSU_TRUST_BLEND_RSU_WEIGHT * vehicle.rsu_trust_assessment
+        )
+
+        final_trust = max(TRUST_MIN, min(TRUST_MAX, round(final_trust_raw, 2)))
         vehicle.trust = final_trust
 
-        # Dynamic Blacklisting & Classification Enforcement
-        if final_trust < TRUST_BLACKLIST_THRESHOLD or vehicle.is_malicious:
+        # Dynamic Blacklisting & Classification Enforcement -- derived from the
+        # observed trust score alone. is_malicious/attack_type are simulation-only
+        # ground truth used to decide what an attacker's real behavior events look
+        # like (see broadcast.py, bls_auth.py); they must never leak into what the
+        # trust system concludes about a vehicle.
+        if final_trust < TRUST_BLACKLIST_THRESHOLD:
             vehicle.is_blacklisted = True
             vehicle.is_cluster_head = False
             vehicle.classification = "MALICIOUS"
-        elif final_trust >= 0.7:
+        elif final_trust >= TRUST_THRESHOLD_TRUSTED:
             vehicle.is_blacklisted = False
             vehicle.classification = "TRUSTED"
         else:
@@ -107,7 +142,7 @@ class TrustManager:
 
         # Log significant trust changes (Phase 5)
         if self.logger and abs(final_trust - old_trust) >= 0.15:
-            reason = "Packet Drop Attack" if vehicle.is_malicious else "Consistent Behavioral Delivery"
+            reason = "Observed Forwarding/Consistency/Speed Anomaly" if final_trust < old_trust else "Consistent Behavioral Delivery"
             self.logger.log(
                 f"[Trust Evaluation] Vehicle {vehicle.id:<6}: Trust Updated "
                 f"{old_trust:.2f} -> {final_trust:.2f} | Reason: {reason} | Class: {vehicle.classification}"
@@ -115,35 +150,26 @@ class TrustManager:
 
         return vehicle.trust
 
-    def _calculate_recommendations(self, vehicle, vehicles):
+    def apply_rsu_feedback(self, vehicle, is_success, nudge):
         """
-        Calculates average recommendation score from non-malicious neighboring nodes,
-        filtering out forged recommendations.
+        Persistently nudges vehicle.rsu_trust_assessment on an RSU verification
+        outcome (called from rsu.py). This is the RSU-boost *input*, blended into
+        the formula by calculate_trust() on every subsequent call -- unlike a direct
+        vehicle.trust mutation, it survives to the next step instead of being
+        silently overwritten by the next recomputation (CRITICAL fix, Report S10.2).
         """
-        if not vehicles or not vehicle.neighbors:
-            return 0.2 if vehicle.is_malicious else 0.8
-
-        recommendation_scores = []
-        for n_id in vehicle.neighbors:
-            n_id = str(n_id)
-            if n_id in vehicles:
-                neighbor = vehicles[n_id]
-                # Filter out recommendations from blacklisted or malicious recommenders
-                if neighbor.is_blacklisted or neighbor.is_malicious:
-                    continue
-
-                if vehicle.id in neighbor.recommendations:
-                    recommendation_scores.append(neighbor.recommendations[vehicle.id])
-                else:
-                    recommendation_scores.append(neighbor.trust)
-
-        if recommendation_scores:
-            return sum(recommendation_scores) / len(recommendation_scores)
-        return 0.1 if vehicle.is_malicious else 0.85
+        delta = nudge if is_success else -nudge
+        vehicle.rsu_trust_assessment = max(TRUST_MIN, min(TRUST_MAX, round(vehicle.rsu_trust_assessment + delta, 2)))
+        return vehicle.rsu_trust_assessment
 
     def update_behavior_event(self, vehicle, event_type, is_success=True):
         """
         Updates node behavior statistics upon network events (forwarding, auth, packet drop).
+        auth_attempts/auth_successes/total_received are retained as real diagnostic
+        counters (still populated by bls_auth.py/broadcast.py) but are no longer
+        direct inputs to calculate_trust() -- the Report's 4-factor model uses Tf/Tc/
+        Ts/Th only; authentication outcome instead *consumes* trust (as the tiered
+        verification gate in bls_auth.py), rather than feeding it.
         """
         if event_type == "FORWARD":
             vehicle.forward_attempts += 1
