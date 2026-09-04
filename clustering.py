@@ -24,9 +24,33 @@ _HEADING_GATE_PENALTY = 1.0e6
 
 class ClusterManager:
     """
-    DBSCAN Spatial Clustering Manager for IoV Vehicles.
+    Velocity-Weighted Clustering Algorithm (VWCA) for IoV Vehicles.
     Groups vehicles dynamically into spatial clusters.
     Label -1 indicates unclustered (noise) vehicles.
+
+    PROOF-OF-WORK
+    --------------
+    Following [Chen & Wu, 2024, Sec. 4.1] "Dynamic Networking Method of Vehicles
+    in VANET": DBSCAN clustering over a mobility/velocity-aware scoring model,
+    rather than plain Euclidean distance, so vehicles are grouped by predicted
+    proximity, not just current position.
+    - eps=80.0 m default: Chen & Wu's own Table 2 evaluates the highway-topology
+      values eps in {20, 40} m (20 m preferred for their scenario -- a dense,
+      single 3-lane, 3000 m highway). This project's road network is a sparser
+      5x5 urban intersection grid (700 m x 700 m); eps=80 m is this project's
+      own empirically-checked value for THAT topology, not Chen & Wu's number
+      transplanted unchanged -- see eps_sensitivity.py and docs/ALGORITHMS.md's
+      Ablation Study for the measured comparison across eps in {20, 40, 80} m on
+      this project's own network (their eps range does not transfer: it produces
+      100% noise / no clustering at all here).
+    - Transmission/communication range: Chen & Wu's Table 2 itself uses 300 m,
+      independently matching this project's GPSR_RANGE_M (see routing.py).
+    - The directional compatibility gate and velocity-projected distance term
+      (Sec 2.2 below) extend Chen & Wu's velocity-aware premise with an explicit
+      heading-incompatibility penalty; Chen & Wu do not publish a gate in this
+      exact >120 deg / project-forward-2s form -- treat the gate's specific
+      angle threshold and prediction horizon as this project's own tuning of
+      their general velocity-aware clustering idea.
 
     Supports two ablation modes (Priority 1):
       - "baseline": plain Euclidean DBSCAN on raw (x, y) positions (original behavior).

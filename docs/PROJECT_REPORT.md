@@ -135,14 +135,38 @@ The project began from a fully functional baseline prototype (SUMO network, clas
 
 - ✅ **Priority 1 — Velocity-Aware & Adaptive DBSCAN Clustering.** Implemented a mobility-aware clustering distance metric (predictive-position projection plus a directional compatibility gate, with a stationary-vehicle safeguard for post-accident queues), persistent cross-step cluster-identity tracking, and a dynamic re-clustering controller that triggers full re-clustering only on significant mobility change, trust change, fleet-membership churn, or falling cluster stability — reducing unnecessary computation while improving Cluster Head stability. The original plain-DBSCAN approach is retained as a one-flag ablation baseline. Verified with 12 dedicated unit tests and a full live SUMO run (density 250, 200 steps), producing new cluster-lifetime, Cluster-Head-churn-rate, connectivity, and stability metrics in the exported CSV.
 - ✅ **Priority 2 — Full BLS Batch Authentication.** Implemented real BLS12-381 signing, individual verification, and true aggregate batch verification. Every emergency alert is now co-signed by the originating vehicle and every currently active Cluster Head (capped at 14 total signers); the RSU applies 3-tier trust-gated verification — aggregate-verifies high-trust (T≥0.7) signers in a single pairing operation, individually verifies mid-trust (0.3≤T<0.7) signers, and rejects low-trust (T<0.3) signers immediately with no verify attempt. A dedicated performance benchmark demonstrated up to **~2× verification speedup** and a **20:1 reduction in signature payload size** (1,920 bytes → 96 bytes) at batch sizes ≥10; a real ECDSA (NIST P-256) ablation arm provides an honest side-by-side comparison against the Report's specified industry-standard scheme (see `docs/ALGORITHMS.md` §6). Four authentication modes (full batch, individual BLS, legacy baseline, none) are available as ablation switches. Verified with dedicated unit tests (`tests/test_bls_auth.py`, `tests/test_ecdsa_auth.py`) and a full live SUMO run with no regressions to Priority 1 or the foundational prototype.
-- **Combined verification status:** 52 of 52 automated tests passing across the full codebase at the current stage.
-
-### 5.3 In Progress / Pending
-
-- 🔲 **Priority 3 — Advanced Multi-Factor / ML-Assisted Trust Model.** Extending trust to a multi-dimensional model incorporating communication behavior, message consistency, speed stability, and historical reporting accuracy; adding trust decay over time and indirect (neighbor/RSU-recommended) trust; introducing a lightweight online machine-learning trust predictor feeding directly into Cluster Head election.
-- 🔲 **Priority 4 — Improved Broadcasting & Persistence.** Replacing/augmenting pure Cluster-Head-only forwarding with trust-and-distance-aware probabilistic or timer-based rebroadcast, geographic/zone-aware dissemination toward the affected road segment, and density/trust-adaptive TTL and hop-count limits — with the current controlled-broadcast approach retained as a baseline.
-- 🔲 **Priority 5 — Rigorous Evaluation Framework.** A structured experimental framework spanning multiple vehicle densities, multiple malicious-vehicle ratios, urban and highway scenarios, and multiple independent runs with statistical reporting (mean ± standard deviation, confidence intervals); a full ablation matrix across all completed enhancements; and an expanded IEEE-style metric and publication-quality reporting suite.
-- 🔲 **Priority 6 — RSU & System-Level Improvements.** Multi-RSU coordination and handoff, RSU-level global trust aggregation, a persistent blacklist for repeatedly malicious vehicles, and a feedback loop returning updated trust information from the RSU/Traffic Control Center back to vehicles.
+- ✅ **Priority 3 — Multi-Factor Bayesian Trust Model (partial).** Trust is now a real 4-factor Bayesian
+  composite — `Trust(v) = 0.30·Tf + 0.25·Tc + 0.20·Ts + 0.25·Th`, with an exponential-decay historical term
+  (`Th_new = 0.85·Th_old + 0.15·t_current`) and a persistent RSU-feedback blend
+  (`Final = 0.80·Trust(v) + 0.20·rsu_assessment`, nudged by real verification outcomes and carried across
+  steps instead of being overwritten). Forwarding behavior (Tf), message-location consistency (Tc), and
+  kinematic speed plausibility (Ts) are all derived from observed per-step simulation state, with no
+  ground-truth (`is_malicious`) leak into the score. See `docs/ALGORITHMS.md` §1 and its Proof-of-Work
+  Mapping table for the exact grounding and the explicit disclosure that Tc/Ts's specific formulas are this
+  project's own construction. **Not yet done:** an online machine-learning trust predictor — the model
+  remains fully rule-based/analytic, not learned.
+- ✅ **Priority 4 — Improved Broadcasting (partial).** Cluster-Head-only forwarding now runs over real GPSR
+  geographic routing (300 m wireless-range cap on every hop, standard right-hand-rule perimeter-mode void
+  recovery, 5-hop TTL, a 4-tier fallback chain ending in a disclosed Store-Carry-Forward), gated by
+  cooperative majority-vote confirmation (>50% of a Cluster Head's own cluster must corroborate before
+  forwarding) and UUID-based cross-event RSU deduplication. **Not yet done:** trust-and-distance-aware
+  probabilistic/timer-based rebroadcast and zone-aware dissemination — forwarding is still single-path
+  CH-chain-only, which is the direct, disclosed cause of the PDR reliability-vs-efficiency trade-off in
+  `outputs/RESULTS_SUMMARY.md`.
+- ✅ **Priority 5 — Rigorous Evaluation Framework (substantially complete).** The comparison harness now
+  sweeps 7 vehicle densities (50/100/150/200/250/300/500 — the first five an exact match to
+  [Kaur et al., 2024]'s own tested set), 5 seeded runs per density with mean ± 95% CI, and 5 emergency
+  events per run. Ablation switches exist and are exercised for clustering (baseline DBSCAN vs.
+  velocity-aware), authentication (BLS batch / BLS individual / legacy baseline / none, plus a real ECDSA
+  NIST P-256 arm), and DBSCAN ε sensitivity (`eps_sensitivity.py`, `docs/ALGORITHMS.md` §2.5). **Not yet
+  done:** multiple malicious-vehicle ratios and a highway (non-urban-grid) scenario are not swept — only the
+  default 15% ratio and the current urban grid are evaluated.
+- 🔲 **Priority 6 — RSU & System-Level Improvements (partial).** Persistent RSU trust feedback (a real
+  feedback loop from RSU verification outcomes back into each vehicle's trust score, carried across steps)
+  is now implemented — see Priority 3 above. **Not yet done:** multi-RSU coordination/handoff and a
+  persistent cross-run blacklist for repeatedly malicious vehicles remain unimplemented.
+- **Combined verification status:** 93 of 93 automated tests passing across the full codebase at the
+  current stage.
 
 ---
 
@@ -150,10 +174,10 @@ The project began from a fully functional baseline prototype (SUMO network, clas
 
 ### 6.1 Future Enhancements
 
-- **Machine-learning-driven trust prediction** (Priority 3), moving from purely rule-based trust scoring to a model trained on observed vehicle behavior, improving resilience to more sophisticated adversarial strategies.
-- **Adaptive, geography-aware rebroadcasting** (Priority 4), further reducing overhead by directing retransmission effort toward the physical area affected by an incident rather than uniformly across all Cluster Heads.
-- **Publication-grade statistical evaluation** (Priority 5), producing the density-, malicious-ratio-, and scenario-swept results with confidence intervals required for a defensible IEEE/Scopus submission.
-- **Multi-RSU coordination and network-wide trust aggregation** (Priority 6), extending the current single-RSU trust feedback loop into a coordinated infrastructure layer.
+- **Machine-learning-driven trust prediction** (Priority 3), moving from the current rule-based/analytic 4-factor trust score to a model trained on observed vehicle behavior, improving resilience to more sophisticated adversarial strategies.
+- **A hybrid, redundancy-aware forwarding scheme** (Priority 4), addressing the PDR reliability-vs-efficiency trade-off now visible in `outputs/RESULTS_SUMMARY.md` — the single-path CH-chain-only forwarding that makes the proposed scheme efficient is also what makes it structurally more exposed to any one hop failing than flooding's redundant paths.
+- **Malicious-ratio and highway-scenario sweeps** (Priority 5), extending the now-substantially-complete 7-density/5-seed evaluation framework to also vary the malicious-vehicle ratio and test a non-urban-grid topology.
+- **Multi-RSU coordination and a persistent cross-run blacklist** (Priority 6), extending the now-implemented single-RSU persistent trust feedback loop into a coordinated multi-RSU infrastructure layer.
 - **Longer-term scalability and deployment directions:** extension to highway (in addition to urban grid) scenarios; integration with a production-grade PKI/certificate authority for BLS key registration in place of the current simulation-internal key registry; evaluation of optimized/compiled pairing-cryptography libraries to reduce BLS latency for larger-scale runs; and alignment with real-world V2X/C-V2X messaging standards for eventual hardware-in-the-loop testing.
 
 ### 6.2 Conclusion

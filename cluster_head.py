@@ -10,9 +10,29 @@ class ClusterHeadManager:
     Cluster Head (CH) Selection Manager.
     Elects CH for each spatial DBSCAN cluster based on a composite score:
       Score = 60% Trust Score + 40% Speed Stability
-    Per the Report, CH election is restricted to TRUSTED vehicles (T>=0.7).
+    CH election is restricted to TRUSTED vehicles (T>=0.7).
 
-    Bootstrap fallback: trust starts neutral (0.5) for every vehicle and only
+    PROOF-OF-WORK
+    --------------
+    Following [Chen & Wu, 2024, Sec. 4.3] "The most suitable CH is selected by
+    ... vehicle nodes" using a composite scoring approach for CH candidacy, and
+    [Azizi & Shokrollahi, 2024 (RTRV), Table 2] which weights *multiple* factors
+    (angle, distance, two-hop neighbor info, trust: w'_1..w'_4) when selecting
+    its "monitoring" relay node -- trust is one weighted factor among several,
+    the same structural pattern this 0.6*Trust + 0.4*SpeedStability score
+    follows. Two further papers independently confirm weighted multi-factor CH
+    scoring as this field's standard pattern: [Darabkh et al., 2025, Eq. 3]
+    weights Lifetime/Distance/Speed, and [Khan et al., 2026, Eq. 2] weights
+    Connectivity-Lifespan/Degree/Past-CH-Lifetime -- found in a second literature
+    folder (base papers/Research paper-set1/) after the original two-paper
+    grounding above was already in place. Neither uses trust as a factor, so
+    this project's Trust term is a security-motivated extension beyond all four
+    papers now surveyed; none of the four publishes this exact 60/40 split or a
+    "TRUSTED-only" eligibility gate verbatim -- the specific weights and the
+    trust-tier restriction remain this project's own tuning of that shared
+    trust-weighted-selection pattern. Full citations: docs/ALGORITHMS.md.
+
+    Bootstrap fallback (this project's own contribution, not from any paper): trust starts neutral (0.5) for every vehicle and only
     rises through real forwarding/RSU evidence -- which requires *being* a CH to
     generate in the first place. Taking "TRUSTED-only" literally with no fallback
     creates a permanent deadlock (verified analytically: with zero real events,

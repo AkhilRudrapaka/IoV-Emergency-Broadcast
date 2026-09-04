@@ -7,6 +7,36 @@ message authentication, with true aggregate/batch verification: N distinct signa
 be combined into a single 96-byte aggregate signature and checked with one pairing
 operation instead of N independent ones.
 
+PROOF-OF-WORK
+--------------
+Following [Naskar et al., 2025, Sec. I] "Authentication Framework With Enhanced
+Privacy and Batch Verifiable Message Sharing in VANETs": the core premise that
+verifying V2V messages one-by-one does not scale, and that a batch-verifiable
+scheme reduces per-RSU verification cost, e.g. "our scheme can perform at
+least ... 2-times more V2V messages [batch-verified] than other related
+schemes within a time threshold of 300 ms" [Naskar et al., 2025, Abstract].
+Naskar et al.'s OWN scheme is a NIZK-based ECDSA* protocol (Chaum-Pedersen
+proofs, epoch certificates, CA registration, Fig. 2) -- this module does not
+implement that protocol. It implements real BLS12-381 aggregate signatures
+(py_ecc, IETF BLS-draft/Eth2 ciphersuite) as this project's improvement on
+Naskar et al.'s batch-verification premise, chosen because BLS supports true
+signature aggregation (an N-signature batch collapses to one constant-size
+96-byte signature) where ECDSA does not -- see ecdsa_auth.py for the real,
+directly-comparable ECDSA ablation arm kept faithful to Naskar et al.'s
+specified scheme (standard sign/verify, not the full NIZK protocol -- see that
+module's own docstring).
+The trust-TIERED verification split (aggregate for high-trust signers,
+individual for mid-trust, immediate rejection for low-trust, see
+AuthenticationManager.verify_message) is this project's own extension,
+combining Naskar et al.'s batch-verification goal with the trust gating this
+project's Sec. 1 (trust.py) already computes -- Naskar et al. does not
+publish a trust-tiered verification split.
+MAX_CHAIN_SIGNERS=14 (~100 ms deadline / ~7 ms per signature) is drawn from
+the project's own Report specification, not independently verified against
+Naskar et al.'s own 300 ms comparison threshold (Naskar et al. benchmark at
+batch size L=210, a different scale) -- both figures are disclosed here rather
+than conflated.
+
 Integration model
 ------------------
 When an emergency alert is disseminated, the sending vehicle AND every Cluster Head that

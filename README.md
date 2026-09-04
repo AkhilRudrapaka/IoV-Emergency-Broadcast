@@ -32,7 +32,13 @@ Instead of flooding, this project disseminates emergency alerts through a **trus
 5. On an accident, only Cluster Heads relay the alert — via **GPSR geographic routing** with a real 300 m wireless-range cap, standard perimeter-mode void recovery, and a 4-tier fallback chain — with UUID-based duplicate suppression blocking every redundant relay.
 6. The RSU authenticates the alert using **real BLS12-381 signatures** (with a real ECDSA ablation arm): the sender and every active Cluster Head co-sign a distinct attestation, and the RSU applies **3-tier trust-gated verification** — aggregate-batch for high trust, individual for mid trust, immediate rejection (no verify attempt) for low trust — with cross-event deduplication and persistent RSU trust feedback.
 
-The full mathematical formulation of every stage is in **[`docs/ALGORITHMS.md`](docs/ALGORITHMS.md)**.
+The full mathematical formulation of every stage is in **[`docs/ALGORITHMS.md`](docs/ALGORITHMS.md)**, which
+includes a component-by-component Proof-of-Work Mapping table: eight VANET papers were read in full to ground
+this project's algorithms (four as the primary foundation — Chen & Wu 2024, Kaur et al. 2024, Naskar et al.
+2025, Azizi & Shokrollahi 2024 — plus four more found later and used to corroborate specific sub-components:
+Zhang & Ye 2026, Darabkh et al. 2025, Khan et al. 2026, Qi et al. 2024), and every component not grounded in
+any of the eight is explicitly labeled "own contribution" rather than attributed to a paper that doesn't
+actually specify it.
 
 ## Key Features
 
@@ -116,7 +122,8 @@ mechanics, the majority-vote confirmation gate, and the combined system-level pi
 | Simulation control | TraCI / `traci`, `sumolib` (Python 3.10) |
 | Clustering | scikit-learn `DBSCAN` (Euclidean + custom precomputed mobility-aware metric) |
 | Numerical computing | NumPy, Pandas |
-| Cryptography | `py_ecc` — BLS12-381 (`G2ProofOfPossession`, IETF-draft / Eth2 ciphersuite) |
+| Cryptography (proposed) | `py_ecc` — BLS12-381 (`G2ProofOfPossession`, IETF-draft / Eth2 ciphersuite) |
+| Cryptography (ablation) | `cryptography` — ECDSA, NIST P-256 |
 | Visualization | Matplotlib (300 DPI IEEE-style figures) |
 | Testing | pytest |
 
@@ -147,13 +154,18 @@ IOV-Broadcast-problem/
 ├── generate_routes.py                         # SUMO route-file generation
 ├── logger.py                                   # Structured console/file logging
 ├── utils.py                                     # Geometry / angle helper functions
-├── network/                                      # SUMO road network, routes, sumocfg
+├── eps_sensitivity.py                            # Standalone DBSCAN ε-sensitivity ablation (§2.5)
+├── network/                                       # SUMO road network, routes, sumocfg
 ├── docs/
-│   ├── ALGORITHMS.md                              # Full mathematical model (this is the one to read)
-│   └── PROJECT_REPORT.md                           # Detailed implementation status report
+│   ├── ALGORITHMS.md                              # Full mathematical model + proof-of-work citation mapping
+│   ├── RESEARCH_PAPER.md                          # Full IEEE-style research paper
+│   ├── PROJECT_REPORT.md                          # Detailed implementation status report
+│   ├── DEMO_GUIDE.md                              # Exact commands: live demo, eval sweep, dual-window demo
+│   └── PANEL_TALKING_POINTS.md                    # Presentation script tied to the base papers
 ├── outputs/
 │   ├── graphs/                                      # Generated 300 DPI evaluation plots
-│   └── logs/                                         # Metrics / comparison / BLS benchmark CSVs
+│   ├── logs/                                         # Metrics / comparison / BLS+ECDSA benchmark / ε-sensitivity CSVs
+│   └── RESULTS_SUMMARY.md                            # Authoritative results write-up — read before quoting any number
 ├── tests/                                             # 93 unit tests (pytest)
 ├── requirements.txt
 ├── pytest.ini
@@ -191,7 +203,11 @@ This generates the required SUMO route files, launches `sumo-gui`, and runs the 
 python3 main.py --eval-only                 # Run only the flooding-vs-proposed comparison + graphs
 python3 -m pytest -q                         # Run the full 93-test suite
 python3 sumo_interface.py                    # Run the live pipeline headlessly (SUMO_GUI=1 env var for GUI)
+python3 eps_sensitivity.py                   # DBSCAN ε-sensitivity ablation (docs/ALGORITHMS.md §2.5)
 ```
+
+For the exact rehearsed-seed demo command, the dual-window (SUMO GUI + companion webpage) setup, and every
+other reproduction command used to produce the numbers below, see **[`docs/DEMO_GUIDE.md`](docs/DEMO_GUIDE.md)**.
 
 ## Demonstration Highlights
 
@@ -211,44 +227,52 @@ What a reviewer watching `python3 main.py --gui --density 100` will see, in orde
 
 ## Experimental Metrics
 
-From `outputs/RESULTS_SUMMARY.md` (regenerated 2026-08-24, second revision aligning Algorithms 1–4 to the
-project's Final Report specification; full methodology, gap analysis, and honest limitations there — read it
-before quoting these numbers), comparing the proposed algorithm against a pure-flooding baseline across six
-vehicle densities (synthetic grid harness, 5 seeded runs × 5 emergency events each, mean ± 95% CI):
+From `outputs/RESULTS_SUMMARY.md` (regenerated 2026-09-03, third revision — adds the full proof-of-work
+citation mapping in `docs/ALGORITHMS.md`/`docs/RESEARCH_PAPER.md` and extends the density sweep to exactly
+match [Kaur et al., 2024]'s own tested set; full methodology, gap analysis, and honest limitations there —
+read it before quoting these numbers), comparing the proposed algorithm against a pure-flooding baseline
+across seven vehicle densities (synthetic grid harness, 5 seeded runs × 5 emergency events each, mean ± 95% CI):
 
 | Density | PDR: Flood → Proposed | Delay (total): Flood → Proposed | ↳ routing-only: Flood → Proposed | Overhead Reduction | Duplicate Suppression |
 |---|---|---|---|---|---|
-| 50  | 100% → 96% | 10.30 ± 0.61 ms → 433.38 ± 36.02 ms | 10.30 → 2.87 ms | 94.16% | 100% |
-| 100 | 100% → 100% | 10.19 ± 0.54 ms → 354.99 ± 26.13 ms | 10.19 → 3.18 ms | 96.88% | 100% |
-| 150 | 100% → 64% | 9.02 ± 0.40 ms → 379.86 ± 47.90 ms | 9.02 → 2.70 ms | 98.42% | 100% |
-| 200 | 100% → 68% | 8.90 ± 0.36 ms → 339.69 ± 42.92 ms | 8.90 → 1.86 ms | 98.95% | 100% |
-| 300 | 100% → 76% | 8.74 ± 0.61 ms → 340.81 ± 44.65 ms | 8.74 → 1.73 ms | 99.34% | 100% |
-| 500 | 100% → 72% | 8.06 ± 0.40 ms → 385.72 ± 48.93 ms | 8.06 → 1.53 ms | 99.62% | 100% |
+| 50  | 100% → 96% | 10.30 ± 0.61 ms → 363.74 ± 58.03 ms | 10.30 → 2.80 ms | 94.25% | 100% |
+| 100 | 100% → 100% | 10.19 ± 0.54 ms → 344.44 ± 29.64 ms | 10.19 → 3.18 ms | 96.88% | 100% |
+| 150 | 100% → 84% | 9.02 ± 0.40 ms → 340.87 ± 30.40 ms | 9.02 → 2.67 ms | 98.36% | 100% |
+| 200 | 100% → 88% | 8.90 ± 0.36 ms → 315.22 ± 22.30 ms | 8.90 → 2.18 ms | 98.85% | 100% |
+| 250 | 100% → 88% | 9.02 ± 0.59 ms → 313.04 ± 27.73 ms | 9.02 → 2.01 ms | 99.15% | 100% |
+| 300 | 100% → 80% | 8.74 ± 0.61 ms → 314.77 ± 13.84 ms | 8.74 → 1.79 ms | 99.33% | 100% |
+| 500 | 100% → 88% | 8.06 ± 0.40 ms → 301.24 ± 5.96 ms | 8.06 → 1.79 ms | 99.59% | 100% |
 
 **Read PDR and delay carefully — both tell an important, real story, not a flattering one.** Total delay is
 *worse* for proposed because it's dominated by real BLS12-381 verification cost (`py_ecc`, a pure-Python
-pairing implementation) — the **routing-only component** (what GPSR is actually meant to improve) is
-consistently *lower* for proposed at every density. **PDR is now consistently lower for proposed too** —
-this is the honest consequence of finally enforcing a real 300 m wireless range and real majority-vote
-corroboration (both previously missing/nonexistent): flooding's path redundancy makes it resilient to any
-single hop failing; the proposed scheme commits to one efficient path, which is structurally more exposed to
-one hop failing. This is a genuine reliability-vs-efficiency trade-off, traced to two verified causes (RSU
-coverage gaps at 300 m; DBSCAN clusters not all being geographically near a given accident) — see
-`outputs/RESULTS_SUMMARY.md` for the full analysis and why it isn't something to hide or work around.
+pairing implementation, whose wall-clock swings ≈25% run-to-run — do not read that column as a
+between-revision result) — the **routing-only component** (what GPSR is actually meant to improve) is
+consistently *lower* for proposed at every density. **PDR remains lower for proposed at five of seven
+densities** — the honest consequence of enforcing a real 300 m wireless range and real majority-vote
+corroboration: flooding's path redundancy makes it resilient to any single hop failing; the proposed scheme
+commits to one efficient path, which is structurally more exposed to one hop failing. Mean PDR rose from
+78.9% to 89.1% this revision after every non-delivery was instrumented and one real delivery-path defect was
+found and fixed (the route pinned itself to a single pre-selected RSU and ignored the other four) — **no
+safety check was relaxed to achieve it**. The residual failures are all genuine: malicious relays dropping
+packets, the corroboration gate correctly withholding, and real 300–400 m RSU coverage gaps. See
+`outputs/RESULTS_SUMMARY.md` for the full per-cause attribution.
 
 BLS12-381 vs. ECDSA authentication (`outputs/logs/bls_benchmark.csv`, `outputs/logs/ecdsa_benchmark.csv`, both real, scenario-independent benchmarks — Algorithm 4 ablation):
 
 | Batch size | BLS individual | BLS batch | BLS speedup | ECDSA individual | ECDSA "batch" | Signature bytes: BLS / ECDSA |
 |---|---|---|---|---|---|---|
-| 1  | 361.8 ms | 374.6 ms | 0.97× | 0.086 ms | 0.075 ms | 96 B / 71 B |
-| 10 | 3460.8 ms | 1544.9 ms | **2.24×** | 1.068 ms | 0.640 ms | 96 B / 710 B |
-| 20 | 7546.7 ms | 3686.5 ms | 2.05× | 1.385 ms | 1.578 ms | 96 B / 1420 B |
+| 1  | 299.6 ms | 299.9 ms | 1.00× | 0.077 ms | 0.068 ms | 96 B / 71 B |
+| 10 | 3040.5 ms | 1566.6 ms | **1.94×** | 1.057 ms | 0.670 ms | 96 B / 710 B |
+| 20 | 6086.6 ms | 2972.4 ms | 2.05× | 1.292 ms | 1.238 ms | 96 B / 1420 B |
 
 **The honest ablation finding:** BLS aggregates — N signatures compress to a constant 96 bytes with a real
-~2× verify speedup. ECDSA has no native aggregation — its "batch" column is real sequential verification with
-no speedup or compression (payload grows linearly with N). ECDSA is ~1000–5000× faster *per signature* in
+~2× verify speedup at N≥10. ECDSA has no native aggregation — its "batch" column is real sequential verification with
+no speedup or compression (payload grows linearly with N). ECDSA is ~2900–4700× faster *per signature* in
 this pure-Python comparison, since BLS pairing is far more expensive than ECDSA scalar multiplication — a
 genuine cost/compression trade-off between the two schemes, not one being objectively "better."
+Absolute BLS milliseconds are wall-clock and swing ≈25% run-to-run on the same machine (2947.8 / 3677.5 /
+3040.5 ms for individual N=10 across three runs); the **speedup ratio** and the constant 96-byte aggregate
+are the reproducible claims.
 
 **Honest caveats** (full list in `outputs/RESULTS_SUMMARY.md` and `docs/ALGORITHMS.md` → *Honest Scope Notes*):
 the comparison harness uses synthetic grid-seeded mobility rather than live SUMO/TraCI movement (the live
@@ -256,6 +280,10 @@ the comparison harness uses synthetic grid-seeded mobility rather than live SUMO
 faster synthetic harness). Absolute BLS milliseconds reflect a pure-Python reference implementation, not
 production V2X latency — the speedup ratio is the defensible claim. Two trust factors (Message Consistency,
 Speed Plausibility) are this project's own construction pending the source report — see `docs/ALGORITHMS.md`.
+A DBSCAN ε-sensitivity ablation (`python3 eps_sensitivity.py`, `outputs/logs/eps_sensitivity.csv`) measures
+why this project re-tunes ε to 80m instead of reusing Chen & Wu (2024)'s highway-tuned 20/40m, and in doing
+so surfaced a real synthetic-harness-only finding — DBSCAN cluster collapse into one mega-cluster at
+density ≥200 — disclosed in full in `docs/ALGORITHMS.md` and `docs/RESEARCH_PAPER.md` §VI.
 
 ## Current Status & Roadmap
 

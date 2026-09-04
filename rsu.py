@@ -22,6 +22,24 @@ class RSU:
     Renders high-visibility RSU polygons/towers in SUMO GUI and flashes bright Cyan/Yellow on packet receipt.
     Implements Phase 11 Processing Pipeline:
     Ingress Queue -> Authentication -> Decision Engine -> Analytics -> Trust Update -> Dissemination.
+
+    PROOF-OF-WORK
+    --------------
+    Following [Azizi & Shokrollahi, 2024 (RTRV), Sec. 4] "RSUs ... gather the
+    reports to update the indirect trust of the next-hop and provide
+    recommendations to vehicles" -- the RSU as an active trust-and-routing
+    participant, not a passive endpoint, is RTRV's central architectural
+    contribution. Persistent RSU trust feedback (Step 4 below, blended by
+    trust.py's TrustManager.apply_rsu_feedback) is this project's own
+    concrete mechanism for that same "RSU updates indirect trust" idea; RTRV
+    does not publish the exact +/-0.05-per-event nudge or the 0.80/0.20 blend
+    used here. RSU placement (5 RSUs at the 5x5 grid's cardinal points +
+    center) follows the same "RSUs deployed to maximize coverage" goal RTRV
+    states (Sec. 2, citing prior RSU-placement optimization work) at a scale
+    appropriate to this project's own 700x700 m grid, not RTRV's 120-RSU,
+    10500x10500 m Tehran scenario (Table 1) -- disclosed rather than implied
+    as a scale match. Cross-event deduplication by message UUID (RSUManager,
+    below) is this project's own addition, with no equivalent stated in RTRV.
     """
 
     def __init__(self, rsu_id, position, logger=None):

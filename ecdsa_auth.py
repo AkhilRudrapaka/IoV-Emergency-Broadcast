@@ -7,11 +7,15 @@ project's improvement. This module implements real ECDSA (NIST P-256 / SECP256R1
 via the `cryptography` library -- not a mock) so the two can be shown side by side
 in an honest ablation table.
 
-Scope note (disclosed, approved): the real Naskar et al. 2025 paper implements a
-full NIZK-based ECDSA* protocol (Chaum-Pedersen proofs, epoch certificates, CA
-registration) -- a cryptographic-protocol engineering effort well beyond this
-pass's scope. This module implements standard ECDSA sign/verify with real measured
-timing, not that full protocol.
+PROOF-OF-WORK: following [Naskar et al., 2025, Sec. I] for the *scheme choice*
+(ECDSA is the architecture's specified baseline: "ECDSA∗ signature scheme"), but
+NOT for the protocol itself -- Naskar et al.'s real scheme is a full NIZK-based
+ECDSA* protocol (Chaum-Pedersen proofs, epoch certificates, CA registration,
+their Fig. 2) -- a cryptographic-protocol engineering effort well beyond this
+pass's scope, disclosed and approved as a scope reduction. This module
+implements standard NIST P-256 ECDSA sign/verify with real measured timing,
+not that full protocol -- treat every number here as "real ECDSA cost", not as
+"Naskar et al.'s scheme's cost".
 
 Unlike BLS, plain ECDSA has **no native signature aggregation**: N signatures
 cannot be combined into one short aggregate the way `bls_auth.py`'s
