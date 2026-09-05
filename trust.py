@@ -37,16 +37,38 @@ class TrustManager:
     Plausibility (Ts), and EMA-decayed Historical Trust (Th) -- plus a persistent
     RSU-assessment blend.
 
-    Tf is real and event-driven (update_behavior_event(), fed by broadcast.py/
-    bls_auth.py). Tc and Ts are computed from real per-step simulation state
-    (claimed-vs-actual message location; kinematic speed-change plausibility) using
-    this session's standard-VANET-trust-literature interpretation of the factor
-    names -- no external formula for them was available (see config.py), so treat
-    their exact thresholds as provisional pending the source report.
+    PROOF-OF-WORK
+    --------------
+    - Direct + RSU-aggregated (indirect) trust as two combined components:
+      following [Azizi & Shokrollahi, 2024 (RTRV), Sec. 4] "the current node
+      calculate[s] the direct trust ... an RSU ... update[s] the indirect trust
+      of the next-hop". Sec 1.4 here (the 0.80/0.20 blend of vehicle-observed
+      trust with a persistent RSU assessment) is this project's own linear
+      instantiation of that same direct+indirect structure -- RTRV does not
+      publish that exact 0.80/0.20 split, so treat the split itself as this
+      work's own tuning, not a value taken from the paper.
+    - Forwarding Behaviour (Tf): a direct-trust component built from real
+      relay-attempt/relay-success counters, the same observational category
+      RTRV's own direct trust uses (packet forwarding monitored by neighbor
+      nodes, [Azizi & Shokrollahi, 2024, Sec. 4.2]).
+    - Malicious-vehicle ratio swept 0.10-0.15 in this project's evaluation sits
+      inside the 0%-25% range RTRV itself evaluates against
+      [Azizi & Shokrollahi, 2024, Table 2: "Number of malicious Vehicle: 0, 33,
+      66, 99, 132, 165"].
+    - Message Consistency (Tc) and Speed Plausibility (Ts) are OWN CONTRIBUTIONS
+      of this project, not present in RTRV or any other paper in base papers/.
+      No formula for these two factor names was available from any source this
+      cycle (the weights/names came from the project's own Final Report, whose
+      file was never located) -- their definitions here (claimed-vs-actual
+      location error; kinematic speed-change plausibility) are standard
+      VANET-trust-literature *techniques*, applied as this work's own
+      construction. Treat their exact thresholds as provisional.
 
-    is_malicious/attack_type are simulation-only ground truth used to decide what a
-    simulated attacker's real actions look like (broadcast.py's PACKET_DROP,
-    accident.py's FAKE_ALERT location forgery); they are never read here.
+    Tf is real and event-driven (update_behavior_event(), fed by broadcast.py/
+    bls_auth.py). is_malicious/attack_type are simulation-only ground truth used
+    to decide what a simulated attacker's real actions look like (broadcast.py's
+    PACKET_DROP, accident.py's FAKE_ALERT location forgery); they are never read
+    here -- see docs/ALGORITHMS.md's Proof-of-Work Mapping for the full table.
     """
 
     def __init__(self, logger=None):

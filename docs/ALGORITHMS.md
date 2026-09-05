@@ -8,6 +8,72 @@ This document formalizes the algorithms implemented in the codebase and shows ho
 
 ---
 
+## Proof-of-Work Mapping
+
+Every row below is checked against the actual PDF text of the papers cited — quotes are verbatim, not
+paraphrased from memory.
+
+**Correction to an earlier claim in this document:** a prior revision stated "no papers beyond these four
+exist anywhere on this machine." That was based on scanning `base papers/base papers/` only. A sibling
+directory, `base papers/Research paper-set1/`, was found later — organized into subfolders matching this
+project's own algorithm categories, two of them (`Batch Authentication (Future Work)`, `RSU-based
+Verification (Future Work)`) pre-labeled "Future Work" by whoever assembled the folder, independently
+confirming the future-work scoping already used in this project's own docs. Of the ~25 PDFs in that folder,
+7 were read in full and 4 turned out to contain genuine, quotable grounding for components previously
+labeled "Own contribution" — those 4 are cited below (marked "found in `Research paper-set1/`") alongside
+the original four. The remaining papers in that folder (mostly further batch-authentication and
+RSU-verification variants, plus two general surveys) were not deep-read; treat "Own contribution" below as
+"no formula found in the 8 papers actually read," not as an exhaustive claim about every VANET paper that
+exists.
+
+| Component | Grounding | Specific idea / quoted evidence | Adaptation made |
+|---|---|---|---|
+| **VWCA distance function** (§2.1) | [Chen & Wu, 2024] | Sec. 4.1: velocity/mobility-aware DBSCAN scoring, "Dynamic Networking Method of Vehicles in VANET" | 0.6/0.4 position/prediction blend and 2.0 s horizon are this project's own tuning of Chen & Wu's velocity-aware premise — not published constants in their paper |
+| **DBSCAN transmission/comm range 300 m** | [Chen & Wu, 2024] + [Kaur et al., 2024] | Chen & Wu Table 2: "Transmission range 300 m"; Kaur et al. Table 2: "Transmission Range for vehicles: 300 ms omnidirectional" (verbatim — the published table writes "ms" where metres are meant, as its own next row reads "Transmission Range for RSU: 1000 ms omnidirectional"; quoted exactly here rather than silently corrected) | Direct, independent match — no adaptation |
+| **DBSCAN ε = 80 m** | [Chen & Wu, 2024], contrasted | Table 2 tests ε∈{20,40} m on a 3-lane, 3000 m *highway*; 20 m preferred there | Does **not** transfer to this project's sparser urban-grid topology — measured directly (`eps_sensitivity.py`): ε=20/40 m produce 70–100% noise (no clustering) on this network; ε=80 m is this project's own value for its own topology, disclosed as such, not Chen & Wu's number reused |
+| **Directional compatibility gate (>120°)** | Own contribution | — | Extends Chen & Wu's velocity-aware premise; the exact angle threshold is not published in Chen & Wu |
+| **Cluster Head election (0.6 Trust + 0.4 SpeedStability)** | [Chen & Wu, 2024] + [Azizi & Shokrollahi, 2024], pattern also independently used by [Darabkh et al., 2025] and [Khan et al., 2026] *(found in `Research paper-set1/`)* | Chen & Wu Sec. 4.3 (composite CH scoring); RTRV Table 2 weights multiple factors (angle/distance/2-hop-info/trust); Darabkh et al. Eq. 3: $WF_{V_i} = (\frac{LT_{V_i}}{avg(LT_{All})}{\times}W_{LT}) + (\frac{avg(D_{All})}{D_{V_i}}{\times}W_D) + (\frac{avg(S_{All})}{S_{V_i}}{\times}W_S)$ (weighted Lifetime/Distance/Speed composite); Khan et al. Eq. 2: $CCF_i = \alpha{\cdot}avgCLS_i + \beta{\cdot}Deg_i + \gamma{\cdot}avgPCL_i$ (weighted Connectivity-Lifespan/Degree/Past-CH-Lifetime composite) | Four independent papers now confirm "weighted multi-factor composite scoring elects the CH" as the standard VANET design pattern — but **none of the four** use Trust as one of their factors (Darabkh: Lifetime/Distance/Speed; Khan: Connectivity-Lifespan/Degree/PCL; explicitly no security dimension in either). This project's inclusion of Trust is a security-motivated extension beyond all four; the exact 60/40 Trust/SpeedStability split itself is still this project's own weighting, not published verbatim anywhere |
+| **TRUSTED-only CH eligibility + bootstrap fallback** | Own contribution | — | Bootstrap fallback specifically is a bug fix for a deadlock found and proven analytically this cycle (see §3, §1.6) — no paper addresses this |
+| **Majority-vote CH confirmation (§5)** | Own contribution, extends [Kaur et al., 2024]; related premise independently explored by [Qi et al., 2024] *(found in `Research paper-set1/`)* | Kaur et al. Sec. 3–4: CH-mediated controlled dissemination structure. Qi et al. (HTEMD model) propose a receiver aggregating $P\_EM_{ik}$ (per-message event-occurrence probability, from each sender's trust) across *multiple senders* of the same event and combining them via information entropy (Eq. 14) before acting on the report | Same defensive rationale (don't act on a single unverified report) but a genuinely different mechanism: Qi et al. weight-aggregate trust-scored probabilities across possibly-distant senders reporting the *same event*; this project instead counts *own-cluster-member state* (within alert radius, or already braking/reacting) with a simple >50% threshold. Cited as related-but-distinct, not as the source of this project's specific mechanism — no paper in the corpus specifies a cluster-membership-headcount majority-vote gate |
+| **GPSR range cap = 300 m** | [Chen & Wu, 2024] + [Kaur et al., 2024] + [Zhang & Ye, 2026] *(found in `Research paper-set1/`)* | Chen & Wu Table 2: "Transmission range 300 m"; Kaur et al. Table 2: "Transmission Range for vehicles: 300 ms omnidirectional" (verbatim — the published table writes "ms" where metres are meant, as its own next row reads "Transmission Range for RSU: 1000 ms omnidirectional"; quoted exactly here rather than silently corrected); Zhang & Ye (VANET-GPSR+) Table 2: "Communication radius (variable): default 300 m" | Three independent papers now converge on 300 m as a default/tested VANET communication radius. RTRV's own Table 1 uses 350 m (Tehran urban scenario) — this project keeps 300 m to match the other three papers; the 350 m discrepancy is disclosed, not hidden |
+| **GPSR fallback chain / RSU-as-CH tier** | [Azizi & Shokrollahi, 2024] | Sec. 4.3: RSU-assisted greedy routing | Exact 4-tier structure (own-CH/nearest-CH/RSU/Store-Carry-Forward) is this project's own formalization. [Zhang & Ye, 2026]'s "adaptive greedy forwarding region expansion" shares the same spirit — expand what counts as a valid next hop before falling back to a slower mode, rather than failing on strict greedy-only criteria — but their specific mechanism (relaxing the closer-than-S constraint to a forward half-plane test) is different from this project's tiered fallback chain, so it is cited as a related design premise, not the source of the specific tiers |
+| **Multi-RSU delivery check** (`routing.py::_reachable_rsu`) | Own contribution (defect fix), consistent with [Kaur et al., 2024] + [Azizi & Shokrollahi, 2024] | Kaur et al. Table 2 deploys "Number of RSUs: 3" with their own dedicated RSU transmission range; Azizi & Shokrollahi Sec. 4 treats the RSU tier as the infrastructure a packet is routed *to*. Neither paper states that a packet must be delivered to one pre-selected RSU | `find_route` picks its greedy/perimeter target RSU once, from the **accident vehicle's** position, and that fixed destination is retained (standard GPSR geometry depends on it). The *delivery* test was previously bound to that same single RSU, so a message that hopped into a **different** RSU's coverage was still declared Store-Carry-Forward. Now every hop delivers to the nearest RSU actually within `GPSR_RANGE_M`. Measured before the fix: at density 150, **5 of 5** SCF failures had another RSU in range; at density 300, 1 of 5 (the other 4 were genuine 300–400 m coverage gaps and **still** fail). Regression test: `tests/test_rsu.py::test_delivers_to_reachable_rsu_not_preselected_one` |
+| **GPSR perimeter mode (right-hand rule)** | Classical GPSR (Karp, B. "GPSR: Greedy Perimeter Stateless Routing for Wireless Networks," ACM/IEEE MobiCom, Boston, MA, USA, 6–11 Aug 2000) | Standard void-recovery technique. [Zhang & Ye, 2026]'s VANET-GPSR+ (`Research paper-set1/`) cites this exact paper as its own reference [10] and explicitly keeps it as the unmodified baseline perimeter fallback while enhancing only the greedy phase — confirming perimeter-mode right-hand-rule recovery is unchanged, well-established classical routing theory, not something either paper redesigns | This project's implementation is standard right-hand-rule perimeter mode, attributed to the general routing literature. Previously this citation could not be verified locally (no local PDF of the original MobiCom 2000 paper to check its exact venue/DOI against); it is now indirectly verified via Zhang & Ye 2026's own reference list, a real PDF present in `Research paper-set1/` — still not a primary-source verification, but no longer an unverifiable from-memory citation either |
+| **Tiered BLS/ECDSA verification (High/Mid/Reject)** | [Naskar et al., 2025] | Abstract: batch verification reduces per-RSU cost vs. individual verification | The specific 3-tier trust-based split (aggregate/individual/immediate-reject) is this project's own extension combining Naskar et al.'s batch-verification goal with this project's own trust gating |
+| **BLS12-381 aggregate signatures** | Standard BLS / IETF draft, **not `base papers/`** | py_ecc `G2ProofOfPossession` | Naskar et al.'s own scheme is NIZK-based ECDSA*, not BLS — BLS is this project's chosen improvement, disclosed as diverging from the paper's specified scheme |
+| **ECDSA ablation arm** | [Naskar et al., 2025] (scheme choice only) | Abstract: "ECDSA∗ signature scheme" | Standard NIST P-256 sign/verify, not Naskar et al.'s full NIZK protocol (Chaum-Pedersen proofs, epoch certs, CA registration) — explicitly scoped down |
+| **MAX_CHAIN_SIGNERS = 14** | Project's own Report spec — **not independently auditable** (see the Unverifiable-source note below the table) | ~100 ms deadline / ~7 ms per signature | Naskar et al.'s own paper uses a *different* 300 ms comparison threshold and L=210 batch size (Abstract, Sec. Empirical Analysis) — the two figures are disclosed separately, not conflated |
+| **RSU as active trust participant** | [Azizi & Shokrollahi, 2024] | Sec. 4: "RSUs ... update the indirect trust of the next-hop" | Persistent ±0.05 nudge / 0.80–0.20 blend are this project's own concrete mechanism for RTRV's stated idea |
+| **Malicious-vehicle ratio (10–15%)** | [Azizi & Shokrollahi, 2024] | Table 2: tested 0, 33, 66, 99, 132, 165 malicious vehicles (0–25% of ~660) | This project's ratio sits inside RTRV's own tested range |
+| **Vehicle density sweep (50, 100, 150, 200, 250)** | [Kaur et al., 2024] | Table 2: "Number of nodes/Vehicle Density: 50, 100, 150, 200, 250" | Exact match — this project extends with 300 and 500 to additionally probe higher-density regimes beyond Kaur et al.'s tested range |
+| **IEEE 802.11p MAC / channel parameters** | [Azizi & Shokrollahi, 2024] + [Kaur et al., 2024] | Both papers' Table 2 specify IEEE 802.11p; Kaur et al. adds "5.9 GHz/10 MHz" | Directly reused for the analytic delay model's PHY assumptions (`utils.compute_delay_ms`) |
+| **RSU cross-event UUID deduplication** | Own contribution | — | No paper in `base papers/` specifies this |
+
+**Unverifiable-source note (read before treating any parameter as "cited"):** several numeric parameters —
+the trust weights (0.30/0.25/0.20/0.25), the EMA decay pair (0.85/0.15), the RSU blend (0.80/0.20), the
+three-tier authentication cutoffs (0.7/0.3), and `MAX_CHAIN_SIGNERS=14` — were supplied by the project author
+as coming from a "Final Project Report (Group 83)." **That document does not exist anywhere on disk** and has
+never been located, so none of it can be audited by a reviewer. These values are therefore *not* citations to
+published literature: for grading and review purposes treat them exactly like "own contribution" values whose
+rationale is stated but whose stated source cannot be checked. Where a paper independently supports the
+surrounding *structure* (e.g. Azizi & Shokrollahi for direct+indirect trust composition), that structural
+support is cited on its own row above and is genuinely verifiable; the specific numbers are not.
+
+**How to read "Own contribution":** it does not mean unmotivated — each is a documented, disclosed
+extension of the cited papers' stated goals (see the Adaptation column), built because none of the 8 papers
+actually read (the original 4 plus the 4 newly found in `Research paper-set1/`, see the note above the
+table) specify that particular mechanism. This is normal for a research paper: a paper that only reproduced
+prior works verbatim would not itself be a contribution. See the accompanying research paper's
+*Proposed Extensions* section for the same mapping framed for publication.
+
+**The four newly-cited papers, full reference:**
+- Zhang, Z.; Ye, N. "VANET-GPSR+: A Lightweight Direction-Aware Routing Protocol for Vehicular Ad Hoc Networks." *Sensors* 2026, 26, 2525. DOI: 10.3390/s26082525.
+- Darabkh, K.A.; Al-Mistarihi, M.F.; Odat, B.A. "Leveraging fog computing and software-defined networking for a novel velocity-aware routing protocol with election and handover thresholds in VANETs." *The Journal of Supercomputing* 2025, 81:426. DOI: 10.1007/s11227-024-06883-3.
+- Khan, A.W.; Bangash, J.I.; Kamal, S.; Bin Abdullah, Z.H. "Multi-criteria based stable clustering technique for vehicular ad-hoc networks." *Scientific Reports* 2026, 16:17086. DOI: 10.1038/s41598-026-47837-4.
+- Qi, J.; Zheng, N.; Xu, M.; Chen, P.; Li, W. "A hybrid-trust-based emergency message dissemination model for vehicular ad hoc networks." *Journal of Information Security and Applications* 2024, 81:103699. DOI: 10.1016/j.jisa.2024.103699.
+
+---
+
 ## 1. Bayesian Trust Model
 
 **Implementation:** `trust.py :: TrustManager.calculate_trust()`
@@ -130,6 +196,28 @@ $$
 
 (`RECLUSTER_MEMBERSHIP_CHANGE_THRESHOLD`, `RECLUSTER_TRUST_DELTA_THRESHOLD`, `RECLUSTER_MOBILITY_STD_THRESHOLD`, `RECLUSTER_STABILITY_SCORE_THRESHOLD` respectively.) Cluster identity persists across steps via Jaccard best-overlap matching (`cluster_stability.py`).
 
+### 2.5 Ablation: DBSCAN ε sensitivity (real measurement, `eps_sensitivity.py`)
+
+Chen & Wu (2024) test ε∈{20,40} m on a dense single highway and prefer ε=20 m for that scenario. This
+project's road network is a sparser urban intersection grid — reusing their absolute value untested would
+be exactly the kind of unverified parameter transplant this project's broader integrity pass has been
+about avoiding. Measured directly on this project's own network and density range (5 seeds/point, mean):
+
+| ε (m) | density 50 | 100 | 200 | 300 | 500 |
+|---|---|---|---|---|---|
+| 20 (Chen & Wu preferred) | 100% noise | 100% noise | 100% noise | 99.5% noise | 86.8% noise |
+| 40 (Chen & Wu tested) | 100% noise | 100% noise | 73.1% noise | 29.5% noise | 4.4% noise |
+| **80 (this project)** | 92.4% noise | **19.4% noise, avg cluster 4.58** | 0.2% noise, **but collapses to 1 mega-cluster** | 0.07% noise, 1 cluster | 0.0% noise, 1 cluster |
+
+Full data: `outputs/logs/eps_sensitivity.csv`. Reading this honestly: Chen & Wu's ε values produce *no
+clustering at all* on this network at low-to-moderate density (too tight for this grid's inter-vehicle
+spacing) — their absolute number does not transfer. ε=80 m is the only tested value that clusters
+meaningfully at density 100 (the density this project's live demo runs at), but at density ≥200 it
+collapses toward a single giant cluster in this **synthetic, open-plane harness specifically** — see the
+Honest Scope Notes entry on synthetic-harness cluster collapse below, which shows this does not happen in
+the real SUMO-driven pipeline at comparable density. Density-adaptive ε (shrinking ε as measured local
+density rises) is noted as future work rather than attempted this cycle.
+
 ---
 
 ## 3. Cluster Head Election
@@ -169,7 +257,7 @@ The prior revision's routing had **no distance cap on any hop** — routes could
 
 1. **Own Cluster Head within 80 m** ($r_{own} = \texttt{GPSR\_OWN\_CH\_RANGE\_M}$).
 2. **Nearest trusted CH within 300 m** ($T \ge 0.3$, $r = \texttt{GPSR\_RANGE\_M}$).
-3. **RSU directly within 300 m** (RSU-as-CH fallback for isolated/noise vehicles).
+3. **Any RSU directly within 300 m** (RSU-as-CH fallback for isolated/noise vehicles; nearest reachable RSU wins — see §4.4).
 4. **Store-Carry-Forward** — no relay available; the message is honestly undelivered this trigger. (This pass does not implement multi-step message queuing/retry — a materially larger scope, disclosed as a simplification.)
 
 ### 4.2 Greedy mode
@@ -198,13 +286,39 @@ $$
 
 — and continue walking the perimeter until a hop closer to the RSU than the void-entry distance is found (resume greedy mode) or the path dead-ends.
 
-### 4.4 Termination
+### 4.4 Termination and multi-RSU delivery
+
+The greedy/perimeter **geometry** above is anchored to a single destination $p_{RSU}$, selected once from the
+accident vehicle's position (standard GPSR — the right-hand-rule progress argument requires a fixed
+destination point). The **delivery test** is a separate question, because this network deploys
+$|\mathcal{R}| = 5$ RSUs (`config.RSU_LOCATIONS`) and every one of them is an equally valid infrastructure
+sink:
 
 $$
-\text{TTL} = 5 \text{ hops}\ (\texttt{GPSR\_TTL\_HOPS}); \qquad \text{success if } \lVert p_{h_i} - p_{RSU}\rVert_2 \le 300\text{ m} \text{ for some } i \le \text{TTL}
+\text{deliver at } h_i \iff \exists\, r \in \mathcal{R} : \lVert p_{h_i} - p_r \rVert_2 \le 300\text{ m}, \qquad
+r^\ast = \operatorname*{argmin}_{r \in \mathcal{R},\ \lVert p_{h_i}-p_r\rVert_2 \le 300} \lVert p_{h_i} - p_r \rVert_2
 $$
 
-Otherwise: Store-Carry-Forward. Loop prevention is enforced throughout ($h_i \notin \text{Visited}$ for all $i$), guaranteeing termination.
+$$
+\text{TTL} = 5 \text{ hops}\ (\texttt{GPSR\_TTL\_HOPS}); \qquad \text{success if the above holds for some } i \le \text{TTL}
+$$
+
+Otherwise: Store-Carry-Forward. Loop prevention is enforced throughout ($h_i \notin \text{Visited}$ for all
+$i$), guaranteeing termination.
+
+**Defect fixed here (measured, not assumed).** The delivery test previously checked only the single
+pre-selected $p_{RSU}$, so a message that hopped into a *different* RSU's coverage was still declared
+undelivered. Instrumenting every non-delivery in the comparison harness showed this was the **dominant**
+failure mode: at density 150, **5 of 5** Store-Carry-Forward failures had another RSU within 300 m of the
+point where the route died; at density 300, 1 of 5. After the fix, SCF failures at density 150 went 5 → 0 and
+PDR rose 64% → 84%. The remaining 4 SCF failures at density 300 are **genuine physical coverage gaps**
+(300–400 m from the nearest RSU) and are still correctly reported as non-delivery — that real limitation is
+disclosed, not papered over. See `routing.py::_reachable_rsu` and the Proof-of-Work Mapping row.
+
+*Measured and rejected:* changing the tier-2 entry hop from "nearest CH to the source" to GPSR's textbook
+"in-range CH closest to the destination" was A/B tested on the same 5 seeds — **identical PDR at both density
+150 and 300** — so it was **not** adopted. A change with no measured effect is not worth the risk; recorded
+here so the null result is on the record rather than silently discarded.
 
 ---
 
@@ -249,7 +363,7 @@ $$
 \sigma_{agg} = \sigma_1 \oplus \cdots \oplus \sigma_n, \qquad \text{AggregateVerify} = \mathbb{1}\Big[e(\sigma_{agg}, G_2) = \textstyle\prod_i e(H(m_i), pk_i)\Big]
 $$
 
-True cryptographic aggregation: $n$ signatures collapse into one 96-byte aggregate, verified with one pairing check — real measured **2.11× speedup and 20:1 payload compression** at batch size 20 (`outputs/RESULTS_SUMMARY.md`).
+True cryptographic aggregation: $n$ signatures collapse into one 96-byte aggregate, verified with one pairing check — real measured **2.04× speedup and 20:1 payload compression** at batch size 20 (`outputs/RESULTS_SUMMARY.md`).
 
 ### 6.3 ECDSA (`ecdsa_auth.py`, NIST P-256, via the `cryptography` library)
 
@@ -335,6 +449,8 @@ Unchanged from the prior revision. Each message carries a UUID; a mutable cache 
 - **Tc and Ts have no verified external formula** — see the provenance note at the top of this document. Compare against the source report's exact §3 once available.
 - **`is_malicious`/`attack_type` never appear in §1's classification formula.** They decide only what a simulated attacker's real actions look like (§6's FAKE_ALERT location forgery, `broadcast.py`'s PACKET_DROP relay failure) — never what the trust system concludes. Only `PACKET_DROP` (via real forwarding failure) and, this revision, `FAKE_ALERT` (via §1's $T_c$ location-consistency check) produce observable behavioral signals. `FORGED_RECOMMENDATION` still produces none — no recommendation-exchange mechanism exists in the current 4-factor model (the prior 5-factor model had a neighbor-recommendation term; the supplied 4-factor spec does not).
 - **Store-Carry-Forward (§4.1 tier 4) is not a full multi-step retry mechanic** — a message that can't find any in-range relay is honestly logged as undelivered for that trigger, not queued and retried on a later step. Building real message-lifetime persistence across steps is materially larger scope.
+- **A real RSU coverage gap remains after the §4.4 multi-RSU delivery fix, and is deliberately left in place.** With 5 RSUs on a 700×700 m grid at a uniform 300 m range, parts of the map (notably near corners) are genuinely 300–400 m from the nearest RSU. Measured at density 300 after the fix: 4 of 5 remaining Store-Carry-Forward failures are exactly this case. Adding RSUs, widening the RSU range to Kaur et al.'s asymmetric 1000 m, or moving towers would all raise PDR — and all would amount to tuning the topology until the result flatters the scheme. The gap is reported instead.
 - **BLS key issuance** and **ECDSA key issuance** are both in-memory, self-issued registries, not a production PKI/certificate authority — the standard "trusted registration" assumption in VANET security literature (e.g. IEEE 1609.2), CA modeling out of scope.
 - **ECDSA implements standard sign/verify, not the full Naskar et al. 2025 NIZK-based ECDSA\* protocol** (Chaum-Pedersen proofs, epoch certificates, CA registration) — a cryptographic-protocol engineering effort well beyond this pass's scope, and explicitly scoped down with the project author's approval.
 - **RSU cross-event dedup (§7.2) is implemented and correct, but the current single-route-per-event pipeline doesn't yet generate many redundant-delivery scenarios for it to fire on every run** — it's exercised whenever one does occur (e.g. the same accident reported via more than one path).
+- **The synthetic comparison-harness mobility model causes DBSCAN cluster collapse at density ≥200 — found and quantified this cycle.** `comparison.py`'s open-plane, persistent-linear-drift mobility model (each vehicle drifts in one fixed random direction for the whole run) preserves enough spatial+directional homogeneity that density-reachability chains merge nearly the entire fleet into a single mega-cluster at higher densities: measured directly at density 300/500, the synthetic harness converges to **1 cluster containing 100% of vehicles** (`eps_sensitivity.py` / a direct instrumented re-run, both confirm this). **The live, real SUMO/TraCI-driven pipeline does not exhibit this** — cross-checked directly: 20 clusters at density 250 (seed 4, the demo run) and 16 clusters at density 200 (seed 10), both well-distributed, not collapsed. Road-network-constrained real movement (lanes, intersections, heterogeneous headings per road segment) preserves the spatial/directional diversity the synthetic harness's simplified open-plane drift does not. **Read the density ≥200 rows of the comparison sweep with this in mind**: those broadcast-overhead-reduction figures partly reflect a near-single-relay-point degenerate case in the synthetic harness, not confirmed multi-cluster behavior at that density — the live pipeline's own multi-cluster behavior at comparable density (200, 250) is the more representative number for that specific claim. Redesigning the synthetic harness's mobility model to avoid this is noted as future work; not attempted this cycle given the ripple effect through every already-validated result.

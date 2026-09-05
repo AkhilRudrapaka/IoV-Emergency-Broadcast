@@ -2,7 +2,49 @@
 
 Explanation script for a mixed (technical + non-technical) panel, organized around what they'll actually
 see live during the GUI demo (see `docs/DEMO_GUIDE.md` for the exact command and current rehearsed seed).
-Each algorithm is explicitly tied to the base paper it's built from, per the project's four-paper foundation.
+Each algorithm is explicitly tied to the base paper it's built from, per the project's four-paper foundation
+(strengthened by four further corroborating papers found later — see `docs/ALGORITHMS.md`'s Proof-of-Work
+Mapping and `docs/RESEARCH_PAPER.md` Section II-F for the GPSR-range, CH-election, and majority-vote details).
+
+## Panel Review 1 narrative — what to lead with, what to keep brief
+
+**Important distinction:** the code is 100% complete and every claim in `docs/RESEARCH_PAPER.md` is honest —
+nothing below asks you to say anything untrue. This is about *time allocation and emphasis* in a live talk
+with a limited slot, not about hiding working code. Stay consistent with the paper's own citations if asked
+to go deeper on anything below.
+
+**Lead with these — strongest, most stable, most directly evidenced:**
+1. **Velocity-weighted clustering** (Chen & Wu, 2024) — the oldest, most-tested module, and the DBSCAN ε
+   ablation (Table II, paper) is a genuine, quantified engagement with the cited paper's own findings — a
+   strong "we didn't just copy the number" story if asked how closely you followed the paper.
+2. **BLS12-381 batch authentication + the ECDSA ablation** (Naskar et al., 2025) — real cryptography, a real
+   measured 1.97–2.04× speedup, and a direct side-by-side comparison against the paper's own specified
+   scheme. This is the most "textbook-complete" piece: implemented, benchmarked, ablated, honestly caveated.
+3. **Duplicate suppression / broadcast overhead reduction** (Kaur et al., 2024) — the cleanest, most
+   structural numbers in the whole project (94–99.6% overhead reduction, 100% duplicate suppression at every
+   density). Easy to explain to a non-technical panelist, hard to argue with.
+
+**Mention, but don't dwell — present matter-of-factly, not defensively:**
+4. **GPSR routing + majority-vote confirmation** — real, tested, and the source of this cycle's most
+   interesting finding (the PDR trade-off). Frame the trade-off as a *finding*, stated once, clearly, then
+   move on — don't let it become the whole conversation unless the panel steers there themselves.
+5. **The Bayesian trust model's Tc/Ts factors** — say plainly that these two specific factors are this
+   project's own construction (no source paper had a formula), same framing as the paper's own "Proposed
+   Extensions." Don't over-explain; one sentence, then move to the parts that are more clearly grounded.
+
+**Hold in reserve — only go here if directly asked:**
+6. The synthetic-harness cluster-collapse finding (Section VI-B of the paper) — genuinely good, rigorous
+   work, but dense and easy to over-explain into confusion for a mixed panel. Have the one-sentence version
+   ready ("the fast evaluation harness we used for the density sweep has a known mobility-model limitation at
+   high density, which we found, measured, and cross-checked against the real SUMO pipeline — full writeup in
+   the paper") rather than leading with it.
+7. The full Naskar et al. NIZK protocol vs. this project's simplified ECDSA — only if someone asks "why isn't
+   ECDSA doing the full privacy-preserving protocol from the paper."
+
+**If asked "is this finished?"** — yes: 93/93 tests passing, every CRITICAL/HIGH item from the project's own
+Report implemented, all four base papers' core ideas integrated and traced. The "future work" list in the
+paper's Section IX is exactly that — genuine next steps beyond a complete, working system, not unfinished
+pieces of this one.
 
 ## 1. The problem: broadcast storm
 
@@ -85,7 +127,7 @@ tiered by trust: **T≥0.7 → aggregate-verified in one batch**, **0.3≤T<0.7 
 signers, not just a post-hoc rejection).
 
 **The honest BLS-vs-ECDSA contrast, state proactively:** BLS gives true cryptographic aggregation — N
-signatures collapse into one 96-byte aggregate, checked with one pairing operation, measured at **2.11×
+signatures collapse into one 96-byte aggregate, checked with one pairing operation, measured at **2.04×
 speedup and 20:1 payload compression** at batch size 20. Plain ECDSA has **no native aggregation** — its
 "batch" mode here is real, honestly-labeled sequential verification of N signatures, with no compression
 (N signatures in, N signatures worth of bytes out, always). ECDSA is dramatically *cheaper per signature*
@@ -124,19 +166,31 @@ file for the authoritative current numbers before quoting any figure here):
 
 ## What the rehearsed demo seed's own numbers will show — say this before anyone else notices
 
-The rehearsed demo seed ends with **Packet Delivery Ratio: 0%, Delivered Messages: 0/1** in the printed
-summary. This is not a malfunction — it's three real mechanisms firing in sequence: the fan-out broadcast
-correctly shows several distant Cluster Heads *withholding* the alert (their own cluster members aren't
-near the accident, so majority-vote confirmation correctly refuses to forward on their behalf); duplicate
-suppression runs normally across the CHs that do corroborate; and on the actual GPSR route, the Cluster
-Head that ends up carrying the message is a real PACKET_DROP attacker that genuinely drops it instead of
-relaying. Immediately follow it with the honest aggregate picture: across the unbiased 5-seed, 5-event
-comparison sweep in `outputs/RESULTS_SUMMARY.md`, proposed-arm PDR is genuinely lower than flooding's at
-most tested densities now that a real 300m range check and real majority-vote confirmation are both
-enforced — a real reliability-vs-efficiency trade-off (flooding's redundant paths survive a single failed
-hop; the proposed scheme's single efficient path doesn't), traced to two verified structural causes in that
-document. This run is a representative example of that trade-off, not a cherry-picked outlier — say so
-plainly rather than waiting to be asked.
+**Updated 2026-09-05 — the previous version of this section is obsolete.** Before the multi-RSU delivery fix
+this seed ended at *PDR 0%* with a malicious Cluster Head dropping the packet, and this script told you to
+pre-empt that. It no longer happens: the fix re-routes this seed and **zero** `[Dropped]` lines appear.
+Do not narrate a packet drop on this seed.
+
+What the rehearsed seed (density 250, steps 200, seed 4) actually prints, verified live: **Packet Delivery
+Ratio 100.00%, Delivered Messages 1/1**, End-to-End Delay 311.12 ms, 13 clusters / 13 Cluster Heads, 18
+duplicate messages suppressed, Auth Success Rate 100%. Narrate it in this order:
+
+1. **A Cluster Head withholds the alert** — `[Withheld] Cluster 2 CH 'v2' lacked majority corroboration;
+   not forwarded`. Its own cluster members aren't near the accident, so majority-vote confirmation correctly
+   refuses to forward on their behalf. This is the security mechanism firing, not a failure.
+2. **Duplicate suppression** blocks 18 redundant relays across the CHs that do corroborate.
+3. **The GPSR path resolves and is logged in full** —
+   `Accident Vehicle (v85) -> CH (v74) -> RSU (RSU_SOUTH)`. Worth one sentence: it delivers to RSU_SOUTH,
+   which is *not* the RSU nearest the accident. That's the multi-RSU delivery fix visible on screen, and it
+   is the single change that moved mean PDR from 78.9% to 89.1%.
+4. **The RSU authenticates the BLS signature chain and ACKs** — `Authentication: PASS | Decision: ACCEPTED`.
+
+Then give the honest aggregate immediately, before anyone asks: across the unbiased 5-seed, 5-event sweep in
+`outputs/RESULTS_SUMMARY.md`, proposed-arm PDR (80–100%) is **still below** flooding's 100% at most
+densities, because flooding's redundant paths survive a single failed hop and a single efficient CH path
+does not. The residual failures are all real — malicious relays dropping packets, the corroboration gate
+correctly withholding, and genuine 300–400 m RSU coverage gaps — none of them accounting artifacts. That
+trade-off is a finding, not a defect.
 
 ## 8. SUMO GUI visual legend
 

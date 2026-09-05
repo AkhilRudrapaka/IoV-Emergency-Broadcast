@@ -5,6 +5,30 @@ class BroadcastManager:
     """
     Controlled Broadcast & Duplicate Message Suppression Manager.
     Maintains a message UUID cache to prevent broadcast storm flooding and duplicate loops.
+
+    PROOF-OF-WORK
+    --------------
+    - Only Cluster Heads forward, unique-ID duplicate suppression: following
+      [Kaur et al., 2024, Sec. 3] "The proposed scheme features a new
+      message-forwarding route that ... reduce[s] latency and minimize[s]
+      flooding" via a controlled CH-based forwarding structure, and
+      [Kaur et al., 2024, Sec. 4] the CT (Cluster Table)/CH-mediated
+      dissemination pattern this broadcast()/broadcast_route() split mirrors
+      (fan-out across active CHs vs. relay along one discovered path).
+    - Cooperative majority-vote confirmation (_has_majority_confirmation,
+      >50% of a CH's own cluster corroborating before it forwards) is this
+      project's OWN CONTRIBUTION -- no paper in the original base-papers/ set
+      specifies a majority-vote gate. It is a natural extension of Kaur et
+      al.'s CH-mediated structure (adding a corroboration check before the CH
+      acts on Kaur et al.'s behalf), not a method taken from any cited paper.
+      [Qi et al., 2024 (HTEMD)], found in a second literature folder
+      (base papers/Research paper-set1/), independently arrives at the same
+      defensive premise -- don't act on a single unverified report -- via a
+      mechanistically different scheme (a receiver entropy-weights
+      P_EM probabilities across *multiple senders* reporting the same event,
+      vs. this project's own-cluster-membership headcount); cited as a related
+      premise, not as this mechanism's source. Full citations:
+      docs/ALGORITHMS.md.
     """
 
     def __init__(self, logger=None):
