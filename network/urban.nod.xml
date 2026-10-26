@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='utf-8'?>
+<nodes>
+  <node id="A0" x="0.00" y="0.00" type="priority" />
+  <node id="A1" x="0.00" y="170.00" type="priority" />
+  <node id="A2" x="0.00" y="370.00" type="priority" />
+  <node id="A3" x="0.00" y="590.00" type="priority" />
+  <node id="A4" x="0.00" y="800.00" type="priority" />
+  <node id="B0" x="160.00" y="0.00" type="priority" />
+  <node id="B1" x="160.00" y="170.00" type="traffic_light" />
+  <node id="B2" x="160.00" y="370.00" type="traffic_light" />
+  <node id="B3" x="160.00" y="590.00" type="traffic_light" />
+  <node id="B4" x="160.00" y="800.00" type="priority" />
+  <node id="C0" x="390.00" y="0.00" type="priority" />
+  <node id="C1" x="390.00" y="170.00" type="traffic_light" />
+  <node id="C2" x="390.00" y="370.00" type="traffic_light" />
+  <node id="C3" x="390.00" y="590.00" type="traffic_light" />
+  <node id="C4" x="390.00" y="800.00" type="priority" />
+  <node id="D0" x="610.00" y="0.00" type="priority" />
+  <node id="D1" x="610.00" y="170.00" type="traffic_light" />
+  <node id="D2" x="610.00" y="370.00" type="traffic_light" />
+  <node id="D3" x="610.00" y="590.00" type="traffic_light" />
+  <node id="D4" x="610.00" y="800.00" type="priority" />
+  <node id="E0" x="820.00" y="0.00" type="priority" />
+  <node id="E1" x="820.00" y="170.00" type="priority" />
+  <node id="E2" x="820.00" y="370.00" type="priority" />
+  <node id="E3" x="820.00" y="590.00" type="priority" />
+  <node id="E4" x="820.00" y="800.00" type="priority" />
+</nodes>
