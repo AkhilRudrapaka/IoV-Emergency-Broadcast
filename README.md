@@ -1,315 +1,301 @@
-# IoV Broadcast Storm Mitigation
+# Trust-Aware Vehicular Emergency Alerts
 
-**Mitigation of the Broadcast Storm Problem for Reliable Emergency Message Dissemination in the Internet of Vehicles using Trust-Aware Clustering and Batch Authentication**
+A Python/SUMO research prototype for verified emergency-alert forwarding through vehicle clusters to roadside units (RSUs). It includes signed voting, BLS certificate verification, forwarding comparisons, saved results, a local web application, and a 12-section documentation portal.
 
-A SUMO/TraCI-driven simulation platform that replaces naive emergency-alert flooding with trust-aware clustering, controlled Cluster-Head broadcasting, and real BLS12-381 batch authentication — built as an IEEE-style research prototype, not a toy demo.
+The incident is staged in simulation. No real crash detection or live emergency dispatch is enabled by default.
 
-[![Tests](https://img.shields.io/badge/tests-93%20passing-brightgreen)]()
-[![Python](https://img.shields.io/badge/python-3.10-blue)]()
-[![SUMO](https://img.shields.io/badge/SUMO-1.12.0-orange)]()
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+## 1. What to copy to the other computer
 
----
+Copy the **entire project folder**, including `network/`, `portal/`, `validation/`, and `results/` if you want the existing experiments. Keep the folder structure unchanged.
 
-## Problem Statement
+Do not copy a virtual environment from another computer. Create a fresh one using the steps below. Caches (`__pycache__`, `.pytest_cache`) and diagnostic logs are unnecessary. Create your own `.env` if optional AI explanations are needed; do not share someone else's API credentials.
 
-In an Internet of Vehicles (IoV) network, a vehicle that detects a hazard (a collision, a stalled vehicle) must alert nearby traffic and infrastructure quickly and reliably. The naive way to guarantee reach is **flooding**: every vehicle that receives the alert immediately rebroadcasts it to every neighbor. Flooding is simple, and it is also the textbook cause of the **broadcast storm problem**:
+Run every project command below from the folder containing `run.py` and `requirements.txt`, unless a step explicitly changes directory.
 
-- **Redundant transmissions** grow with vehicle density — the same message gets retransmitted by every receiving node.
-- **Channel contention and collisions** spike exactly when reliable delivery matters most (dense, panic-prone post-accident traffic).
-- **No defense against misbehaving nodes** — nothing stops a vehicle from injecting false alerts, silently dropping packets it should forward, or forging trust recommendations about its neighbors.
-- **Mobility-blind clustering** (plain spatial DBSCAN) groups vehicles that happen to be close together even if they're moving in opposite directions on opposing lanes — producing clusters and Cluster Heads that dissolve almost immediately.
-- **Signature verification doesn't scale** — checking one signature per message, per Cluster Head, per vehicle becomes a bottleneck exactly as network density (and therefore the number of relays) grows.
+## 2. Prerequisites
 
-## Proposed Solution
+- A 64-bit Python installation. Python 3.11 is the version used in the existing development environment; dependency installation must succeed before running the project.
+- Internet access for initial dependency installation and optional AI requests.
+- A graphical desktop for the animated SUMO demo. The web application and headless experiments do not require a GUI.
+- A modern web browser.
+- Node.js is optional, used only for the static portal's JavaScript validation command.
 
-Instead of flooding, this project disseminates emergency alerts through a **trust-aware, mobility-aware, cryptographically batch-authenticated pipeline**:
+The exact dependency pins are in `requirements.txt`, including Python-version-specific SciPy entries. SUMO, TraCI, and sumolib are installed through those requirements. The code locates SUMO through the Python `sumo` package, so a separate system-wide SUMO installation or manually configured `SUMO_HOME` is normally unnecessary.
 
-1. Vehicles are continuously classified (Trusted / Unknown / Malicious) from a real 4-factor Bayesian trust score, not static labels.
-2. Vehicles are grouped by a **velocity-aware DBSCAN variant** that blends current position with a short-horizon predicted position and a directional compatibility gate — so vehicles converging from opposite lanes aren't wrongly clustered.
-3. Each cluster elects a **Cluster Head** by a composite trust + speed-stability score, restricted to TRUSTED vehicles (with a documented bootstrap fallback).
-4. Before forwarding, a Cluster Head requires **cooperative majority-vote confirmation** (>50% of its own cluster corroborating the event).
-5. On an accident, only Cluster Heads relay the alert — via **GPSR geographic routing** with a real 300 m wireless-range cap, standard perimeter-mode void recovery, and a 4-tier fallback chain — with UUID-based duplicate suppression blocking every redundant relay.
-6. The RSU authenticates the alert using **real BLS12-381 signatures** (with a real ECDSA ablation arm): the sender and every active Cluster Head co-sign a distinct attestation, and the RSU applies **3-tier trust-gated verification** — aggregate-batch for high trust, individual for mid trust, immediate rejection (no verify attempt) for low trust — with cross-event deduplication and persistent RSU trust feedback.
+## 3. Windows setup (PowerShell)
 
-The full mathematical formulation of every stage is in **[`docs/ALGORITHMS.md`](docs/ALGORITHMS.md)**, which
-includes a component-by-component Proof-of-Work Mapping table: eight VANET papers were read in full to ground
-this project's algorithms (four as the primary foundation — Chen & Wu 2024, Kaur et al. 2024, Naskar et al.
-2025, Azizi & Shokrollahi 2024 — plus four more found later and used to corroborate specific sub-components:
-Zhang & Ye 2026, Darabkh et al. 2025, Khan et al. 2026, Qi et al. 2024), and every component not grounded in
-any of the eight is explicitly labeled "own contribution" rather than attributed to a paper that doesn't
-actually specify it.
+Install Python, then open PowerShell in the copied project folder. Replace the example path with the folder on your new computer:
 
-## Key Features
-
-- Realistic 5×5 urban SUMO road network — multi-lane roads, intersections, traffic lights, 50–500+ vehicle densities
-- Live TraCI-driven vehicle classification, trust scoring, and Cluster-Head election every simulation step
-- Velocity-aware adaptive DBSCAN clustering with a dynamic re-clustering controller (skips redundant re-clustering when nothing material has changed)
-- Realistic two-vehicle collision model with radius-based congestion propagation (braking, queueing, lane changes)
-- UUID-based duplicate suppression and controlled Cluster-Head-only broadcasting
-- Real BLS12-381 batch authentication (`py_ecc`) with 3-tier trust-gated verification (aggregate / individual / immediate-reject), and a measured **~2× verification speedup** at batch size ≥10
-- Real ECDSA (NIST P-256, `cryptography`) ablation arm — a direct, honest comparison of BLS's aggregation against the Report's specified industry-standard scheme
-- GPSR geographic routing with a real 300 m wireless-range cap, standard right-hand-rule perimeter-mode void recovery, a 4-tier fallback chain, and a 5-hop TTL
-- Cooperative majority-vote confirmation (>50% of a Cluster Head's own cluster) before forwarding
-- Full RSU ingress → cross-event dedup → tiered authentication → decision → analytics → persistent trust-feedback → dissemination pipeline, multi-RSU deployment
-- Config-driven ablation switches (clustering mode, dynamic re-clustering, authentication mode) for controlled comparison studies
-- 9 automated, 300 DPI, IEEE-style evaluation graphs and a flooding-baseline comparison harness
-- 93 automated unit tests covering every core module
-
-## System Architecture
-
-```
-SUMO / TraCI (live vehicle mobility)
-        │
-        ▼
-Vehicle Classification & Trust Evaluation  ──────────────┐
-        │                                                 │ (trust feeds
-        ▼                                                 │  clustering,
-Velocity-Aware DBSCAN Clustering                          │  CH election,
-        │                                                 │  and BLS
-        ▼                                                 │  verification)
-Cluster Head Election (0.6·Trust + 0.4·SpeedStability)     │
-        │                                                 │
-        ▼                                                 │
-Accident Event → Emergency Message → BLS Chain Signing     │
-        │                                                 │
-        ▼                                                 │
-Controlled Broadcast (duplicate suppression) → Multi-Hop    │
-Routing (loop-free, trust-gated) → Nearest RSU              │
-        │                                                 │
-        ▼                                                 │
-RSU: Authenticate (BLS batch/individual) → Decision →       │
-Trust Update ─────────────────────────────────────────────┘
-        │
-        ▼
-Metrics, CSV Export, IEEE Graphs
+```powershell
+cd "C:\Projects\vehicular-emergency-alerts"
+py -3.11 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m pip check
 ```
 
-## Mathematical Models
+If the Python launcher `py` is unavailable, use `python -m venv .venv` after checking `python --version`.
 
-Full derivations, exact weights, and thresholds (matching the shipped code, not an idealized version of it) are in **[`docs/ALGORITHMS.md`](docs/ALGORITHMS.md)**. The headline formulas:
+If PowerShell blocks activation, activation is optional. Run the environment's interpreter directly:
 
-**Bayesian trust score** (4-factor weighted composite with EMA historical trust + persistent RSU boost):
-
-$$T(v) = 0.80\big(0.30\,T_f + 0.25\,T_c + 0.20\,T_s + 0.25\,T_h\big) + 0.20\,R(v)$$
-
-where $T_f$ = forwarding behaviour, $T_c$ = message consistency, $T_s$ = speed plausibility, $T_h$ = EMA historical trust (decay 0.85), $R(v)$ = persistent RSU trust assessment.
-
-**Cluster Head election** (TRUSTED-only, T≥0.7, with a documented bootstrap fallback):
-
-$$\text{Score}(v) = 0.6\,T(v) + 0.4\,S(v), \qquad H(c) = \operatorname*{argmax}_{v \in E_1(c)} \text{Score}(v)$$
-
-**Velocity-aware clustering distance** (blends current + short-horizon projected position, gated by heading):
-
-$$d(i,j) = 0.6\,\lVert p_i - p_j \rVert_2 + 0.4\,\lVert p_i' - p_j' \rVert_2, \qquad p' = p + \vec{v}\cdot H$$
-
-**GPSR routing** (300 m range cap on every hop, perimeter-mode void recovery, 5-hop TTL):
-
-$$h_{i+1} = \operatorname*{argmin}_{h \,\in\, \text{Progress}(h_i)} \lVert p_{h_i} - p_h \rVert_2, \qquad \text{Progress}(h_i) \subseteq \{h : \lVert p_{h_i}-p_h\rVert_2 \le 300\text{m}\}$$
-
-**Tiered batch authentication** (BLS12-381, with a real ECDSA ablation arm):
-
-$$\text{ACCEPT}(m) = \text{AggregateVerify}(\text{High}, T{\ge}0.7) \;\wedge\; \bigwedge_{\text{Mid}, 0.3\le T<0.7} \text{Verify}(\cdot) \;\wedge\; \big[\text{Reject}_{T<0.3} = \emptyset\big]$$
-
-See `docs/ALGORITHMS.md` for every formula's full derivation, the GPSR fallback chain and perimeter-mode
-mechanics, the majority-vote confirmation gate, and the combined system-level pipeline expression.
-
-## Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Traffic simulation | SUMO 1.12.0 (`sumo`, `sumo-gui`) |
-| Simulation control | TraCI / `traci`, `sumolib` (Python 3.10) |
-| Clustering | scikit-learn `DBSCAN` (Euclidean + custom precomputed mobility-aware metric) |
-| Numerical computing | NumPy, Pandas |
-| Cryptography (proposed) | `py_ecc` — BLS12-381 (`G2ProofOfPossession`, IETF-draft / Eth2 ciphersuite) |
-| Cryptography (ablation) | `cryptography` — ECDSA, NIST P-256 |
-| Visualization | Matplotlib (300 DPI IEEE-style figures) |
-| Testing | pytest |
-
-## Project Structure
-
-```
-IOV-Broadcast-problem/
-├── main.py                    # Unified entry point (route gen + live run + eval + graphs)
-├── config.py                  # Central configuration — every tunable parameter
-├── vehicle.py                 # Vehicle state, classification, GUI color mapping
-├── trust.py                   # Trust evaluation engine (§1 of ALGORITHMS.md)
-├── clustering.py               # Velocity-aware DBSCAN clustering (§2)
-├── cluster_stability.py         # Cluster persistence tracking + dynamic re-clustering
-├── cluster_head.py               # Cluster Head election (§3)
-├── neighbor_discovery.py          # Range-based neighbor table
-├── accident.py                     # Two-vehicle collision + congestion simulation
-├── messaging.py                     # EmergencyMessage data model
-├── broadcast.py                      # Controlled broadcast + duplicate suppression (§6)
-├── routing.py                         # GPSR geographic routing, 300m range + perimeter mode (§4)
-├── rsu.py                              # RSU ingress/dedup/auth/decision/dissemination pipeline (§7)
-├── authentication.py                    # Legacy SHA-256 baseline authentication
-├── bls_auth.py                           # Real BLS12-381 tiered batch authentication (§6)
-├── ecdsa_auth.py                          # Real ECDSA (P-256) ablation arm (§6)
-├── flooding.py                            # Baseline flooding engine (for comparison)
-├── comparison.py                           # Proposed vs. flooding evaluation harness
-├── metrics.py                               # Telemetry collection / CSV export
-├── graphs.py                                 # IEEE-style 300 DPI graph generation
-├── generate_routes.py                         # SUMO route-file generation
-├── logger.py                                   # Structured console/file logging
-├── utils.py                                     # Geometry / angle helper functions
-├── eps_sensitivity.py                            # Standalone DBSCAN ε-sensitivity ablation (§2.5)
-├── network/                                       # SUMO road network, routes, sumocfg
-├── docs/
-│   ├── ALGORITHMS.md                              # Full mathematical model + proof-of-work citation mapping
-│   ├── RESEARCH_PAPER.md                          # Full IEEE-style research paper
-│   ├── PROJECT_REPORT.md                          # Detailed implementation status report
-│   ├── DEMO_GUIDE.md                              # Exact commands: live demo, eval sweep, dual-window demo
-│   └── PANEL_TALKING_POINTS.md                    # Presentation script tied to the base papers
-├── outputs/
-│   ├── graphs/                                      # Generated 300 DPI evaluation plots
-│   ├── logs/                                         # Metrics / comparison / BLS+ECDSA benchmark / ε-sensitivity CSVs
-│   └── RESULTS_SUMMARY.md                            # Authoritative results write-up — read before quoting any number
-├── tests/                                             # 93 unit tests (pytest)
-├── requirements.txt
-├── pytest.ini
-└── README.md
+```powershell
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe run.py web
 ```
 
-> **Note on structure:** core modules are kept at the repository root rather than under `src/`. Every module currently imports its dependencies as flat, top-level names (`from vehicle import Vehicle`, etc.); moving 20+ interdependent, already-tested modules into a package would mean rewriting every cross-import for a purely cosmetic gain, with real risk to a pipeline that's currently fully working. `tests/` and `docs/` were introduced because they carry no such risk — tests import via `pytest.ini`'s `pythonpath = .`, which was verified against the full suite before and after the move.
+For later commands, either activate the environment or replace `python` with `.\.venv\Scripts\python.exe`.
 
-## How to Install & Run
+## 4. Linux / macOS setup
 
-### Prerequisites
-
-- Ubuntu 20.04+ (or similar Linux), Python 3.10+
-- [SUMO](https://sumo.dlr.de/docs/Downloads.php) 1.12.0+ with `sumo` / `sumo-gui` on your `PATH`, and `SUMO_HOME` set
-
-### Setup
+Use an installed Python interpreter compatible with the pinned dependencies:
 
 ```bash
-git clone https://github.com/AkhilRudrapaka/IOV-Broadcast-problem.git
-cd IOV-Broadcast-problem
-pip install -r requirements.txt
+cd /path/to/vehicular-emergency-alerts
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m pip check
 ```
 
-### Run the live GUI demonstration
+On Linux, if virtual-environment creation reports that `venv` is missing, install your distribution's Python venv package first. If SUMO-GUI reports missing native libraries, install the libraries named in that error using your operating system's package manager. A desktop session is required for GUI commands; a headless server can run the CLI experiments and web app.
+
+## 5. Verify the installation
+
+With the virtual environment active, run:
 
 ```bash
-python3 main.py --gui --density 100
+python -c "import numpy, scipy, sklearn, matplotlib, py_ecc, sumo, sumolib, traci; print('Python dependencies OK'); print('SUMO package location:', sumo.SUMO_HOME)"
+python -c "import os, subprocess, sumo; subprocess.run([os.path.join(sumo.SUMO_HOME, 'bin', 'sumo.exe' if os.name == 'nt' else 'sumo'), '--version'], check=True)"
+python run.py --help
+python -m pytest validation -q
 ```
 
-This generates the required SUMO route files, launches `sumo-gui`, and runs the full 15-phase pipeline live: vehicle classification → clustering → trust evaluation → Cluster Head election → a scripted two-vehicle accident at step 50 → BLS chain signing → controlled broadcast → multi-hop routing → RSU authentication and ACK → metrics/graph export.
+The dependency check should print `Python dependencies OK`; the binary check should print a SUMO version. Tests exercise the simulator and web integration and can take some time.
 
-### Other entry points
+## 6. Start the web application
+
+In terminal 1, activate the environment and run:
 
 ```bash
-python3 main.py --eval-only                 # Run only the flooding-vs-proposed comparison + graphs
-python3 -m pytest -q                         # Run the full 93-test suite
-python3 sumo_interface.py                    # Run the live pipeline headlessly (SUMO_GUI=1 env var for GUI)
-python3 eps_sensitivity.py                   # DBSCAN ε-sensitivity ablation (docs/ALGORITHMS.md §2.5)
+python run.py web
 ```
 
-For the exact rehearsed-seed demo command, the dual-window (SUMO GUI + companion webpage) setup, and every
-other reproduction command used to produce the numbers below, see **[`docs/DEMO_GUIDE.md`](docs/DEMO_GUIDE.md)**.
+Keep the terminal open and visit **http://127.0.0.1:8765/**.
 
-## Demonstration Highlights
+| URL | What it shows |
+| --- | --- |
+| `http://127.0.0.1:8765/` | Saved simulation results with 12 project-documentation buttons |
+| `http://127.0.0.1:8765/index.html` | Full documentation portal |
+| `http://127.0.0.1:8765/simulation` | Results workspace, including language selection and explanations |
 
-What a reviewer watching `python3 main.py --gui --density 100` will see, in order:
+The documentation buttons cover Home; Introduction and Background; Problem Statement; Objectives and Research Gap; Proposed System and Architecture; Methodology and Algorithms; Implementation and Technologies; Accident Simulation and Emergency Workflow; Results and Performance Evaluation; Source Code and Reproducibility; Research Papers and References; and Limitations and Future Work.
 
-1. **SUMO-GUI starts** with a realistic multi-lane urban grid, traffic lights, and live vehicle movement.
-2. **Vehicle coloring updates every step** via real TraCI calls: white = trusted, yellow = unknown, black = malicious, blue = Cluster Head, orange = active forwarder / braking due to accident, red = accident vehicle.
-3. **Clusters form and are logged** every re-clustering step (`[Clustering] Step N: Clusters Formed = ... | Sizes = {...} | Noise Vehicles = ...`).
-4. **Trust scores update continuously**, with explicit before/after snapshots around the accident and after RSU verification.
-5. **Cluster Heads are elected** with a logged score breakdown (`Score: 0.94 (Trust: 0.90, SpeedStab: 1.00)`).
-6. **A two-vehicle collision triggers at step 50** — both vehicles halt and turn red with highlight rings; nearby traffic brakes, queues, and turns orange.
-7. **BLS chain signatures are generated** (sender + every active Cluster Head), logged with signature count and real signing time.
-8. **Controlled broadcast demonstrates duplicate suppression**: every active Cluster Head "hears" the alert, each checks majority-vote corroboration from its own cluster before forwarding (logged `[Withheld]` if it can't corroborate), and any already-cached message is logged as a blocked duplicate.
-9. **The message routes hop-by-hop to the nearest RSU via GPSR**, with the full path logged — including a real 300m range check on every hop, and an honest `STORE_CARRY_FORWARD` if nothing is in range.
-10. **The RSU deduplicates by accident UUID, authenticates (tiered BLS), accepts, and ACKs** the message (`Authentication: PASS -> Decision: ACCEPTED -> ACK Sent`), flashing cyan in the GUI, and persistently nudges the sender's RSU trust assessment.
-11. **Metrics and 9 IEEE-style graphs are generated automatically** at the end of the run.
+If the copied project has no saved runs, open **terminal 2**, activate the same environment, and generate one:
 
-## Experimental Metrics
+```bash
+python run.py single -d 200 -r 2
+```
 
-From `outputs/RESULTS_SUMMARY.md` (regenerated 2026-09-03, third revision — adds the full proof-of-work
-citation mapping in `docs/ALGORITHMS.md`/`docs/RESEARCH_PAPER.md` and extends the density sweep to exactly
-match [Kaur et al., 2024]'s own tested set; full methodology, gap analysis, and honest limitations there —
-read it before quoting these numbers), comparing the proposed algorithm against a pure-flooding baseline
-across seven vehicle densities (synthetic grid harness, 5 seeded runs × 5 emergency events each, mean ± 95% CI):
+After it finishes, click **Refresh results** in the browser. The viewer also checks for changed saved runs every five seconds. It displays saved data, not a live simulation-step feed.
 
-| Density | PDR: Flood → Proposed | Delay (total): Flood → Proposed | ↳ routing-only: Flood → Proposed | Overhead Reduction | Duplicate Suppression |
-|---|---|---|---|---|---|
-| 50  | 100% → 96% | 10.30 ± 0.61 ms → 363.74 ± 58.03 ms | 10.30 → 2.80 ms | 94.25% | 100% |
-| 100 | 100% → 100% | 10.19 ± 0.54 ms → 344.44 ± 29.64 ms | 10.19 → 3.18 ms | 96.88% | 100% |
-| 150 | 100% → 84% | 9.02 ± 0.40 ms → 340.87 ± 30.40 ms | 9.02 → 2.67 ms | 98.36% | 100% |
-| 200 | 100% → 88% | 8.90 ± 0.36 ms → 315.22 ± 22.30 ms | 8.90 → 2.18 ms | 98.85% | 100% |
-| 250 | 100% → 88% | 9.02 ± 0.59 ms → 313.04 ± 27.73 ms | 9.02 → 2.01 ms | 99.15% | 100% |
-| 300 | 100% → 80% | 8.74 ± 0.61 ms → 314.77 ± 13.84 ms | 8.74 → 1.79 ms | 99.33% | 100% |
-| 500 | 100% → 88% | 8.06 ± 0.40 ms → 301.24 ± 5.96 ms | 8.06 → 1.79 ms | 99.59% | 100% |
+Stop the server with **Ctrl+C**. After changes to `web_results.py`, stop and restart it. If port 8765 is occupied:
 
-**Read PDR and delay carefully — both tell an important, real story, not a flattering one.** Total delay is
-*worse* for proposed because it's dominated by real BLS12-381 verification cost (`py_ecc`, a pure-Python
-pairing implementation, whose wall-clock swings ≈25% run-to-run — do not read that column as a
-between-revision result) — the **routing-only component** (what GPSR is actually meant to improve) is
-consistently *lower* for proposed at every density. **PDR remains lower for proposed at five of seven
-densities** — the honest consequence of enforcing a real 300 m wireless range and real majority-vote
-corroboration: flooding's path redundancy makes it resilient to any single hop failing; the proposed scheme
-commits to one efficient path, which is structurally more exposed to one hop failing. Mean PDR rose from
-78.9% to 89.1% this revision after every non-delivery was instrumented and one real delivery-path defect was
-found and fixed (the route pinned itself to a single pre-selected RSU and ignored the other four) — **no
-safety check was relaxed to achieve it**. The residual failures are all genuine: malicious relays dropping
-packets, the corroboration gate correctly withholding, and real 300–400 m RSU coverage gaps. See
-`outputs/RESULTS_SUMMARY.md` for the full per-cause attribution.
+```bash
+python run.py web --port 8766
+```
 
-BLS12-381 vs. ECDSA authentication (`outputs/logs/bls_benchmark.csv`, `outputs/logs/ecdsa_benchmark.csv`, both real, scenario-independent benchmarks — Algorithm 4 ablation):
+Then open `http://127.0.0.1:8766/`. The server binds to localhost; it is intended for use on the same computer.
 
-| Batch size | BLS individual | BLS batch | BLS speedup | ECDSA individual | ECDSA "batch" | Signature bytes: BLS / ECDSA |
-|---|---|---|---|---|---|---|
-| 1  | 299.6 ms | 299.9 ms | 1.00× | 0.077 ms | 0.068 ms | 96 B / 71 B |
-| 10 | 3040.5 ms | 1566.6 ms | **1.94×** | 1.057 ms | 0.670 ms | 96 B / 710 B |
-| 20 | 6086.6 ms | 2972.4 ms | 2.05× | 1.292 ms | 1.238 ms | 96 B / 1420 B |
+## 7. Run the visual SUMO demo
 
-**The honest ablation finding:** BLS aggregates — N signatures compress to a constant 96 bytes with a real
-~2× verify speedup at N≥10. ECDSA has no native aggregation — its "batch" column is real sequential verification with
-no speedup or compression (payload grows linearly with N). ECDSA is ~2900–4700× faster *per signature* in
-this pure-Python comparison, since BLS pairing is far more expensive than ECDSA scalar multiplication — a
-genuine cost/compression trade-off between the two schemes, not one being objectively "better."
-Absolute BLS milliseconds are wall-clock and swing ≈25% run-to-run on the same machine (2947.8 / 3677.5 /
-3040.5 ms for individual N=10 across three runs); the **speedup ratio** and the constant 96-byte aggregate
-are the reproducible claims.
+In a separate terminal with the environment active:
 
-**Honest caveats** (full list in `outputs/RESULTS_SUMMARY.md` and `docs/ALGORITHMS.md` → *Honest Scope Notes*):
-the comparison harness uses synthetic grid-seeded mobility rather than live SUMO/TraCI movement (the live
-`sumo_interface.py` pipeline does use real TraCI mobility end-to-end — only the multi-density sweep uses the
-faster synthetic harness). Absolute BLS milliseconds reflect a pure-Python reference implementation, not
-production V2X latency — the speedup ratio is the defensible claim. Two trust factors (Message Consistency,
-Speed Plausibility) are this project's own construction pending the source report — see `docs/ALGORITHMS.md`.
-A DBSCAN ε-sensitivity ablation (`python3 eps_sensitivity.py`, `outputs/logs/eps_sensitivity.csv`) measures
-why this project re-tunes ε to 80m instead of reusing Chen & Wu (2024)'s highway-tuned 20/40m, and in doing
-so surfaced a real synthetic-harness-only finding — DBSCAN cluster collapse into one mega-cluster at
-density ≥200 — disclosed in full in `docs/ALGORITHMS.md` and `docs/RESEARCH_PAPER.md` §VI.
+```bash
+python run.py demo
+```
 
-## Current Status & Roadmap
+The GUI presents the configured incident, clusters, corroboration, forwarding comparisons, RSU outcomes, and forged-alert test. Keep the web server running separately if you also want to inspect saved results.
 
-**Working today** (all verified against a live run, not just described): SUMO simulation, vehicle
-classification, Bayesian trust evaluation derived only from observed behavior (no ground-truth shortcut —
-see `outputs/RESULTS_SUMMARY.md`), velocity-aware clustering, TRUSTED-only Cluster Head election with a
-documented bootstrap fallback, two-vehicle accident simulation, cooperative majority-vote confirmation,
-duplicate suppression, GPSR routing with a real 300m range cap and perimeter-mode recovery, multi-hop
-routing with real packet-drop consequences, RSU authentication (legacy SHA-256, real BLS12-381 tiered
-batch, and a real ECDSA ablation), RSU cross-event dedup, persistent RSU trust feedback, metrics/graph
-generation, flooding baseline comparison, multi-run statistical evaluation with 95% CI. 93/93 tests passing.
+Useful options:
 
-**Planned next** (see `docs/PROJECT_REPORT.md` for the full dependency-ordered roadmap):
+```bash
+python run.py demo --scheme proposed
+python run.py demo --pace 0.8
+python run.py demo --no-wait
+python run.py demo --narrate --language ta --offline
+```
 
-1. A hybrid reliability scheme addressing the PDR trade-off documented in `outputs/RESULTS_SUMMARY.md` (the
-   proposed scheme's efficiency now comes with a real single-path reliability cost under strict 300m-range
-   and majority-vote enforcement, vs. flooding's redundant-path resilience)
-2. Real SUMO/TraCI-driven multi-density comparison (replacing the synthetic mobility harness)
-3. Detection of *content-forgery* attacks (FORGED_RECOMMENDATION remains undetectable — no
-   recommendation-exchange mechanism exists in the current 4-factor trust model; FAKE_ALERT location-forgery
-   is now detected via Message Consistency)
-4. ML-assisted trust modeling
-5. Adaptive/geographic probabilistic broadcasting
-6. Production PKI/certificate-authority-backed key registration (both BLS and ECDSA)
-7. Multi-RSU coordination and network-wide trust aggregation
+Running `python run.py` without a subcommand also starts the demo. On a machine without a graphical display, use `single` or `explain` instead.
 
-## License
+## 8. Generate research results
 
-Released under the [MIT License](LICENSE).
+Start with a small experiment:
+
+```bash
+python run.py experiment --densities 50 100 200 250 --runs 3
+```
+
+For the complete configuration:
+
+```bash
+python run.py experiment
+```
+
+The current configuration uses populations 50, 100, 200, 250, 300, and 500 with 30 independent seeds per population. Full experiments and sensitivity sweeps can take substantially longer than a single run; there is no fixed runtime guarantee.
+
+Outputs are written under `results/urban/`:
+
+| Path | Contents |
+| --- | --- |
+| `raw/` | Saved compressed scenario records and historical runs |
+| `processed/` | Per-run CSV data and aggregated comparisons |
+| `figures/` | Charts, maps, and animations |
+| `summaries/` | Result reports, explanations, and configuration metadata |
+| `dashboard.html` | Generated experiment dashboard |
+| `infrastructure/` | Local event database and export data |
+
+Rebuild the dashboard from existing results:
+
+```bash
+python run.py dashboard
+```
+
+Open `results/urban/dashboard.html` in a browser. This command expects processed results and the configured demo record; run an experiment first on a clean copy.
+
+Explain a saved record or inspect all schemes:
+
+```bash
+python run.py single -d 200 -r 2 --all
+python run.py explain d200_r02 --scheme proposed
+python run.py explain d200_r02 --forged voting_reputation
+```
+
+Experiments can replace aggregate CSVs and generated figures. Keep a backup of an earlier result set if it must be preserved. The seed rule is `BASE_SEED + 100 * density + run_index`; parameters live in `config.py`.
+
+The checked-in quick comparison contains only two scenarios per population. It is preliminary evidence, not the completed 30-seed experiment.
+
+### Bash helper scripts
+
+On Linux, macOS, or a suitable Bash environment, these helpers expect `.venv/bin/python`:
+
+```bash
+bash run_demo.sh
+SKIP_GUI=1 bash run_experiment.sh
+```
+
+`run_experiment.sh` also runs validation and sensitivity sweeps, so it is heavier than the quick experiment above. Some comments and output paths in the helpers reflect older project settings; `config.py` and the Python commands in this README describe the current configuration. On Windows PowerShell, use `python run.py ...` directly.
+
+## 9. Optional AI explanations
+
+Simulation and saved metrics work without an AI key. To enable AI explanations, create `.env` beside `run.py`:
+
+```dotenv
+GROQ_API_KEY=replace_with_your_own_key
+# Optional: set a model supported by your Groq account
+# GROQ_MODEL=your_model_id
+```
+
+The project loads `GROQ_API_KEY` and `GROQ_MODEL` from this file. If `GROQ_MODEL` is omitted, it uses the default defined in `narrator.py`; availability depends on the provider and account.
+
+Restart the web server, choose a saved result and language, then click **Explain this result**. The key stays on the Python server. API errors and rate limits are shown in the UI; saved metrics remain accessible.
+
+Terminal explanations:
+
+```bash
+python run.py demo --narrate --language ta
+python run.py assistant d200_r02 --language en
+python run.py assistant d200_r02 --language en --offline
+```
+
+The web interface offers more languages than the terminal's `ta` / `en` options. Offline terminal explanations do not require a key. Generated explanations may contain errors; recorded metrics remain authoritative.
+
+## 10. Optional cloud export and test dispatch
+
+Without external endpoint configuration, events remain local. These commands do not need a cloud account to export or retain local data:
+
+```bash
+python run.py sync
+python run.py dispatch
+```
+
+To enable external integrations, set these **environment variables in the terminal running the command**:
+
+| Variable | Purpose |
+| --- | --- |
+| `IOV_CLOUD_URL` | HTTPS JSON ingestion endpoint |
+| `IOV_CLOUD_TOKEN` | Optional cloud bearer token |
+| `IOV_EMERGENCY_URL` | Explicitly configured HTTPS test/service endpoint |
+| `IOV_EMERGENCY_TOKEN` | Optional dispatch bearer token |
+
+For example, PowerShell uses `$env:IOV_CLOUD_URL = 'https://your-test-service.example/ingest'`; Bash uses `export IOV_CLOUD_URL='https://your-test-service.example/ingest'`. Replace the example with an endpoint you control. The `.env` loader handles only the Groq variables, not these integration variables.
+
+Receiving services must honor the supplied `Idempotency-Key`. Failed transfers stay queued for retry. No real emergency-service endpoint is bundled.
+
+## 11. Static documentation deployment
+
+The `portal/` directory is a separate, dependency-free HTML/CSS/JavaScript site. To preview it without the Python app:
+
+```bash
+cd portal
+python -m http.server 3000
+```
+
+Open `http://127.0.0.1:3000/`. This serves documentation and the packaged result snapshot; it does not provide the Python results API or AI explanations.
+
+For a static host, publish the contents of `portal/`. For a Vercel import, use `portal` as the project root with a static/Other framework configuration. No frontend dependencies or compilation are required. Do not upload `.env` or the entire research directory as public static files. The SUMO GUI and the long-running Python HTTP server need a separate runtime; deploying the static folder does not deploy those features.
+
+After generating new experiments, refresh the packaged CSV, figures, and source downloads from the **project root**:
+
+```bash
+python build_portal_assets.py
+```
+
+Optional portal validation, from `portal/`, with Node.js installed:
+
+```bash
+node check.mjs
+```
+
+The validation currently expects the checked-in 44-row comparison snapshot. A new experiment matrix can change that row count; review the assertion when intentionally publishing a different matrix.
+
+## 12. Troubleshooting
+
+| Symptom | Resolution |
+| --- | --- |
+| `python` / `py` not found | Install Python and reopen the terminal; verify the selected interpreter. |
+| `ModuleNotFoundError` | Activate `.venv` and install requirements with that environment's `python -m pip`. |
+| No matching dependency distribution | Check the named package, Python version, OS, and architecture. Use a compatible interpreter with available distributions. Preserve the original pins; record any intentional compatibility changes. |
+| Installation cannot reach the package index | Check internet/proxy settings and retry; an incomplete install is not a working environment. |
+| SUMO binary missing | Reinstall `eclipse-sumo` in the active environment, then rerun the binary version check. |
+| SUMO-GUI cannot open | Use a graphical desktop and resolve any reported native-library error; use CLI experiments on headless machines. |
+| Missing network or result file | Run from the project root and copy the full `network/` directory. Generate missing results with `single` or `experiment`. |
+| Web page cannot connect | Keep `python run.py web` running, check its terminal, and use its configured port. |
+| Documentation content returns 404 | Restart the Python server after updating its source, then refresh the browser. |
+| Empty result list | Run `python run.py single -d 200 -r 2`, wait for completion, and refresh results. |
+| AI explanation unavailable | Check your own key, configured model, network access, and provider quota; honor the retry countdown. |
+| Static portal shows older results | Regenerate its assets with `python build_portal_assets.py`. |
+
+## 13. Project map
+
+```text
+run.py                       Command-line entry point
+config.py                    Experiment parameters and defaults
+scenario.py / network/       SUMO mobility and road network
+clustering.py                Clustering and representative selection
+corroboration.py              Voting and BLS certificates
+protocols.py / channel.py    Forwarding schemes and radio model
+rsu.py / infrastructure.py   RSU acceptance, persistence, and outbox
+experiment.py / metrics.py   Evaluation pipeline
+figures.py / report.py       Charts, reports, and dashboard
+web_results.py              Local HTTP server and results API
+results_viewer.html          Results UI and documentation buttons
+portal/                     Static project documentation
+validation/                 Automated validation suite
+results/urban/              Saved research outputs
+PROJECT_GUIDE.md             Additional project notes
+```
+
+The Word-document generator scripts are optional authoring utilities and require `python-docx`, which is not part of the simulator requirements. Install it separately only if regenerating those documents.
