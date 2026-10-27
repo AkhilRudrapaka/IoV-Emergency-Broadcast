@@ -1,0 +1,1 @@
+{"name":"relay-research-portal","version":"1.0.0","private":true,"description":"Dependency-free vehicular emergency alert documentation portal","scripts":{"dev":"python -m http.server 3000","build":"node check.mjs","check":"node check.mjs"}}

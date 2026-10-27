@@ -1,150 +1,101 @@
-import os
+"""
+Every experimental parameter lives here, with its source. Nothing numeric that
+changes an outcome is defined anywhere else. Full justification table:
+PROJECT_GUIDE.md section 13.
+"""
 
-# Central Configuration for IoV Broadcast Storm Mitigation Research Project
-#
-# PROOF-OF-WORK: parameters below are grounded against the actual "Simulation
-# Parameters" / "Simulation Setup" tables of the four papers in base papers/
-# (verified by direct PDF text extraction, not recalled from memory) rather
-# than an external trace dataset (no NGSIM/TAPAS Cologne/VeReMi files exist on
-# this machine -- see docs/ALGORITHMS.md's Proof-of-Work Mapping for the full
-# per-parameter citation). Where a value diverges from a paper's own number,
-# that is stated explicitly, not silently rounded to match.
+TITLE = "Trust-Aware Cluster-Based Broadcast Suppression for Real-Time Vehicular Emergency Alerts"
 
-# Vehicle Densities for Evaluation.
-# [50, 100, 150, 200] match [Kaur et al., 2024, Table 2] "Number of nodes/
-# Vehicle Density: 50, 100, 150, 200, 250" exactly; 250 is included below to
-# complete that exact match, and 300/500 extend beyond Kaur et al.'s own
-# tested range to probe higher-density behavior.
-VEHICLE_DENSITIES = [50, 100, 150, 200, 250, 300, 500]
+# ---------------------------------------------------------------- scenario
+NET_FILE = "network/urban.net.xml"   # curved streets, landscaped blocks and a central boulevard
+DENSITIES = [50, 100, 200, 250, 300, 500]  # includes all requested populations
+RUNS_PER_DENSITY = 30                 # independent seeds per density; 30 keeps every 95 % CI narrow vs. the effects (RESULTS.md)
+BASE_SEED = 10_000                    # seed(d, r) = BASE_SEED + 100*d + r  -> unique, reproducible
+DEPART_WINDOW_S = 30                  # all vehicles inserted uniformly at random within the first 30 s
+ROUTE_EDGES = 30                      # ~5.4 km random walk: no vehicle finishes its trip before the incident window ends
+INCIDENT_WINDOW_S = (60, 120)         # incident time ~ U{60..120}: >=30 s after last insertion (traffic mixed, >=30 trust observations)
 
-# SUMO Simulation Settings
-SUMO_NET_FILE = "network/road.net.xml"
-SUMO_ROUTING_DIR = "network"
-SIMULATION_STEPS = 200
+# ---------------------------------------------------------- infrastructure
+# Two road-side units at intersections B3 and D1. Intersections are the preferred
+# RSU sites (Trullols et al. 2010): line of sight along four road arms and the densest traffic.
+# Two units on opposite quadrants cover much of the road network in one radio hop; the far corners
+# are deliberately NOT covered, so those alerts must be relayed vehicle-to-vehicle to reach an RSU.
+RSU_POSITIONS = {"RSU-1": (200.0, 600.0), "RSU-2": (600.0, 200.0)}
+HOP_LIMIT = 10             # ETSI EN 302 636-4-1 itsGnDefaultHopLimit: a copy is not relayed beyond 10 hops
+# The fixed scenario for ./run_demo.sh, the explainer and the dashboard showcase. Chosen once, by rule:
+# among the 200-vehicle incidents outside direct RSU range (so the alert must be relayed to reach an
+# RSU), the run whose proposed-scheme transmission count is closest to the median (ties: lowest run).
+DEMO_DENSITY, DEMO_RUN = 200, 2
 
-# Communication Parameters
-COMM_RANGE = 150.0  # Communication range in meters (neighbor discovery / flooding baseline only -- see GPSR_RANGE_M below for the routing-specific 300m value)
+# ------------------------------------------------------------ misbehaviour
+MALICIOUS_RATIO = 0.10     # fraction of vehicles that receive but never relay (selfish/black-hole); experimental assumption
+WATCHDOG_MISS_PROB = 0.10  # P(watchdog misses an honest relay, e.g. due to a collision) -> false accusation (Marti et al. 2000); assumption
+TRUST_CH_THRESHOLD = 0.7   # Beta-reputation trust needed to be prioritised as a relay (project Algorithm 1 threshold)
 
-# Clustering Parameters (DBSCAN)
-# eps=80.0m: [Chen & Wu, 2024, Table 2] test eps in {20,40}m on a dense
-# highway (3 lanes, 3000m) and prefer 20m THERE. That does not transfer to
-# this project's sparser urban intersection grid -- measured directly
-# (eps_sensitivity.py, docs/ALGORITHMS.md Sec 2.5): eps=20/40m produce
-# 70-100% noise (no clustering) on this network. eps=80.0 is this project's
-# own value for its own topology, not Chen & Wu's number reused unverified.
-DBSCAN_EPS = 80.0
-DBSCAN_MIN_SAMPLES = 2
+# ------------------------------------------------------ radio (IEEE 802.11p / ITS-G5, 10 MHz @ 5.9 GHz)
+COMM_RANGE_M = 300.0       # decode = carrier-sense = interference range (unit disk, a simplification); 300 m used by both base papers (Chen 2024, Kaur 2024)
+SLOT_US = 13               # 802.11p (10 MHz) slot time
+SIFS_US = 32               # 802.11p SIFS
+AIFSN = 2                  # AC_VO (emergency) - IEEE 802.11 Table 9-138, dot11OCBActivated
+CW_MIN = 3                 # AC_VO: (aCWmin+1)/4 - 1 = 3; broadcast frames are never ACKed so CW never grows
+DATA_RATE_MBPS = 6         # default ITS-G5 control-channel rate (QPSK 1/2): 48 data bits per 8 us OFDM symbol
+PAYLOAD_BYTES = 300        # emergency alert payload (DENM / SAE J2735 scale)
+MAC_OVERHEAD_BYTES = 38    # QoS MAC header 26 + LLC/SNAP 8 + FCS 4
+CBR_WINDOW_MS = 100        # ETSI TS 102 687: CBR is the busy fraction over T_CBR = 100 ms
 
-# Velocity-Aware Clustering (Priority 1 — ablation switch)
-CLUSTERING_MODE = "velocity_aware"     # "baseline" | "velocity_aware"
-VELOCITY_PREDICTION_HORIZON = 2.0      # seconds, forward-projection horizon
-VELOCITY_WEIGHT_POSITION = 0.6
-VELOCITY_WEIGHT_MOBILITY = 0.4
-MAX_HEADING_DIFF_DEG = 120.0           # directional gate threshold
-MIN_SPEED_FOR_HEADING_GATE = 1.0       # m/s; below this, heading is unreliable
+# ------------------------------------------------ forwarding (slotted 1-persistence, Wisitpongphan et al. 2007)
+N_SLOTS = 5                # paper's rush-hour recommendation
+TAU_MS = 5.0               # one slot = WAIT_TIME = 5 ms (paper: >= 95th-percentile MAC delay)
 
-# Dynamic Re-clustering (Priority 1)
-ENABLE_DYNAMIC_RECLUSTERING = True
-RECLUSTER_MIN_INTERVAL_STEPS = 5
-RECLUSTER_TRUST_DELTA_THRESHOLD = 0.15
-RECLUSTER_MOBILITY_STD_THRESHOLD = 3.0        # speed stddev (m/s) trigger
-RECLUSTER_STABILITY_SCORE_THRESHOLD = 0.7
-RECLUSTER_MEMBERSHIP_CHANGE_THRESHOLD = 0.2   # fraction of fleet churned forces recluster
+RAD_MS = 5.0               # random assessment delay ~ U[0, RAD_MS): one slot wide, so it never reorders distance slots
 
-# Trust Evaluation & Classification Parameters
-TRUST_INITIAL = 0.5
-TRUST_MIN = 0.0
-TRUST_MAX = 1.0
-TRUST_BLACKLIST_THRESHOLD = 0.3
+# ------------------------------------------------ corroboration: voting + BLS12-381 signatures
+# An alert is accepted only with a BLS aggregate signature from a quorum of reputable endorsers.
+COMMITTEE_SIZE = 5         # the 5 nearest reputable neighbours of the incident may vote (smallest committee tolerating 2 faults)
+QUORUM = 3                 # majority of the committee: 3 of 5 endorsements needed
+SIGNATURE_BYTES = 96       # BLS12-381 signature (G2, compressed); an aggregate has the same size
+VOTE_BYTES = 132           # a vote frame: 32 B event digest + 4 B signer ID + 96 B signature
+SIGNER_ID_BYTES = 4        # per endorser listed in the certificate
+BLS_SIGN_MS = 1.4          # processing time charged per signature  (measured native BLS12-381: Zhang et al. 2021, arXiv:2106.04030)
+BLS_VERIFY_MS = 4.3        # processing time charged per verification (same source); experimental assumption for an on-board unit
+VOTE_SLOT_MS = 0.5         # committee members answer in rank order, one vote frame (0.3 ms on air) per slot, so votes never collide
 
-# Vehicle Classification Thresholds
-TRUST_THRESHOLD_TRUSTED = 0.7
-TRUST_THRESHOLD_UNKNOWN_MIN = 0.3
+# ------------------------------------------------ clustering (Chen & Wu 2024, Table 2)
+DBSCAN_EPS_M = 40.0        # paper uses eps in (20, 40) m
+DBSCAN_MIN_PTS = 3         # paper's MinPts
 
-# Bayesian Trust Model (Algorithm 1): Trust(v) = w_fwd*Tf + w_c*Tc + w_s*Ts + w_h*Th
-# Tf=Forwarding Behaviour, Tc=Message Consistency, Ts=Speed Plausibility, Th=Historical Trust.
-# Tc and Ts have no external formula available this session (source report not on disk) --
-# see trust.py for their standard-VANET-literature definitions and the explicit caveat
-# that they are this session's interpretation of the factor names, not verified against
-# the original report text.
-TRUST_WEIGHT_FWD = 0.30
-TRUST_WEIGHT_CONSISTENCY = 0.25
-TRUST_WEIGHT_SPEED = 0.20
-TRUST_WEIGHT_HIST = 0.25
-TRUST_EMA_ALPHA = 0.85          # New_Th = 0.85*Old_Th + 0.15*current
-TRUST_EMA_CURRENT_WEIGHT = 0.15
-
-# RSU trust boost: Final Trust = 0.80*vehicle_assessment + 0.20*rsu_assessment.
-# rsu_assessment is a persistent per-vehicle value nudged by RSU verification outcomes
-# (rsu.py), blended in on every calculate_trust() call -- not a one-off mutation that
-# gets silently overwritten by the next step's recomputation.
-RSU_TRUST_BLEND_VEHICLE_WEIGHT = 0.80
-RSU_TRUST_BLEND_RSU_WEIGHT = 0.20
-RSU_TRUST_NUDGE = 0.05          # per-event move applied to the persistent rsu_assessment
-
-# Speed Plausibility (Ts): kinematic-feasibility check. Bound matches the existing SUMO
-# vType's decel="4.5" (network/routes*.xml) -- not an invented constant.
-MAX_SPEED_DELTA_PER_STEP_MPS = 4.5
-MAX_SPEED_MPS = 22.0            # matches vType maxSpeed
-
-# Message Consistency (Tc): claimed-vs-actual sender location at message creation time.
-MESSAGE_LOCATION_TOLERANCE_M = 50.0             # GPS-class tolerance before penalizing
-FAKE_ALERT_LOCATION_OFFSET_RANGE_M = (200.0, 500.0)  # simulated FAKE_ALERT forgery magnitude
-
-# BLS Batch Authentication (Priority 2 — ablation switch)
-AUTHENTICATION_MODE = "bls_batch"     # "bls_batch" | "bls_individual" | "baseline" | "none"
-BLS_TRUST_THRESHOLD = 0.7             # T >= 0.7: aggregate/batch verify
-BLS_MID_TRUST_THRESHOLD = 0.3         # 0.3 <= T < 0.7: individual verify; T < 0.3: reject immediately, no verify attempt
-BLS_BENCHMARK_BATCH_SIZES = [1, 2, 5, 10, 20]
-MAX_CHAIN_SIGNERS = 14                # CH pre-screening cap: ~7ms/signature under a 100ms deadline
-
-# GPSR Geographic Forwarding (Algorithm 3)
-GPSR_RANGE_M = 300.0            # wireless range enforced on every hop (greedy + perimeter)
-GPSR_OWN_CH_RANGE_M = 80.0      # fallback tier 1: own CH must be within this range
-GPSR_TTL_HOPS = 5
-
-# Multi-event evaluation (Evaluation Harness)
-EMERGENCY_EVENTS_PER_RUN = 5    # emergency alerts injected per comparison-harness run, so PDR is meaningful
-
-# Malicious Vehicle Settings
-# 0.15 (15%) sits inside the 0-25% range [Azizi & Shokrollahi, 2024 (RTRV),
-# Table 2] itself evaluates against ("Number of malicious Vehicle: 0, 33, 66,
-# 99, 132, 165" out of ~660 total, i.e. 0%-25%).
-MALICIOUS_RATIO = 0.15  # 15% malicious vehicles by default
-ATTACK_TYPES = ["FAKE_ALERT", "PACKET_DROP", "FORGED_RECOMMENDATION"]
-
-# Analytic End-to-End Delay Model (Evaluation Harness)
-# IEEE 802.11p-typical 10 MHz / QPSK-1/2 channel and SAE-J2735-scale payload size.
-# Applied identically to PROPOSED and FLOODING arms -- the delay difference between
-# them is a consequence of real per-run quantities (hop count, measured BLS verify
-# time, real signature bytes), not a per-algorithm tuned constant. Does not model
-# MAC-layer contention/collision, so it is a conservative (likely-understated)
-# estimate of flooding's real disadvantage under broadcast-storm conditions.
-V2V_DATA_RATE_BPS = 6_000_000   # 802.11p 6 Mbps PHY rate
-BASE_MESSAGE_SIZE_BYTES = 300   # SAE J2735-scale emergency alert payload
-PER_HOP_PROCESSING_MS = 1.0     # routing/queuing decision overhead per hop, symmetric both arms
-
-# Roadside RSU Locations (Positioned on the green roadside grass area beside roads)
-RSU_LOCATIONS = {
-    "RSU_NORTH": (445.0, 750.0),
-    "RSU_SOUTH": (445.0, 50.0),
-    "RSU_EAST": (750.0, 445.0),
-    "RSU_WEST": (50.0, 445.0),
-    "RSU_CENTER": (445.0, 445.0)
+# ------------------------------------------------ outputs
+RESULTS_DIR = "results/urban"
+BASELINES = ["flooding", "slotted1p", "proposed"]   # the headline comparison
+ABLATIONS = ["no_rad", "no_slots", "no_coverage", "no_clustering", "no_cluster_forwarding", "no_reputation", "no_security"]
+PROTOCOLS = BASELINES + ABLATIONS + ["ch_route"]
+LABELS = {
+    "ch_route": "CH shortest-path delivery",
+    "flooding": "Blind flooding",
+    "slotted1p": "Slotted 1-persistence",
+    "proposed": "Proposed (full)",
+    "no_rad": "without random delay",
+    "no_slots": "without distance slots",
+    "no_coverage": "without coverage test",
+    "no_clustering": "without clustering",
+    "no_cluster_forwarding": "without cluster-based forwarding",
+    "no_reputation": "without reputation",
+    "no_security": "without voting + BLS",
 }
+# Forged-alert test: the same proposed scheme with three levels of protection.
+FORGERY = {"voting_reputation": "Voting + BLS + reputation (full)", "voting_only": "Voting + BLS, no reputation gate",
+           "no_voting": "No voting"}
 
-# SUMO Visualization Colors (RGBA)
-COLOR_TRUSTED = (255, 255, 255, 255)       # White: Trusted Vehicles
-COLOR_UNKNOWN = (255, 255, 0, 255)        # Yellow: Unknown / Unverified Vehicles
-COLOR_MALICIOUS = (0, 0, 0, 255)         # Black: Malicious Vehicles
-COLOR_CLUSTER_HEAD = (0, 0, 255, 255)    # Blue: Cluster Head
-COLOR_FORWARDING = (255, 165, 0, 255)    # Orange: Active Forwarding CH
-COLOR_ACCIDENT = (255, 0, 0, 255)        # Red: Collision Site Vehicles
-COLOR_RSU = (0, 255, 0, 255)             # Green: Roadside RSU Tower Polygon
+# Sensitivity runs override a parameter through the environment, e.g.
+#   EXP_COMM_RANGE_M=150 EXP_RESULTS_DIR=results/sensitivity/range_150 python run.py experiment
+# The override is recorded in that run's experiment_config.json.
+import os as _os
+for _k, _v in _os.environ.items():
+    if _k.startswith("EXP_") and _k[4:] in globals():
+        globals()[_k[4:]] = type(globals()[_k[4:]])(_v)
 
-# Output Paths
-OUTPUT_DIR = "outputs"
-GRAPHS_DIR = os.path.join(OUTPUT_DIR, "graphs")
-LOGS_DIR = os.path.join(OUTPUT_DIR, "logs")
-METRICS_CSV = os.path.join(LOGS_DIR, "simulation_metrics.csv")
-COMPARISON_CSV = os.path.join(LOGS_DIR, "comparison_results.csv")
+# Place the RSUs on actual intersections in whichever network is selected.
+import xml.etree.ElementTree as _ET
+_junctions = {j.get("id"): j for j in _ET.parse(NET_FILE).getroot().findall("junction")}
+RSU_POSITIONS = {name: (float(_junctions[j].get("x")), float(_junctions[j].get("y")))
+                 for name, j in (("RSU-1", "B3"), ("RSU-2", "D1"))}
