@@ -1,0 +1,118 @@
+{
+  "generated": "2026-10-07T23:09:15",
+  "python": "3.11.4",
+  "sumo": "Eclipse SUMO sumo 1.27.1",
+  "overrides": {},
+  "parameters": {
+    "ABLATIONS": [
+      "no_rad",
+      "no_slots",
+      "no_coverage",
+      "no_clustering",
+      "no_cluster_forwarding",
+      "no_reputation",
+      "no_security"
+    ],
+    "AIFSN": 2,
+    "BASELINES": [
+      "flooding",
+      "slotted1p",
+      "proposed"
+    ],
+    "BASE_SEED": 10000,
+    "BLS_SIGN_MS": 1.4,
+    "BLS_VERIFY_MS": 4.3,
+    "CBR_WINDOW_MS": 100,
+    "COMMITTEE_SIZE": 5,
+    "COMM_RANGE_M": 300.0,
+    "CW_MIN": 3,
+    "DATA_RATE_MBPS": 6,
+    "DBSCAN_EPS_M": 40.0,
+    "DBSCAN_MIN_PTS": 3,
+    "DEMO_DENSITY": 200,
+    "DEMO_RUN": 2,
+    "DENSITIES": [
+      50,
+      100,
+      200,
+      250,
+      300,
+      500
+    ],
+    "DEPART_WINDOW_S": 30,
+    "FORGERY": {
+      "voting_reputation": "Voting + BLS + reputation (full)",
+      "voting_only": "Voting + BLS, no reputation gate",
+      "no_voting": "No voting"
+    },
+    "HOP_LIMIT": 10,
+    "INCIDENT_WINDOW_S": [
+      60,
+      120
+    ],
+    "LABELS": {
+      "ch_route": "CH shortest-path delivery",
+      "flooding": "Blind flooding",
+      "slotted1p": "Slotted 1-persistence",
+      "proposed": "Proposed (full)",
+      "no_rad": "without random delay",
+      "no_slots": "without distance slots",
+      "no_coverage": "without coverage test",
+      "no_clustering": "without clustering",
+      "no_cluster_forwarding": "without cluster-based forwarding",
+      "no_reputation": "without reputation",
+      "no_security": "without voting + BLS"
+    },
+    "MAC_OVERHEAD_BYTES": 38,
+    "MALICIOUS_RATIO": 0.1,
+    "NET_FILE": "network/urban.net.xml",
+    "N_SLOTS": 5,
+    "PAYLOAD_BYTES": 300,
+    "PROTOCOLS": [
+      "flooding",
+      "slotted1p",
+      "proposed",
+      "no_rad",
+      "no_slots",
+      "no_coverage",
+      "no_clustering",
+      "no_cluster_forwarding",
+      "no_reputation",
+      "no_security",
+      "ch_route"
+    ],
+    "QUORUM": 3,
+    "RAD_MS": 5.0,
+    "RESULTS_DIR": "results/urban",
+    "ROUTE_EDGES": 30,
+    "RSU_POSITIONS": {
+      "RSU-1": [
+        152.25,
+        604.92
+      ],
+      "RSU-2": [
+        630.2,
+        168.62
+      ]
+    },
+    "RUNS_PER_DENSITY": 30,
+    "SIFS_US": 32,
+    "SIGNATURE_BYTES": 96,
+    "SIGNER_ID_BYTES": 4,
+    "SLOT_US": 13,
+    "TAU_MS": 5.0,
+    "TITLE": "Trust-Aware Cluster-Based Broadcast Suppression for Real-Time Vehicular Emergency Alerts",
+    "TRUST_CH_THRESHOLD": 0.7,
+    "VOTE_BYTES": 132,
+    "VOTE_SLOT_MS": 0.5,
+    "WATCHDOG_MISS_PROB": 0.1,
+    "_ET": "<module 'xml.etree.ElementTree' from 'C:\\\\Users\\\\Administrator\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python311\\\\Lib\\\\xml\\\\etree\\\\ElementTree.py'>"
+  },
+  "densities": [
+    50,
+    100,
+    200,
+    250
+  ],
+  "runs": 2
+}
