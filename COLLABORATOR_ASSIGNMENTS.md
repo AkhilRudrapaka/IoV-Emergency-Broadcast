@@ -59,12 +59,10 @@ This document outlines the technical work distribution among the project collabo
 
 **Primary Areas**
 - Project documentation (`README.md`, `PROJECT_GUIDE.md`)
-- AI explanation integration (`narrator.py`, `.env` handling)
 - Technical writing for research reports.
 
 **Starter Tasks**
 - Update README with a quick‑start Docker section.
-- Write a tutorial on enabling Groq AI explanations.
 - Draft the “Limitations & Future Work” chapter.
 
 ---

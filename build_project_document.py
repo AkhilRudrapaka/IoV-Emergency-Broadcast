@@ -70,7 +70,7 @@ p('Prepared from the local implementation on 16 October 2026. Written in English
 p('This document describes the code as implemented. Numerical examples are teaching examples unless explicitly labelled as recorded simulation evidence. Literature comments in source files are not independently verified citations.')
 doc.add_page_break()
 h('Contents')
-sections = ['Project purpose and complete flow', 'Technology stack and file responsibilities', 'SUMO road network and vehicle generation', 'Dataset and incident generation', 'Radio geometry and channel simulation', 'Watchdog observations and Beta trust', 'DBSCAN clustering', 'Cluster representatives and bridge roles', 'Voting and event corroboration', 'BLS signatures and certificate validation', 'Forwarding protocols and suppression', 'Cluster-head shortest-path routing', 'RSU validation and duplicate handling', 'Storage, trust updates, cloud and dispatch', 'SUMO demonstration and visual meanings', 'Metrics and statistical formulas', 'Experiments, ablations and forged alerts', 'Web application and AI explanations', 'Commands and practical usage', 'Recorded example, limitations and viva answers', 'Configuration reference and source index']
+sections = ['Project purpose and complete flow', 'Technology stack and file responsibilities', 'SUMO road network and vehicle generation', 'Dataset and incident generation', 'Radio geometry and channel simulation', 'Watchdog observations and Beta trust', 'DBSCAN clustering', 'Cluster representatives and bridge roles', 'Voting and event corroboration', 'BLS signatures and certificate validation', 'Forwarding protocols and suppression', 'Cluster-head shortest-path routing', 'RSU validation and duplicate handling', 'Storage, trust updates, cloud and dispatch', 'SUMO demonstration and visual meanings', 'Metrics and statistical formulas', 'Experiments, ablations and forged alerts', 'Web application', 'Commands and practical usage', 'Recorded example, limitations and viva answers', 'Configuration reference and source index']
 for i, title in enumerate(sections, 1): p(f'{i}. {title}')
 doc.add_page_break()
 
@@ -93,7 +93,6 @@ table(['Tool/library', 'Purpose and how it is used'], [
 ('Matplotlib', 'Static figures, comparisons, maps, timelines and animation assets.'),
 ('SQLite / JSON / gzip / CSV', 'Durable local backhaul, detailed compressed traces, configuration and summary datasets.'),
 ('urllib / HTTP server', 'Optional HTTPS APIs and local browser interface without an additional web framework.'),
-('Groq API', 'Optional language-model explanations of recorded evidence; does not decide protocol outcomes.'),
 ('pytest', 'Validation suite covering channel, security, protocols, RSU, pipeline and user-facing explanations.')])
 table(['Source file', 'Responsibility'], [
 ('config.py', 'Central parameters, protocol names, experimental variants and selected network.'),
@@ -108,7 +107,7 @@ table(['Source file', 'Responsibility'], [
 ('metrics.py', 'Definitions, measurements, consistency checks and confidence intervals.'),
 ('demo.py / presentation.py', 'TraCI replay, cluster display, overlays and infrastructure status.'),
 ('figures.py / report.py', 'Plots, explanations, reports and static dashboard.'),
-('narrator.py / web_results.py', 'Optional AI narration and multilingual saved-result application.'),
+('web_results.py', 'Local saved-result application.'),
 ('run.py', 'Command-line entry point for all supported operations.'),
 ('network/build_urban.py', 'Builds the urban roads and decorative scenery.'),
 ('validation/', 'Executable validation tests; read these alongside the relevant implementation.')])
@@ -225,11 +224,8 @@ p('Forgery tests compare full voting+BLS+reputation, voting+BLS without reputati
 p('The sensitivity command sweeps radio range across 150, 300 and 450 m, and malicious ratio across 0, 0.1, 0.2 and 0.3. EXP_ environment variables can override recognised configuration names; use scalar settings carefully because the generic type conversion is not a general parser for structured lists or dictionaries.')
 p('Existing RESULTS.md identifies an older two-run-per-density result set. It must not be presented as the full current 30-seed experiment, and current code may have evolved since those files were generated. Re-run the intended configuration and inspect recorded experiment metadata before making final comparative claims.')
 
-h('18. Web application and AI explanations')
+h('18. Web application')
 p('The local web interface runs at http://127.0.0.1:8765 and reads saved experiment records. It lists simulation history, schemes and genuine/forged outcomes, with expandable recorded reports. It checks for new saved results about every five seconds. It is not a live radio-step telemetry feed.')
-p('Users select a saved event and language, then request an explanation. Supported web languages include Tamil, Hindi, Telugu, Kannada, Malayalam, Bengali, Marathi, Gujarati, Punjabi and Odia. Terminal narration supports Tamil and English. Explanations are cached by evidence, scheme/event, language and model so matching requests can reuse text.')
-p('narrator.py sends recorded evidence to a configured Groq model through an HTTPS API. The default model string in the code is qwen/qwen3.8-27b, overridable through GROQ_MODEL; actual service availability is not verified by this document. GROQ_API_KEY can be loaded server-side from the environment or local .env. Credentials are not included in the document.')
-p('AI text explains evidence; it does not select clusters, produce metrics, verify signatures, prove an event or dispatch a response. The terminal provides explicit basic offline fallback for missing keys or failures. The web interface reports explanation errors rather than presenting untranslated English as a successful translation. Recorded values remain authoritative.')
 
 h('19. Commands and practical usage')
 table(['Command', 'Purpose'], [('python -m pip install -r requirements.txt', 'Install pinned project dependencies into the intended Python environment.'), ('python run.py', 'Open the default SUMO demonstration.'), ('python run.py demo', 'Run the GUI demonstration, normally for population 200, run 2.'), ('python run.py demo --scheme proposed ch_route', 'Choose the comparison sequence.'), ('python run.py single --all', 'Generate one scenario and print all scheme and forgery comparisons.'), ('python run.py single -d 100 -r 1 --debug', 'Choose population/run and include chronological detail.'), ('python run.py explain d200_r02 --scheme proposed', 'Explain saved forwarding decisions and generate supporting figures.'), ('python run.py experiment --densities 50 100 200 250 --runs 3', 'Small smoke experiment; insufficient alone for strong statistical conclusions.'), ('python run.py experiment', 'Run the configured complete multi-seed experiment.'), ('python run.py dashboard', 'Rebuild the static dashboard from existing outputs.'), ('python run.py sensitivity --density 200', 'Run configured range and malicious-population sweeps.'), ('python run.py web', 'Start the saved-results application on localhost.'), ('python run.py demo --narrate --language ta', 'Prepare Tamil narration before GUI playback.'), ('python run.py assistant d200_r02 --language en --offline', 'Read basic saved-run explanations without API calls.'), ('python run.py sync', 'Export local infrastructure data; upload only with configured endpoint.'), ('python run.py dispatch', 'Send queued events only to a configured HTTPS service endpoint.'), ('python -m pytest', 'Run validation tests; no full experiment is needed just to inspect this document.')])
@@ -268,7 +264,7 @@ for node in tree.body:
             for target_item, part in zip(target.elts, value):
                 if isinstance(target_item, ast.Name): params.append((target_item.id, str(part)))
 table(['Configuration name', 'Literal default in source'], params)
-p('Primary evidence for this explanation is the local source tree: PROJECT_GUIDE.md; config.py; scenario.py; clustering.py; corroboration.py; channel.py; protocols.py; infrastructure.py; rsu.py; experiment.py; metrics.py; demo.py; presentation.py; run.py; narrator.py; web_results.py; report.py; figures.py; network/build_urban.py; requirements.txt; and validation/*.py. Existing saved examples and screenshots are identified separately above.')
+p('Primary evidence for this explanation is the local source tree: PROJECT_GUIDE.md; config.py; scenario.py; clustering.py; corroboration.py; channel.py; protocols.py; infrastructure.py; rsu.py; experiment.py; metrics.py; demo.py; presentation.py; run.py; web_results.py; report.py; figures.py; network/build_urban.py; requirements.txt; and validation/*.py. Existing saved examples and screenshots are identified separately above.')
 p('Algorithm names appearing in source comments include DBSCAN, Beta reputation, watchdog monitoring, greedy set cover, Dijkstra routing, slotted 1-persistence and BLS aggregate signatures. This document provides implementation explanations rather than a verified literature survey. Project novelty or paper-specific improvements need a separate comparison against the original research papers.')
 
 # Apply explicit font attributes to every actual text run, including tables/header/footer.

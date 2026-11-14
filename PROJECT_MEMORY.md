@@ -1,3 +1,5 @@
+> **LEGACY DOCUMENT.** It describes the architecture of commit `df48e8c` (trust.py, GPSR routing, 5 RSUs, 94 tests, `main.py`), which was deleted in commit `0c39b11`. None of its modules, parameters or numbers match the current code. Current design: [docs/SYSTEM_DESIGN.md](docs/SYSTEM_DESIGN.md); audit: [docs/AUDIT.md](docs/AUDIT.md).
+
 # Project Memory & Pipeline — IoV Broadcast Storm Mitigation
 
 **What this file is:** the single self-contained briefing for this project — for a panel member, a new
