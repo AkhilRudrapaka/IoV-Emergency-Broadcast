@@ -36,8 +36,9 @@ shutil.copy2(ROOT / 'results/urban/summaries/RESULTS.md', downloads / 'RESULTS.m
 revision = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=ROOT, capture_output=True, text=True).stdout.strip() or 'Unavailable'
 snapshot = 'Source revision: ' + revision + '\nSnapshot UTC: ' + datetime.now(timezone.utc).isoformat() + '\nSource bundle includes current working files, which may differ from the recorded revision.\n'
 (downloads / 'SNAPSHOT.txt').write_text(snapshot, encoding='utf-8')
-selected = list(ROOT.glob('*.py')) + [ROOT / n for n in ['requirements.txt', 'pytest.ini', 'README.md', 'PROJECT_GUIDE.md', 'run_demo.sh', 'run_experiment.sh']]
-selected += list((ROOT / 'network').glob('*.xml')) + list((ROOT / 'network').glob('*.py')) + list((ROOT / 'validation').glob('test_*.py'))
+selected = list(ROOT.glob('*.py')) + [ROOT / n for n in ['requirements.txt', 'pytest.ini', 'README.md', 'PROJECT_GUIDE.md', 'run_demo.sh', 'run_experiment.sh',
+                                                     'results_viewer.html']]   # served by `python run.py web`
+selected += list((ROOT / 'network').glob('*.xml')) + list((ROOT / 'network').glob('*.py')) + list((ROOT / 'validation').glob('*.py'))
 selected += list((ROOT / 'results/urban/processed').glob('*.csv')) + list((ROOT / 'results/urban/summaries').glob('*.md')) + list((ROOT / 'results/urban/summaries').glob('*.json'))
 with zipfile.ZipFile(downloads / 'source.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
     for path in selected:

@@ -1,26 +1,275 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SUMO · Results explained</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SUMO · Faculty demo: separated runs and a fair comparison</title>
 <style>
-:root{font-family:"Gill Sans MT","Gill Sans",Calibri,"Nirmala UI",sans-serif;color:#172333;background:#f3f5f7}*{box-sizing:border-box}body{margin:0}header{background:#102b3c;color:white;padding:32px 5vw;border-bottom:4px solid #23b5a6}header small{color:#78d8cf;letter-spacing:2px}h1{font-size:34px;font-weight:600;letter-spacing:-.5px;margin:9px 0}header p{color:#bfcede;margin-bottom:0}.controls{display:flex;gap:20px;align-items:end;padding:24px 5vw;background:white;border-bottom:1px solid #dbe3eb;flex-wrap:wrap}label{display:grid;gap:8px;font-weight:600;font-size:14px}select,button{font:inherit;padding:11px 14px;border:1px solid #cad5df;border-radius:8px;background:white}button{cursor:pointer}button:disabled{cursor:wait;opacity:.6}button:focus-visible,select:focus-visible{outline:3px solid #29a99d;outline-offset:2px}main{display:grid;grid-template-columns:320px 1fr;gap:24px;padding:26px 5vw}.panel{background:white;border:1px solid #dbe3eb;border-radius:14px;padding:30px;box-shadow:0 8px 30px #14253808;min-height:520px}.list{display:grid;gap:10px;align-content:start}.result{text-align:left;padding:18px;background:white;line-height:1.6;box-shadow:0 3px 12px #14253805;transition:background .15s,border-color .15s}.result:hover{background:#f5faf9;border-color:#168579}.result.active{border:2px solid #168579;background:#eefaf7}.result small{display:block;color:#65758a}.tag{font-size:12px;font-weight:600;color:#168579}.bad{color:#a64027}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}.stat{padding:16px;background:#f3f6fa;border-radius:8px}.stat strong{display:block;font-size:24px;margin-top:6px}.stat small{color:#65758a}#explain{background:#137f75;color:white;border:0}#explanation{white-space:pre-wrap;line-height:1.95;font-size:19px;max-width:850px;margin-top:24px;padding-top:22px;border-top:1px solid #e1e8ee}#status{color:#65758a;font-size:14px}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.55;background:#142538;color:#e0ebf4;padding:20px;border-radius:8px}details{margin-top:25px}summary{cursor:pointer;font-weight:600}.empty{color:#65758a}footer{padding:0 5vw 24px;color:#65758a;font-size:13px}@media(max-width:850px){main{grid-template-columns:1fr}.list{max-height:260px;overflow:auto}.stats{grid-template-columns:1fr}}
-.documentation-hub{padding:24px 5vw;background:#edf5f3;border-bottom:1px solid #cbded7}.documentation-hub h2{margin:0 0 6px;font-size:22px}.documentation-hub p{color:#526a66;margin:0 0 16px}.documentation-buttons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.documentation-buttons button{text-align:left;background:white;color:#173d35;border-color:#cbded7;font-size:13px;line-height:1.4;min-height:60px}.documentation-buttons button.active{background:#137f75;color:white;border-color:#137f75}.documentation-buttons button span{display:block;font-size:11px;opacity:.65;margin-bottom:3px}.documentation-panel{margin-top:18px;background:white;border:1px solid #cadbd5;border-radius:10px;overflow:hidden}.documentation-toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 16px;background:white;border-bottom:1px solid #dbe3eb}.documentation-toolbar a{color:#137f75}.documentation-panel iframe{display:block;width:100%;height:850px;border:0}.documentation-panel[hidden]{display:none}@media(max-width:1000px){.documentation-buttons{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:600px){.documentation-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}.documentation-panel iframe{height:950px}.documentation-toolbar{flex-wrap:wrap}}
+:root{font-family:"Gill Sans MT","Gill Sans",Calibri,"Nirmala UI",sans-serif;color:#172333;background:#f3f5f7}*{box-sizing:border-box}body{margin:0}header{background:#102b3c;color:white;padding:28px 5vw 18px;border-bottom:4px solid #23b5a6}header small{color:#78d8cf;letter-spacing:2px}h1{font-size:32px;font-weight:600;letter-spacing:-.5px;margin:8px 0}header p{color:#bfcede;margin:0 0 14px;max-width:980px;line-height:1.5}.toc{display:flex;flex-wrap:wrap;gap:8px}.toc a{color:#d9f3ef;text-decoration:none;font-size:13px;padding:6px 10px;border:1px solid #2f5568;border-radius:999px}.toc a:hover{background:#18405a}
+label{display:grid;gap:6px;font-weight:600;font-size:14px}select,button{font:inherit;padding:10px 13px;border:1px solid #cad5df;border-radius:8px;background:white}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.55}button:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #29a99d;outline-offset:2px}.primary{background:#137f75;color:white;border-color:#137f75}.danger{color:#a64027}
+.dash{display:grid;grid-template-columns:minmax(0,1fr);gap:22px;padding:24px 5vw}.card{min-width:0;background:white;border:1px solid #dbe3eb;border-radius:14px;padding:24px 28px;box-shadow:0 8px 30px #14253808}.card h2{margin:0 0 14px;font-size:22px;display:flex;align-items:center;gap:10px}.card h2 span{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#102b3c;color:white;font-size:15px}.card h3{font-size:16px;margin:22px 0 8px}.card p{line-height:1.55}.muted{color:#65758a}.note{background:#f3f6fa;border-left:4px solid #8aa0b6;padding:10px 14px;border-radius:6px;font-size:14px}.warn{background:#fff4e5;border-left:4px solid #e0a040;padding:10px 14px;border-radius:6px;font-size:14px}.err{background:#fdecea;border-left:4px solid #c0392b;padding:10px 14px;border-radius:6px;font-size:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}.row{display:flex;gap:16px;align-items:end;flex-wrap:wrap;margin-bottom:16px}.facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin:8px 0 14px}.fact{background:#f3f6fa;border-radius:8px;padding:10px 12px}.fact small{display:block;color:#65758a;font-size:12px;margin-bottom:3px}.fact strong{font-size:15px;overflow-wrap:anywhere}
+.run{border:1px solid #dbe3eb;border-radius:12px;padding:16px 18px;display:grid;gap:8px;align-content:start}.run h3{margin:0;font-size:17px}.run .algo{font-weight:600}.chip{display:inline-block;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:#e8edf2;color:#40536a}.chip.finished{background:#dff3ea;color:#11694b}.chip.running,.chip.starting{background:#fff1d6;color:#8a5a00}.chip.failed{background:#fbe3df;color:#9b2c1d}
+.tabs{display:flex;gap:8px;margin-bottom:12px}.tabs button[aria-selected=true]{background:#102b3c;color:white;border-color:#102b3c}.badge{display:inline-block;font-weight:700;font-size:13px;padding:5px 11px;border-radius:6px;margin-bottom:10px}.badge.live{background:#d93a2b;color:white}.badge.recorded{background:#e8edf2;color:#40536a}.badge.waiting{background:#fff1d6;color:#8a5a00}
+.stages{display:flex;flex-wrap:wrap;gap:6px;list-style:none;padding:0;margin:0 0 12px}.stages li{border:1px solid #9aa8b8;border-radius:6px;padding:6px 10px;font-size:13px;background:white}.stages li.done{background:#d9dee5}.stages li.now{background:#f6c445;border-color:#c99a1c;font-weight:700}.stages li.skipped{border-style:dashed;color:#8a97a8}
+figure{margin:0}#capture{display:block;max-width:100%;border:1px solid #cfd8e2;border-radius:8px;background:#eef2f6}figcaption{font-size:13px;color:#4d5f74;margin-top:6px}.filmstrip{display:flex;gap:6px;overflow-x:auto;padding:8px 0}.filmstrip button{padding:0;border:2px solid transparent;border-radius:6px;background:none;flex:0 0 auto}.filmstrip button.on{border-color:#137f75}.filmstrip img{display:block;width:120px;border-radius:4px}
+.metrics{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0 10px}.metrics th,.metrics td{padding:7px 9px;border-bottom:1px solid #e3e9ef;text-align:left;vertical-align:top}.metrics td.v{text-align:right;white-space:nowrap;font-weight:600}.metrics th.v{text-align:right}.metrics .def{color:#65758a;font-size:12.5px}.metrics tr.group td{background:#f3f6fa;font-weight:600}.scroll{overflow-x:auto}
+.charts{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin:10px 0}.chart{border:1px solid #e3e9ef;border-radius:10px;padding:10px 12px}.chart h4{margin:0 0 6px;font-size:14px}.chart svg{width:100%;height:auto;display:block}
+.evidence li{margin:6px 0;overflow-wrap:anywhere}code{background:#eef2f6;padding:1px 5px;border-radius:4px;font-size:13px;overflow-wrap:anywhere;word-break:break-all}.two>*,.run{min-width:0}
+.history{margin:0 5vw 24px;background:#eef1f4;border:1px dashed #b9c4cf;border-radius:14px;padding:6px 18px}.history>summary{cursor:pointer;font-weight:600;padding:12px 0;color:#40536a}
+.controls{display:flex;gap:20px;align-items:end;padding:16px 0;flex-wrap:wrap}.history-main{display:grid;grid-template-columns:300px 1fr;gap:20px;padding-bottom:18px}.panel{background:white;border:1px solid #dbe3eb;border-radius:12px;padding:22px}.list{display:grid;gap:10px;align-content:start}.result{text-align:left;padding:14px;background:white;line-height:1.5}.result.active{border:2px solid #168579;background:#eefaf7}.result small{display:block;color:#65758a}.tag{font-size:12px;font-weight:600;color:#168579}.bad{color:#a64027}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}.stat{padding:14px;background:#f3f6fa;border-radius:8px}.stat strong{display:block;font-size:22px;margin-top:6px}.stat small{color:#65758a}#status{color:#65758a;font-size:14px}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.55;background:#142538;color:#e0ebf4;padding:18px;border-radius:8px}.empty{color:#65758a}.live{margin:8px 0;padding:12px 16px;background:#fff8e1;border:1px solid #efd27a;border-radius:10px}.live small{display:block;color:#7a6a3a;margin-top:4px}.compare{width:100%;border-collapse:collapse;font-size:13px;margin:6px 0 18px}.compare th,.compare td{padding:6px 8px;border-bottom:1px solid #e3e9ef;text-align:right;white-space:nowrap}.compare th:first-child,.compare td:first-child{text-align:left}.compare tr.on td{background:#eefaf7;font-weight:600}
+.documentation-hub{padding:24px 5vw;background:#edf5f3;border-top:1px solid #cbded7;border-bottom:1px solid #cbded7}.documentation-hub h2{margin:0 0 6px;font-size:22px}.documentation-hub p{color:#526a66;margin:0 0 16px}.documentation-buttons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.documentation-buttons button{text-align:left;background:white;color:#173d35;border-color:#cbded7;font-size:13px;line-height:1.4;min-height:60px}.documentation-buttons button.active{background:#137f75;color:white;border-color:#137f75}.documentation-buttons button span{display:block;font-size:11px;opacity:.65;margin-bottom:3px}.documentation-panel{margin-top:18px;background:white;border:1px solid #cadbd5;border-radius:10px;overflow:hidden}.documentation-toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 16px;background:white;border-bottom:1px solid #dbe3eb}.documentation-toolbar a{color:#137f75}.documentation-panel iframe{display:block;width:100%;height:850px;border:0}.documentation-panel[hidden]{display:none}
+footer{padding:16px 5vw 28px;color:#65758a;font-size:13px}
+@media(max-width:900px){.two,.history-main{grid-template-columns:1fr}.documentation-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style></head><body>
-<header><a href="/" target="_top" style="color:#78d8cf;display:inline-block;margin-bottom:14px;text-decoration:none">← Project documentation · All 12 sections</a><br><small>SUMO · SIMULATION INSIGHTS</small><h1>Understand every simulation result</h1><p>Recorded evidence. Clear explanations. Your preferred language.</p></header>
-<section class="documentation-hub" aria-labelledby="documentation-heading"><h2 id="documentation-heading">Project Website / Documentation Portal</h2><p>Explore the project background, system design, algorithms, experiments, source code, and future work. Choose a section to read its content here.</p><nav class="documentation-buttons" id="documentation-buttons" aria-label="Project documentation sections"></nav><section class="documentation-panel" id="documentation-panel" hidden><div class="documentation-toolbar"><strong id="documentation-title"></strong><a id="documentation-open" href="/index.html" target="_blank" rel="noopener">Open full documentation ↗</a><button id="documentation-close" type="button">Back to simulation results ↓</button></div><iframe id="documentation-frame" title="Project documentation section"></iframe></section></section>
-<section class="controls" id="simulation-controls"><label>Run time (your system)<select id="run"></select></label><label>Explanation language<select id="language"></select></label><button id="refresh">Refresh results</button><label><span>Result list</span><select id="scope"><option value="main">Main demo results</option><option value="all">All research comparisons</option></select></label></section>
-<main><aside><h2 style="font-size:18px">Recorded results</h2><div id="results" class="list"></div></aside><section class="panel"><span id="type" class="tag">SELECT A RESULT</span><h2 id="title">Explore your simulation</h2><p id="event" class="empty">Saved runs will appear here after running SUMO.</p><div id="stats" class="stats"></div><button id="explain" disabled>Explain this result</button><p id="status" role="status" aria-live="polite"></p><div id="explanation" aria-live="polite"></div><details><summary>Full recorded SUMO result</summary><pre id="raw">No result selected.</pre></details></section></main>
-<footer>AI explanations use the selected recorded event. Recorded metrics remain authoritative. Genuine accidents and forged-alert tests are shown separately.</footer>
+<header><a href="/index.html" target="_top" style="color:#78d8cf;display:inline-block;margin-bottom:12px;text-decoration:none">← Project documentation · All 12 sections</a><br><small>SUMO · FACULTY DEMO</small><h1>Trust-aware emergency alerts, one approach at a time</h1>
+<p>Choose an incident scenario, run the baseline only, then the proposed method only — each in its own SUMO-GUI window, never both on one map — and compare the two on the identical run record.</p>
+<nav class="toc" aria-label="Dashboard sections"><a href="#overview">1 Overview</a><a href="#scenario">2 Scenario &amp; approach</a><a href="#live-sim">3 Live simulation</a><a href="#outcome">4 Outcome</a><a href="#comparison">5 Algorithm comparison</a><a href="#evidence">6 Evidence &amp; limitations</a></nav></header>
+<main class="dash">
+
+<section id="overview" class="card" aria-labelledby="h-overview"><h2 id="h-overview"><span>1</span>Overview</h2>
+<div class="two"><div><h3>Goal</h3><p>When a vehicle crashes, the vehicles around it should learn of it within tens of milliseconds, and a roadside unit (RSU) should register the event for the emergency services. Two risks stand in the way: on a shared radio channel, many vehicles rebroadcasting the same alert collide (the <em>broadcast storm</em>), and a misbehaving vehicle could report an accident that never happened.</p>
+<h3>What this demo shows</h3><p>One comparison pair = one incident scenario (fixed network, traffic, incident and seed). The pair is replayed twice in SUMO-GUI, one approach per run: first a baseline only, then the proposed method only. Every scheme of a pair runs on the same simulated snapshot, so the comparison below is like-for-like.</p></div>
+<div><h3>The proposed method, in plain words</h3><p><strong>Corroborate, then forward selectively.</strong> The crashed vehicle asks its nearest reputable neighbours to vote; the alert is released only with 3 of 5 votes, whose signatures are combined into one compact certificate that every receiver checks. Cluster heads and trusted vehicles relay first, farther ones before nearer ones, and a vehicle stays silent when all its neighbours already have the alert. As one stage of the same method, a <em>CH-to-CH route</em> carries the alert along trusted cluster heads to the nearest RSU.</p>
+<h3>The baselines</h3><p>Four forwarding baselines are implemented, all with the same voting and certificate check and the same radio: <strong>blind flooding</strong> (every vehicle rebroadcasts once), <strong>flooding + random delay</strong>, <strong>slotted 1-persistence</strong> (farther receivers rebroadcast earlier; any duplicate suppresses) and <strong>slotted 1-p + random delay</strong>. They differ from the proposed method only in how the alert is forwarded.</p></div></div>
+</section>
+
+<section id="scenario" class="card" aria-labelledby="h-scenario"><h2 id="h-scenario"><span>2</span>Scenario &amp; approach</h2>
+<div class="row"><label>Comparison pair<select id="pair"></select></label><label>Baseline for a new pair<select id="new-baseline"></select></label><button id="new-pair" type="button">New pair (next reproducible scenario)</button></div>
+<p id="pair-empty" class="note" hidden>No comparison pair yet. Create one: the next scenario of a fixed, seeded order whose incident lies on the road network and at least 50 m from every incident already used.</p>
+<div id="scenario-facts" class="facts"></div>
+<p id="repeat-warning" class="warn" hidden></p>
+<div class="two" id="run-cards">
+<article class="run" id="card-baseline"><h3>Baseline-only run</h3><div class="algo" id="algo-baseline"></div><div id="replays-baseline" class="muted"></div><div><span class="chip" id="status-baseline">—</span> <span id="times-baseline" class="muted"></span></div><div id="msg-baseline"></div><button id="start-baseline" class="primary" type="button">Run baseline only</button></article>
+<article class="run" id="card-proposed"><h3>Proposed-only run</h3><div class="algo" id="algo-proposed"></div><div id="replays-proposed" class="muted"></div><div><span class="chip" id="status-proposed">—</span> <span id="times-proposed" class="muted"></span></div><div id="msg-proposed"></div><button id="start-proposed" class="primary" type="button">Run proposed only</button></article></div>
+<p class="note" style="margin-top:14px">Each run opens SUMO-GUI on this computer and plays start to finish (about 1 minute for a baseline-only run, about 2 minutes for a proposed-only run); pause/resume is not offered. Only one run can be active at a time; a run whose process ends without finishing is marked failed.</p>
+<p id="control-status" role="status" aria-live="polite"></p>
+</section>
+
+<section id="live-sim" class="card" aria-labelledby="h-live"><h2 id="h-live"><span>3</span>Live simulation</h2>
+<div class="tabs" role="tablist" aria-label="Run shown in sections 3 and 4"><button type="button" role="tab" id="tab-baseline" data-view="baseline" aria-selected="false">Baseline run</button><button type="button" role="tab" id="tab-proposed" data-view="proposed" aria-selected="false">Proposed run</button></div>
+<div id="live-badge"></div>
+<ol id="stages" class="stages" aria-label="Protocol stage indicator"></ol>
+<div id="live-facts" class="facts"></div>
+<figure id="capture-figure" hidden><img id="capture" alt=""><figcaption id="capture-caption"></figcaption></figure>
+<div id="filmstrip" class="filmstrip" aria-label="Window captures of this run"></div>
+<p class="muted" style="font-size:13px">Pictures are captures of the SUMO-GUI window of this run only (taken at every stage change and every 3 s). The radio is a simulated 802.11p model; its events last tens of milliseconds and are replayed in slow motion while SUMO's clock is paused.</p>
+</section>
+
+<section id="outcome" class="card" aria-labelledby="h-outcome"><h2 id="h-outcome"><span>4</span>Outcome</h2>
+<p id="outcome-head"></p><div class="scroll"><table id="outcome-table" class="metrics"></table></div>
+</section>
+
+<section id="comparison" class="card" aria-labelledby="h-comparison"><h2 id="h-comparison"><span>5</span>Algorithm comparison</h2>
+<p id="comparison-head"></p>
+<div id="comparison-body" hidden><div class="scroll"><table id="comparison-table" class="metrics"></table></div><div id="charts" class="charts"></div>
+<h3>Every implemented baseline on the same record</h3><p class="muted" style="font-size:13px">The pair's record also holds the other baselines, simulated on the identical snapshot by the same run; they were not replayed in SUMO-GUI.</p><div class="scroll"><table id="others-table" class="metrics"></table></div></div>
+<h3>Multi-seed experiment results (not this pair)</h3><p id="multi-head" class="muted"></p><div class="scroll"><table id="multi-table" class="metrics"></table></div>
+</section>
+
+<section id="evidence" class="card" aria-labelledby="h-evidence"><h2 id="h-evidence"><span>6</span>Evidence &amp; limitations</h2>
+<ul id="evidence-list" class="evidence"></ul>
+<h3>Limitations</h3><ul class="evidence">
+<li>The radio is a simulated IEEE 802.11p model (unit disk, 300 m) without fading or capture; the incident is staged (no crash detection).</li>
+<li>SUMO-GUI replays a run that the experiment engine computed on the identical SUMO state; the demo decides nothing itself, and every replay ends on the record's own totals.</li>
+<li>A pair is one run of one scenario: it illustrates the behaviour and supports no statistical claim. The multi-seed results above are the evidence for general statements.</li>
+<li>The CH-to-CH route is a stage of the proposed method, not a separate algorithm. The baselines share the proposed method's voting and certificate check and differ only in forwarding.</li>
+<li>Scenarios are the experiment's 30 seeds at 200 vehicles on one 5 × 5 urban grid; once every location has been used, a reused one is labelled as a repeat.</li>
+<li>Dispatch is a local outbox only; no emergency service is contacted. Runs cannot be paused or resumed.</li></ul>
+</section>
+</main>
+
+<details id="history" class="history"><summary>Historical saved runs (results/urban — earlier runs, not part of the current pair)</summary>
+<section class="controls" id="simulation-controls"><label>Run time (your system)<select id="run"></select></label><button id="refresh" type="button">Refresh results</button><label><span>Result list</span><select id="scope"><option value="main">Main demo results</option><option value="all">All research comparisons</option></select></label></section>
+<section id="live" class="live" hidden aria-live="polite"><strong>LIVE SUMO DEMO (full walkthrough)</strong> · <span id="live-text"></span><small>Counters come from the recorded channel log of the run being replayed. The radio is a simulated 802.11p model, shown in slow motion while SUMO's clock is paused.</small></section>
+<div class="history-main"><aside><h2 style="font-size:17px">Recorded results</h2><div id="results" class="list"></div></aside><section class="panel"><span id="type" class="tag">SELECT A RESULT</span><h2 id="title" style="font-size:20px">Explore a saved run</h2><p id="event" class="empty">Saved runs appear here after running SUMO.</p><div id="stats" class="stats"></div><h3 style="font-size:15px;margin:4px 0">Same accident, every scheme (this saved run)</h3><div class="scroll"><table id="compare" class="compare"></table></div><p id="status" role="status" aria-live="polite"></p><details><summary>Full recorded SUMO result</summary><pre id="raw">No result selected.</pre></details></section></div>
+</details>
+
+<section class="documentation-hub" aria-labelledby="documentation-heading"><h2 id="documentation-heading">Project Website / Documentation Portal</h2><p>Explore the project background, system design, algorithms, experiments, source code, and future work. Choose a section to read its content here.</p><nav class="documentation-buttons" id="documentation-buttons" aria-label="Project documentation sections"></nav><section class="documentation-panel" id="documentation-panel" hidden><div class="documentation-toolbar"><strong id="documentation-title"></strong><a id="documentation-open" href="/index.html" target="_blank" rel="noopener">Open full documentation ↗</a><button id="documentation-close" type="button">Back to the dashboard ↑</button></div><iframe id="documentation-frame" title="Project documentation section"></iframe></section></section>
+<footer>Every value is read from a run record; nothing is estimated or filled in. Single-pair demo values and multi-seed experiment results are shown separately.</footer>
 <script>
-const $=id=>document.getElementById(id);let results=[],selected=null,version=0,recordSignature="",records=[];
+const $=id=>document.getElementById(id);
 async function api(url,options){const r=await fetch(url,options);const data=await r.json();if(!r.ok)throw Error(data.error||'Request failed');return data;}
-function clearExplanation(){version++;$('explanation').textContent='';$('status').textContent='Choose your preferred language, then generate a plain-language explanation.';$('explain').disabled=!selected;}
-function pick(index){selected=results[index];clearExplanation();document.querySelectorAll('.result').forEach((b,i)=>b.classList.toggle('active',i===index));$('title').textContent=selected.label;$('type').textContent=selected.forged?'FORGED ALERT TEST':'GENUINE ACCIDENT';$('type').className=selected.forged?'tag bad':'tag';$('event').textContent=selected.alert.event_id+' · Vehicle '+selected.alert.source_vehicle+' · '+selected.alert.incident_time_s+' s';$('raw').textContent=selected.report;$('stats').replaceChildren();const m=selected.metrics;for(const [label,value] of [['RSU registration',selected.accepted?'Accepted':'Not accepted'],['Radio transmissions',m.transmissions??'—'],['Incident-to-RSU delay',m.rsu_delay_ms==null?'—':Number(m.rsu_delay_ms).toFixed(2)+' ms']]){const div=document.createElement('div');div.className='stat';const small=document.createElement('small');small.textContent=label;const strong=document.createElement('strong');strong.textContent=value;div.append(small,strong);$('stats').append(div);}}
-async function load(){clearExplanation();selected=null;results=[];$('explain').disabled=true;$('results').replaceChildren();$('raw').textContent='No result selected.';try{if(!$('run').value){$('status').textContent='No saved runs yet. Run python run.py single in the SUMO terminal, then refresh.';return;}const data=await api('/api/results?run='+encodeURIComponent($('run').value));results=data.results.filter(r=>$('scope').value==='all'||(!r.forged&&['flooding','proposed','ch_route'].includes(r.scheme))||r.forged==='voting_reputation');results.forEach((r,i)=>{const b=document.createElement('button');b.className='result';b.textContent=({'flooding':'1. Everyone rebroadcasts','proposed':'2. Smart forwarding (proposed)','ch_route':'3. Route to roadside station'}[r.scheme]&&!r.forged)?({'flooding':'1. Everyone rebroadcasts','proposed':'2. Smart forwarding (proposed)','ch_route':'3. Route to roadside station'}[r.scheme]):(r.forged==='voting_reputation'?'4. Fake-alert security test':r.label);const s=document.createElement('small');s.textContent=(r.forged?'Forged alert · ':'Accident · ')+(r.accepted?'RSU registered':'No RSU registration');b.append(s);b.onclick=()=>pick(i);$('results').append(b);});if(results.length)pick(0);}catch(e){$('status').textContent=e.message;}}
-async function refresh(automatic=false){try{const data=await api('/api/runs');const signature=JSON.stringify(data.records);if(automatic&&signature===recordSignature)return;const previousFirst=records[0]?.id;recordSignature=signature;records=data.records;const old=$('run').value;$('run').replaceChildren();for(const record of records){const date=new Date(record.saved_at);const time=date.toLocaleString(undefined,{year:'numeric',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',second:'2-digit'});$('run').append(new Option(time+' ? '+record.scenario+(record.timestamp_source==='file save time'?' (older file)':''),record.id));}if(records.some(r=>r.id===old)&&!(automatic&&records[0]?.id!==previousFirst))$('run').value=old;if(!$('language').options.length)for(const l of data.languages)$('language').append(new Option(l.native+' ? '+l.name,l.code));await load();}catch(e){$('status').textContent='Could not load results: '+e.message;}}
-$('run').onchange=load;$('language').onchange=clearExplanation;$('refresh').onclick=()=>refresh();$('scope').onchange=load;
-$('explain').onclick=async()=>{if(!selected)return;const token=++version,language=$('language').value;$('explain').disabled=true;$('explanation').textContent='';$('status').textContent='Preparing your explanation…';try{const data=await api('/api/explain',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({run:$('run').value,scheme:selected.scheme,forged:selected.forged,language})});if(token!==version)return;$('explanation').lang=language;$('explanation').textContent=data.text;if(data.retry_seconds){$('status').textContent=data.error+' Retry in '+data.retry_seconds+' seconds.';const until=Date.now()+data.retry_seconds*1000;const timer=setInterval(()=>{if(token!==version){clearInterval(timer);return;}const remaining=Math.max(0,Math.ceil((until-Date.now())/1000));$('status').textContent=data.error+' Retry in '+remaining+' seconds.';$('explain').disabled=remaining>0;if(!remaining){clearInterval(timer);$('status').textContent='You can retry now. If the limit persists, check your Groq account quota.';}},1000);return;}$('status').textContent=data.error||(data.source==='cached AI'?'Explanation ready ? saved response':'Explanation ready ? generated from this result');}catch(e){if(token===version)$('status').textContent=e.message;}finally{if(token===version&&!$('status').textContent.includes('Retry in'))$('explain').disabled=false;}};
-const documentationSections=[['home','Home Page'],['introduction','Introduction and Background'],['problem','Problem Statement'],['objectives','Objectives and Research Gap'],['architecture','Proposed System and Architecture'],['methodology','Methodology and Algorithms'],['implementation','Implementation and Technologies'],['workflow','Accident Simulation and Emergency Workflow'],['results','Results and Performance Evaluation'],['source','Source Code and Reproducibility'],['references','Research Papers and References'],['future','Limitations and Future Work']];
+function el(tag,text,cls){const e=document.createElement(tag);if(text!=null)e.textContent=text;if(cls)e.className=cls;return e;}
+function fact(label,value){const d=el('div',null,'fact');d.append(el('small',label),el('strong',value==null||value===''?'—':String(value)));return d;}
+function fmtTime(iso){if(!iso)return '';const d=new Date(iso);return d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+function fmtDate(iso){if(!iso)return '';const d=new Date(iso);return d.toLocaleString(undefined,{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+
+// ------------------------------------------------------------------ faculty demo: one comparison pair
+const STAGES=['Incident','Alert','Cluster / CH','Votes','Certificate','Forwarding / Route','RSU'];
+const SCHEME_NAMES={proposed:'Proposed (full)',ch_route:'CH-to-CH route stage'};
+let pairs=[],active=[],view=null,viewChosen=false,current=null,shown=null,multi=null,timer=null,busy=false,filmSig='',msgAt=0;
+
+function selectedId(){return $('pair').value||null;}
+async function loadPairs(){
+  const d=await api('/api/pairs');pairs=d.pairs;active=d.active;
+  if(!$('new-baseline').options.length)for(const b of d.baselines)$('new-baseline').append(new Option(b.label,b.scheme));
+  const keep=selectedId();$('pair').replaceChildren();
+  for(const p of [...pairs].reverse()){const s=p.scenario;$('pair').append(new Option(`${p.pair_id} · scenario ${s.scenario_id} · seed ${s.seed} · ${p.baseline_label} vs proposed`,p.pair_id));}
+  const want=keep||new URLSearchParams(location.search).get('pair');
+  if(want&&pairs.some(p=>p.pair_id===want))$('pair').value=want;
+  $('pair-empty').hidden=pairs.length>0;
+}
+async function loadPair(){const id=selectedId();if(!id){current=null;render();return;}current=await api('/api/pair?id='+encodeURIComponent(id));render();}
+async function tick(){
+  clearTimeout(timer);
+  try{await loadPairs();await loadPair();if(Date.now()-msgAt>10000)$('control-status').textContent=$('control-status').dataset.sticky||'';}
+  catch(e){$('control-status').textContent='Could not load the dashboard data: '+e.message;}
+  timer=setTimeout(tick,active.length?1500:5000);
+}
+function runOf(a){return current&&current.pair.runs[a];}
+function chooseView(){
+  if(!current)return null;
+  const mine=active.find(x=>x.pair_id===current.pair.pair_id);
+  if(mine&&!viewChosen)return mine.approach;
+  if(view&&(viewChosen||runOf(view).status!=='not started'))return view;
+  return runOf('proposed').status!=='not started'?'proposed':'baseline';
+}
+function render(){
+  view=chooseView();
+  for(const a of ['baseline','proposed']){$('tab-'+a).setAttribute('aria-selected',String(a===view));}
+  renderScenario();renderLive();renderOutcome();renderComparison();renderEvidence();
+}
+function renderScenario(){
+  $('scenario-facts').replaceChildren();$('repeat-warning').hidden=true;
+  for(const a of ['baseline','proposed']){$('start-'+a).disabled=true;$('algo-'+a).textContent='';$('replays-'+a).textContent='';$('status-'+a).textContent='—';$('status-'+a).className='chip';$('times-'+a).textContent='';$('msg-'+a).replaceChildren();}
+  if(!current)return;
+  const p=current.pair,s=p.scenario,i=s.incident;
+  $('scenario-facts').append(fact('Scenario ID',s.scenario_id),fact('Seed',s.seed),fact('Incident',`${i.vehicle} at (${i.x.toFixed(1)}, ${i.y.toFixed(1)}) m, lane ${i.lane}`),fact('Incident time (SUMO)',`t = ${i.time_s.toFixed(0)} s`),fact('Event ID',i.event_id),fact('Network',`${s.network} (5 × 5 urban grid)`),fact('Traffic',`${s.density} vehicles, same demand model in every scenario`),fact('Selection',s.selection.rank==null?'chosen explicitly':`rank ${s.selection.rank} of the seeded order (selection seed ${s.selection.selection_seed})`));
+  if(s.selection.repeat_of){$('repeat-warning').hidden=false;$('repeat-warning').textContent=`Repeated location: this scenario's incident repeats ${s.selection.repeat_of} (every other location was already used).`;}
+  const someoneActive=active.length>0;
+  for(const a of ['baseline','proposed']){
+    const r=p.runs[a];$('algo-'+a).textContent=r.algorithm;
+    $('replays-'+a).textContent='Replays: '+(a==='baseline'?r.algorithm+' only':'Proposed (full), then its CH-to-CH route stage, then the forged-alert test of its corroboration');
+    $('status-'+a).textContent=r.status;$('status-'+a).className='chip '+r.status.replace(' ','-');
+    $('times-'+a).textContent=[r.started?'started '+fmtTime(r.started):'',r.finished?'ended '+fmtTime(r.finished):''].filter(Boolean).join(' · ');
+    if(r.status==='failed'&&r.message)$('msg-'+a).append(el('div',r.message,'err'));
+    $('start-'+a).textContent=r.status==='finished'||r.status==='failed'?(a==='baseline'?'Run baseline only again':'Run proposed only again'):(a==='baseline'?'Run baseline only':'Run proposed only');
+    $('start-'+a).disabled=someoneActive||busy;
+  }
+  if(someoneActive){const x=active[0];$('control-status').dataset.sticky=`A run is active: pair ${x.pair_id}, ${x.approach} only. Starting another run is blocked until it ends.`;}
+  else $('control-status').dataset.sticky='';
+}
+function stageClasses(stage,approach,finished){
+  const idx=STAGES.indexOf(stage);
+  return STAGES.map((name,k)=>{if(approach==='baseline'&&name==='Cluster / CH')return 'skipped';if(finished&&k<=idx)return k===idx?'now':'done';if(k===idx)return 'now';return k<idx?'done':'';});
+}
+function renderLive(){
+  $('live-badge').replaceChildren();$('stages').replaceChildren();$('live-facts').replaceChildren();
+  if(!current){$('live-badge').append(el('span','Create or choose a comparison pair.','badge recorded'));$('filmstrip').replaceChildren();$('capture-figure').hidden=true;filmSig='';return;}
+  const r=runOf(view),live=current.live&&current.live.approach===view?current.live:null,caps=current.captures[view]||[];
+  const running=['starting','running'].includes(r.status);
+  if(running&&live&&live.fresh)$('live-badge').append(el('span',`LIVE · ${r.algorithm} · SUMO-GUI is running this ${view}-only run`,'badge live'));
+  else if(running)$('live-badge').append(el('span',live?`No live update for ${live.age_s.toFixed(0)} s (the run is still ${r.status})`:'Starting… waiting for the first live update of this run','badge waiting'));
+  else if(caps.length)$('live-badge').append(el('span',`Recorded: captures of the ${r.status} ${view}-only run (not live)`,'badge recorded'));
+  else $('live-badge').append(el('span',r.status==='failed'?`The ${view}-only run failed before any capture`:r.status==='not started'?`No captures yet: the ${view}-only run has not been run`:'No window captures were recorded for this run (window capture works on Windows only)','badge recorded'));
+  const last=caps[caps.length-1];
+  const stage=live?live.workflow_stage:last?last.workflow_stage:null;
+  const cls=stageClasses(stage,view,(live&&live.done)||(!live&&!!last&&last.done));
+  STAGES.forEach((name,k)=>{const li=el('li',name,cls[k]);if(cls[k]==='skipped')li.title='Not part of the baseline: clusters belong to the proposed method';$('stages').append(li);});
+  if(live||last){
+    const st=live||last;
+    $('live-facts').append(fact('Approach',`${view}-only: ${r.algorithm}`),fact('Now replaying',st.scheme),fact('SUMO time',st.sim_time_s==null?null:`t = ${Number(st.sim_time_s).toFixed(0)} s`),fact('Radio time',st.t_ms==null?null:`+${Number(st.t_ms).toFixed(1)} ms`),fact('Incident status',st.done?'Replay finished; SUMO clock running again, the crashed vehicle stays stopped':stage==='live traffic'?'No incident yet: live traffic':`Incident at t = ${current.pair.scenario.incident.time_s.toFixed(0)} s; SUMO clock paused for the radio replay`),fact('Status',st.status));
+    if(live){if(live.frames!=null)$('live-facts').append(fact('Frames so far',live.frames));if(live.reach)$('live-facts').append(fact('Reach',live.reach));if(live.rsu)$('live-facts').append(fact('RSU',live.rsu));}
+  }
+  const sig=current.pair.pair_id+':'+view+':'+caps.map(c=>c.file+'@'+c.captured).join(',');
+  if(sig===filmSig)return;                                     // same pictures: nothing to reload
+  filmSig=sig;$('filmstrip').replaceChildren();$('capture-figure').hidden=true;
+  if(caps.length){
+    const pick=shown&&caps.find(c=>c.file===shown.file&&shown.view===view)||last;
+    const show=c=>{shown={file:c.file,view};$('capture').src=`/pairs/${encodeURIComponent(current.pair.pair_id)}/${view}/${c.file}?t=${c.captured}`;$('capture').alt=`SUMO-GUI window, ${view}-only run: ${c.workflow_stage}, ${c.scheme}`;$('capture-caption').textContent=`${c.workflow_stage} · ${c.scheme} · ${c.status||''}${c.t_ms!=null?' · +'+Number(c.t_ms).toFixed(1)+' ms radio time':''}${c.sim_time_s!=null?' · t = '+Number(c.sim_time_s).toFixed(0)+' s':''}`;for(const b of $('filmstrip').children)b.classList.toggle('on',b.dataset.file===c.file);};
+    for(const c of caps){const b=el('button',null);b.type='button';b.dataset.file=c.file;b.title=`${c.workflow_stage} · ${c.scheme}`;const im=document.createElement('img');im.loading='lazy';im.alt=`${c.workflow_stage}, ${c.scheme}`;im.src=`/pairs/${encodeURIComponent(current.pair.pair_id)}/${view}/${c.file}?t=${c.captured}`;b.append(im);b.onclick=()=>{shown={file:c.file,view,pinned:true};show(c);};$('filmstrip').append(b);}
+    $('capture-figure').hidden=false;show(shown&&shown.pinned&&shown.view===view?pick:last);
+  }
+}
+function metricRows(table,rows,metrics,withDefs){
+  table.replaceChildren();const head=el('tr');head.append(el('th','Metric'));for(const r of rows)head.append(el('th',r.label,'v'));head.append(el('th','Unit'));if(withDefs)head.append(el('th','Definition'));table.append(head);
+  metrics.forEach((m,k)=>{const tr=el('tr');tr.append(el('td',m.label));for(const r of rows)tr.append(el('td',r.available?r.cells[k].text:'unavailable','v'));tr.append(el('td',m.unit,'def'));if(withDefs)tr.append(el('td',m.definition,'def'));table.append(tr);});
+}
+function renderOutcome(){
+  $('outcome-table').replaceChildren();
+  if(!current){$('outcome-head').textContent='No pair selected.';return;}
+  const o=current.outcomes[view],r=runOf(view),s=current.pair.scenario;
+  if(!o.available){$('outcome-head').replaceChildren(el('span',`${view==='baseline'?'Baseline':'Proposed'}-only run (${r.algorithm}): ${o.reason}`,r.status==='failed'?'err':'note'));return;}
+  $('outcome-head').textContent=`${view==='baseline'?'Baseline':'Proposed'}-only run · ${r.algorithm} · scenario ${s.scenario_id}, seed ${s.seed} · record ${current.comparison.record} (fingerprint ${o.fingerprint.slice(0,16)}…). Values are copied from that record.`;
+  metricRows($('outcome-table'),o.rows.map(x=>({...x,label:SCHEME_NAMES[x.scheme]||x.label})),current.metrics,true);
+}
+function chart(metric,rows){
+  const box=el('div',null,'chart');box.append(el('h4',`${metric.label} (${metric.unit})`));
+  const vals=rows.map(r=>({label:r.label,v:r.cells.find(c=>c.key===metric.key).value,t:r.cells.find(c=>c.key===metric.key).text,cls:r.cls}));
+  const ns='http://www.w3.org/2000/svg',W=320,H=170,max=Math.max(...vals.map(x=>x.v==null?0:(metric.key==='reachability'?x.v*100:x.v)),1e-9)*1.18;
+  const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('role','img');svg.setAttribute('aria-label',`${metric.label}: `+vals.map(x=>`${x.label} ${x.t}`).join('; '));
+  const add=(tag,attrs,text)=>{const e=document.createElementNS(ns,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;svg.append(e);return e;};
+  add('line',{x1:20,y1:H-34,x2:W-10,y2:H-34,stroke:'#9aa8b8'});
+  vals.forEach((x,k)=>{const bw=(W-60)/vals.length-24,cx=40+k*((W-60)/vals.length)+bw/2+6,x0=cx-bw/2;const v=x.v==null?null:(metric.key==='reachability'?x.v*100:x.v);
+    if(v==null)add('text',{x:cx,y:H-48,'text-anchor':'middle','font-size':12,fill:'#8a5a00'},x.t);
+    else{const h=(H-60)*v/max;add('rect',{x:x0,y:H-34-h,width:bw,height:h,fill:x.cls==='proposed'?'#137f75':'#7b8da3',rx:3});add('text',{x:cx,y:H-38-h,'text-anchor':'middle','font-size':12,'font-weight':700,fill:'#172333'},x.t);}
+    add('text',{x:cx,y:H-16,'text-anchor':'middle','font-size':11.5,fill:'#40536a'},x.label.length>26?x.label.slice(0,25)+'…':x.label);});
+  box.append(svg);return box;
+}
+function renderComparison(){
+  $('comparison-body').hidden=true;$('charts').replaceChildren();
+  if(!current){$('comparison-head').textContent='No pair selected.';return;}
+  const c=current.comparison,p=current.pair,s=p.scenario;
+  if(!c.available){$('comparison-head').replaceChildren(el('span','No comparison is shown: '+c.reason+'.','note'));return;}
+  $('comparison-head').textContent=`Single pair, one run: scenario ${s.scenario_id}, seed ${s.seed}, incident ${s.incident.vehicle} at t = ${s.incident.time_s.toFixed(0)} s. Both runs replayed the same record ${c.record} (fingerprint ${c.fingerprint.slice(0,16)}…), so every scheme below ran on the identical snapshot, network, demand, radio and parameters. One run supports no statistical claim; see the multi-seed results below.`;
+  const by=Object.fromEntries(c.rows.map(r=>[r.scheme,r]));
+  const base={...by[p.baseline],label:by[p.baseline].label,cls:'baseline'},prop={...by.proposed,label:'Proposed (full)',cls:'proposed'},route={...by.ch_route,label:'Proposed: CH-to-CH route stage'};
+  const t=$('comparison-table');t.replaceChildren();
+  const h1=el('tr');h1.append(el('th',''),el('th','Baseline (replayed)','v'),el('th','Proposed method (replayed)','v'),el('th','',''),el('th','',''));
+  const h2=el('tr');h2.append(el('th','Metric'),el('th',by[p.baseline].label,'v'),el('th','Proposed (full) — to vehicles','v'),el('th','its CH-to-CH route stage — to the RSU','v'),el('th','Unit'));
+  t.append(h1,h2);
+  current.metrics.forEach((m,k)=>{const tr=el('tr');tr.append(el('td',m.label));for(const r of [base,prop,route])tr.append(el('td',r.available?r.cells[k].text:'unavailable','v'));tr.append(el('td',m.unit,'def'));t.append(tr);});
+  for(const key of ['transmissions','reachability','t90_ms','rsu_delay_ms']){const m=current.metrics.find(x=>x.key===key);$('charts').append(chart(m,[base,prop]));}
+  const others=p.baseline?c.rows.filter(r=>r.role.startsWith('baseline')).map(r=>({...r,label:r.label+(r.scheme===p.baseline?' (replayed)':'')})):[];
+  metricRows($('others-table'),others,current.metrics,false);
+  $('comparison-body').hidden=false;
+}
+async function loadMulti(){
+  try{multi=await api('/api/experiment');}catch(e){$('multi-head').textContent=e.message;return;}
+  $('multi-head').textContent=`${multi.rows[0]?multi.rows[0].runs:'?'} seeds per scheme at ${multi.density} vehicles, from ${multi.source} (written ${fmtDate(multi.modified)}). Mean ± 95 % confidence half-width over the seeds; n is shown where fewer seeds had a value (for example when 90 % was never reached). These are the evidence for general claims; the pair above is one illustration.`;
+  const t=$('multi-table');t.replaceChildren();const cols=[['reachability','Reach','%',100,1],['t90_ms','Time to 90 % reachable','ms',1,1],['transmissions','Frames on air','frames',1,1],['collision_losses','Receptions lost','receptions',1,0],['rsu_received','RSU delivery','% of runs',100,0],['rsu_delay_ms','First RSU registration','ms',1,1]];
+  const head=el('tr');head.append(el('th','Scheme'),el('th','Seeds','v'));for(const [,label,unit] of cols)head.append(el('th',`${label} (${unit})`,'v'));t.append(head);
+  for(const r of multi.rows){const tr=el('tr');tr.append(el('td',r.scheme==='ch_route'?'Proposed: CH-to-CH route stage':r.label),el('td',String(r.runs),'v'));for(const [key,,,scale,d] of cols){const v=r.values[key];tr.append(el('td',v.mean==null?'not available':`${(v.mean*scale).toFixed(d)} ± ${v.ci95==null?'—':(v.ci95*scale).toFixed(d)}`+(v.n!==r.runs?` (n = ${v.n})`:''),'v'));}t.append(tr);}
+}
+function renderEvidence(){
+  const ul=$('evidence-list');ul.replaceChildren();
+  if(!current){ul.append(el('li','No pair selected.'));return;}
+  const p=current.pair,s=p.scenario,f=current.folder;
+  const li=(...parts)=>{const x=el('li');for(const part of parts)x.append(typeof part==='string'?document.createTextNode(part):part);ul.append(x);};
+  li('Pair ',el('code',p.pair_id),` created ${fmtDate(p.created)}; every file of this pair is in `,el('code',f));
+  li('Scenario record: ',el('code',`${f}/pair.json`),` (scenario ${s.scenario_id}, seed ${s.seed}, selection: ${s.selection.method})`);
+  for(const a of ['baseline','proposed']){const r=p.runs[a];li(`${a}-only run (${r.algorithm}): ${r.status}`,r.started?`, ${fmtDate(r.started)} – ${r.finished?fmtTime(r.finished):'…'}`:'',r.fingerprint?', record fingerprint ':'',r.fingerprint?el('code',r.fingerprint.slice(0,16)+'…'):'',`, ${(current.captures[a]||[]).length} window captures in `,el('code',`${f}/${a}/`),'; command ',el('code',`python run.py demo --pair ${p.pair_id} --approach ${a}`));}
+  li('Run record: ',el('code',`${f}/${current.comparison.record}`),current.comparison.available?' — both runs replayed it (equal fingerprints).':' — '+current.comparison.reason+'.');
+  li('Reproduce this scenario in a new pair: ',el('code',`python run.py pair new --scenario ${s.scenario_id} --baseline ${p.baseline}`));
+  li('Metric definitions: metrics.py; scheme definitions: protocols.py and docs/SYSTEM_DESIGN.md §3; multi-seed results: ',el('code','python run.py experiment'),' → results/urban/processed/summary.csv.');
+}
+async function startRun(approach){
+  const id=selectedId();if(!id)return;busy=true;renderScenario();
+  $('control-status').textContent=`Starting the ${approach}-only run of ${id}… SUMO-GUI opens in a few seconds.`;msgAt=Date.now();
+  try{await api('/api/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pair:id,approach})});viewChosen=false;view=approach;}
+  catch(e){$('control-status').textContent='Not started: '+e.message;msgAt=Date.now();}
+  finally{busy=false;tick();}
+}
+$('start-baseline').onclick=()=>startRun('baseline');$('start-proposed').onclick=()=>startRun('proposed');
+$('new-pair').onclick=async()=>{busy=true;$('new-pair').disabled=true;$('control-status').textContent='Selecting the next reproducible scenario…';
+  try{const p=await api('/api/pairs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({baseline:$('new-baseline').value})});await loadPairs();$('pair').value=p.pair_id;viewChosen=false;view=null;shown=null;$('control-status').textContent=`Created ${p.pair_id}: scenario ${p.scenario.scenario_id}, seed ${p.scenario.seed}.`;msgAt=Date.now();}
+  catch(e){$('control-status').textContent='No pair created: '+e.message;msgAt=Date.now();}finally{busy=false;$('new-pair').disabled=false;tick();}};
+$('pair').onchange=()=>{viewChosen=false;view=null;shown=null;filmSig='';loadPair();};
+for(const a of ['baseline','proposed'])$('tab-'+a).onclick=()=>{viewChosen=true;view=a;shown=null;filmSig='';render();};
+tick();loadMulti();
+
+// ------------------------------------------------------------------ historical saved runs (results/urban)
+let results=[],selected=null,recordSignature="",records=[];
+function pick(index){selected=results[index];$('status').textContent='';document.querySelectorAll('.result').forEach((b,i)=>b.classList.toggle('active',i===index));$('title').textContent=selected.label;$('type').textContent=selected.forged?'FORGED ALERT TEST':'GENUINE ACCIDENT';$('type').className=selected.forged?'tag bad':'tag';$('event').textContent=selected.alert.event_id+' · Vehicle '+selected.alert.source_vehicle+' · '+selected.alert.incident_time_s+' s';$('raw').textContent=selected.report;$('stats').replaceChildren();const m=selected.metrics;for(const [label,value] of [['RSU registration',selected.accepted?'Accepted':'Not accepted'],['Radio transmissions',m.transmissions??'—'],['Incident-to-RSU delay',m.rsu_delay_ms==null?'—':Number(m.rsu_delay_ms).toFixed(2)+' ms']]){const div=document.createElement('div');div.className='stat';const small=document.createElement('small');small.textContent=label;const strong=document.createElement('strong');strong.textContent=value;div.append(small,strong);$('stats').append(div);}compare();}
+function fmt(v,d=1,s=1){return v==null?'—':(s*v).toFixed(d);}
+function compare(){const t=$('compare');t.replaceChildren();const rows=results.filter(r=>!r.forged);const cols=[['Scheme',r=>r.label],['Frames',r=>r.metrics.transmissions],['Alert frames',r=>r.metrics.alert_tx],['Reach %',r=>fmt(r.metrics.reachability,1,100)],['90 % reached ms',r=>fmt(r.metrics.t90_ms)],['Receptions lost',r=>r.metrics.collision_losses],['Suppression %',r=>fmt(r.metrics.suppression_ratio,0,100)],['RSU arrival ms',r=>fmt(r.metrics.rsu_arrival_ms,2)],['RSU registered ms',r=>fmt(r.metrics.rsu_delay_ms,2)]];const head=document.createElement('tr');for(const [name] of cols){const th=document.createElement('th');th.textContent=name;head.append(th);}t.append(head);for(const r of rows){const tr=document.createElement('tr');if(r===selected)tr.className='on';for(const [,get] of cols){const td=document.createElement('td');td.textContent=get(r)??'—';tr.append(td);}t.append(tr);}}
+async function live(){try{const d=await api('/api/live');const fresh=d.updated&&(Date.now()/1000-d.updated<15);$('live').hidden=!fresh;if(fresh)$('live-text').textContent=d.done?('finished · run '+d.run_id+' · '+d.stage):[d.workflow_stage?'Stage: '+d.workflow_stage:null,d.scheme,d.t_ms!=null?'+'+d.t_ms+' ms':null,d.status||d.stage,d.frames!=null?d.frames+' frames':null,d.reach,d.suppressed!=null?d.suppressed+' suppressed':null,d.collisions!=null?d.collisions+' receptions lost':null,d.rsu?'RSU: '+d.rsu:null].filter(Boolean).join(' · ');}catch(e){$('live').hidden=true;}}
+async function load(){$('status').textContent='';selected=null;results=[];$('results').replaceChildren();$('raw').textContent='No result selected.';try{if(!$('run').value){$('status').textContent='No saved runs yet. Run python run.py single in the SUMO terminal, then refresh.';return;}const data=await api('/api/results?run='+encodeURIComponent($('run').value));results=data.results.filter(r=>$('scope').value==='all'||(!r.forged&&['flooding','proposed','ch_route'].includes(r.scheme))||r.forged==='voting_reputation');results.forEach((r,i)=>{const b=document.createElement('button');b.className='result';b.textContent=({'flooding':'1. Everyone rebroadcasts','proposed':'2. Smart forwarding (proposed)','ch_route':'3. Route to roadside station'}[r.scheme]&&!r.forged)?({'flooding':'1. Everyone rebroadcasts','proposed':'2. Smart forwarding (proposed)','ch_route':'3. Route to roadside station'}[r.scheme]):(r.forged==='voting_reputation'?'4. Fake-alert security test':r.label);const s=document.createElement('small');s.textContent=(r.forged?'Forged alert · ':'Accident · ')+(r.accepted?'RSU registered':'No RSU registration');b.append(s);b.onclick=()=>pick(i);$('results').append(b);});if(results.length)pick(0);}catch(e){$('status').textContent=e.message;}}
+async function refresh(automatic=false){try{const data=await api('/api/runs');const signature=JSON.stringify(data.records);if(automatic&&signature===recordSignature)return;const previousFirst=records[0]?.id;recordSignature=signature;records=data.records;const old=$('run').value;$('run').replaceChildren();for(const record of records){const date=new Date(record.saved_at);const time=date.toLocaleString(undefined,{year:'numeric',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',second:'2-digit'});$('run').append(new Option(time+' · '+record.scenario+(record.timestamp_source==='file save time'?' (older file)':''),record.id));}if(records.some(r=>r.id===old)&&!(automatic&&records[0]?.id!==previousFirst))$('run').value=old;await load();}catch(e){$('status').textContent='Could not load results: '+e.message;}}
+$('run').onchange=load;$('refresh').onclick=()=>refresh();$('scope').onchange=load;
+$('history').addEventListener('toggle',()=>{if($('history').open&&!records.length)refresh();});
+setInterval(()=>{if($('history').open)refresh(true);},5000);live();setInterval(live,1000);
+
+// ------------------------------------------------------------------ documentation portal
+const documentationSections=[['home','Home Page'],['demo','SUMO Demonstration'],['introduction','Introduction and Background'],['problem','Problem Statement'],['objectives','Objectives and Research Gap'],['architecture','Proposed System and Architecture'],['methodology','Methodology and Algorithms'],['implementation','Implementation and Technologies'],['workflow','Accident Simulation and Emergency Workflow'],['results','Results and Performance Evaluation'],['source','Source Code and Reproducibility'],['references','Research Papers and References'],['future','Limitations and Future Work']];
 for(const [index,[id,title]] of documentationSections.entries()){const button=document.createElement('button');button.type='button';const number=document.createElement('span');number.textContent=String(index+1).padStart(2,'0');button.append(number,document.createTextNode(title));button.setAttribute('aria-expanded','false');button.setAttribute('aria-controls','documentation-panel');button.onclick=()=>{for(const other of $('documentation-buttons').children){other.classList.remove('active');other.setAttribute('aria-expanded','false')}button.classList.add('active');button.setAttribute('aria-expanded','true');$('documentation-title').textContent=title;$('documentation-panel').hidden=false;$('documentation-frame').src='/index.html#'+id;$('documentation-open').href='/index.html#'+id;};$('documentation-buttons').append(button);}
-$('documentation-close').onclick=()=>{$('documentation-panel').hidden=true;for(const button of $('documentation-buttons').children){button.classList.remove('active');button.setAttribute('aria-expanded','false')}$('simulation-controls').scrollIntoView({behavior:'smooth',block:'start'});};
+$('documentation-close').onclick=()=>{$('documentation-panel').hidden=true;for(const button of $('documentation-buttons').children){button.classList.remove('active');button.setAttribute('aria-expanded','false')}$('overview').scrollIntoView({behavior:'smooth',block:'start'});};
 if(window.self!==window.top){document.querySelector('.documentation-hub').hidden=true;document.querySelector('header a').hidden=true;}
-refresh();setInterval(()=>refresh(true),5000);
 </script></body></html>

@@ -1,26 +1,24 @@
 """
 Every experimental parameter lives here, with its source. Nothing numeric that
-changes an outcome is defined anywhere else. Full justification table:
-PROJECT_GUIDE.md section 13.
+changes an outcome is defined anywhere else. Design rationale: docs/SYSTEM_DESIGN.md.
 """
 
 TITLE = "Trust-Aware Cluster-Based Broadcast Suppression for Real-Time Vehicular Emergency Alerts"
 
 # ---------------------------------------------------------------- scenario
-NET_FILE = "network/urban.net.xml"   # curved streets, landscaped blocks and a central boulevard
+NET_FILE = "network/urban.net.xml"   # straight 5x5 grid (820 x 800 m), 9 signalised junctions, 3-lane central boulevard
 DENSITIES = [50, 100, 200, 250, 300, 500]  # includes all requested populations
-RUNS_PER_DENSITY = 30                 # independent seeds per density; 30 keeps every 95 % CI narrow vs. the effects (RESULTS.md)
+RUNS_PER_DENSITY = 30                 # independent seeds per density (paired across schemes; see RESULTS.md for the CIs)
 BASE_SEED = 10_000                    # seed(d, r) = BASE_SEED + 100*d + r  -> unique, reproducible
 DEPART_WINDOW_S = 30                  # all vehicles inserted uniformly at random within the first 30 s
 ROUTE_EDGES = 30                      # ~5.4 km random walk: no vehicle finishes its trip before the incident window ends
-INCIDENT_WINDOW_S = (60, 120)         # incident time ~ U{60..120}: >=30 s after last insertion (traffic mixed, >=30 trust observations)
+INCIDENT_WINDOW_S = (60, 120)         # incident time ~ U{60..120}: >=30 s after the last scheduled departure (traffic mixed)
 
 # ---------------------------------------------------------- infrastructure
 # Two road-side units at intersections B3 and D1. Intersections are the preferred
 # RSU sites (Trullols et al. 2010): line of sight along four road arms and the densest traffic.
 # Two units on opposite quadrants cover much of the road network in one radio hop; the far corners
 # are deliberately NOT covered, so those alerts must be relayed vehicle-to-vehicle to reach an RSU.
-RSU_POSITIONS = {"RSU-1": (200.0, 600.0), "RSU-2": (600.0, 200.0)}
 HOP_LIMIT = 10             # ETSI EN 302 636-4-1 itsGnDefaultHopLimit: a copy is not relayed beyond 10 hops
 # The fixed scenario for ./run_demo.sh, the explainer and the dashboard showcase. Chosen once, by rule:
 # among the 200-vehicle incidents outside direct RSU range (so the alert must be relayed to reach an
@@ -29,6 +27,10 @@ DEMO_DENSITY, DEMO_RUN = 200, 2
 
 # ------------------------------------------------------------ misbehaviour
 MALICIOUS_RATIO = 0.10     # fraction of vehicles that receive but never relay (selfish/black-hole); experimental assumption
+# Probability that a misbehaving vehicle relays correctly while it is being WATCHED (routine traffic). 0 = persistent
+# black hole, so its Beta trust can never exceed 1/(f+2) <= 0.5 (near-oracle detection); > 0 = on-off attacker that
+# builds reputation and still drops the emergency alert. Sensitivity sweep: run.py sensitivity.
+MALICIOUS_COOPERATION = 0.0
 WATCHDOG_MISS_PROB = 0.10  # P(watchdog misses an honest relay, e.g. due to a collision) -> false accusation (Marti et al. 2000); assumption
 TRUST_CH_THRESHOLD = 0.7   # Beta-reputation trust needed to be prioritised as a relay (project Algorithm 1 threshold)
 
@@ -66,12 +68,17 @@ DBSCAN_MIN_PTS = 3         # paper's MinPts
 
 # ------------------------------------------------ outputs
 RESULTS_DIR = "results/urban"
-BASELINES = ["flooding", "slotted1p", "proposed"]   # the headline comparison
+# Headline comparison. "+RAD" variants add the same U[0, RAD_MS) random assessment delay the proposed scheme uses,
+# so the comparison isolates what tiers + the coverage test add beyond jitter (audit RAD-1/RAD-3).
+BASELINES = ["flooding", "flooding_rad", "slotted1p", "slotted1p_rad", "proposed"]
 ABLATIONS = ["no_rad", "no_slots", "no_coverage", "no_clustering", "no_cluster_forwarding", "no_reputation", "no_security"]
-PROTOCOLS = BASELINES + ABLATIONS + ["ch_route"]
+# Order fixes each scheme's RNG stream (experiment.run_one); new schemes are appended so earlier streams never shift.
+PROTOCOLS = ["flooding", "slotted1p", "proposed"] + ABLATIONS + ["ch_route", "flooding_rad", "slotted1p_rad"]
 LABELS = {
     "ch_route": "CH shortest-path delivery",
     "flooding": "Blind flooding",
+    "flooding_rad": "Flooding + random delay",
+    "slotted1p_rad": "Slotted 1-p + random delay",
     "slotted1p": "Slotted 1-persistence",
     "proposed": "Proposed (full)",
     "no_rad": "without random delay",
