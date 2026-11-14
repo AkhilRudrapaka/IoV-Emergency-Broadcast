@@ -1,0 +1,624 @@
+==================== SCE
+[SCE-1] major/risk/high :: A genuine alert is silently dropped when the source has fewer than 3 reputable honest neighbours (no timeout or fallback)
+  @ protocols.py:94-99, protocols.py:146-147, corroboration.py:84-86, run.py:113
+  EVID: Code: the only path that sets release_at is protocols.py:97-98 `if len(self.votes) >= QUORUM: self.release_at = t + self.verify`. With fewer than 3 votes, no ALERT frame is ever queued and simulate() ends. validation/test_corroboration.py:63 asserts 'no quorum, no dissemination'. MEASURED (scratchpad/audit/sce/sweep.py, 180 runs, default 300 m): with the reputation gate, 0/180 genuine alerts lacked quorum (fewest reputable in-range neighbours of the source: 4 at d=50, 7 at d=100). The no_reputation arm dropped 2/180 genuine alerts: d100_r19 received 1 of 100 with 3 frames (proposal + 2 votes); d300_r12 received 1 of 300. MEASURED at COMM_RANGE_M=150, the project's own sensitivity value (run.py:113; audit/sce/liveness.py): the genuine alert was never disseminated in 14/30 runs at d=50, 2/30 at d=100 and 0/30 at d=200. In each such run proposed and flooding showed accepted 0, received 1, alert_tx 0. In d50_r11 the source was within direct RSU range: proposed rsu_received 0.0 vs no_security 1.0 (39 vehicles reachable). In d50_r02, proposed reached 1/34 vs no_security 33/34 plus the RSU. Documentation: build_project_document.py:158 states the rule ('cannot release the protected alert'), but the README, PROJECT_GUIDE and FACULTY_PRESENTATION limitations do not mention suppressed genuine emergencies.
+  IMPACT: With sparse traffic or a shorter range, a real accident produces no warning and no RSU report, even when an RSU is one hop away. The default 300 m matrix never triggers this, so the headline results hide the failure mode.
+  ACTION: Add a quorum timeout: after T ms, release an 'uncorroborated' alert or send directly to an in-range RSU. Record a per-run 'genuine_suppressed' metric and list the measured rate (47% at d=50, 150 m) under limitations.
+
+[SCE-2] major/oracle-leak/high :: The Beta reputation is a ground-truth oracle by construction: malicious trust is capped at 0.5, below the 0.7 threshold
+  @ scenario.py:121-135, clustering.py:21-22, config.py:31-33, run.py:113-114
+  EVID: scenario.py:133 `failed = vid in malicious_ids or miss[i]`, so a malicious vehicle never records a success: trust = 1/(f+2) <= 0.5 for any f, always below TRUST_CH_THRESHOLD=0.7. No packets exist before the incident. The 'observation' is a per-second Bernoulli draw for any vehicle with at least one neighbour within 300 m, yet the comment at scenario.py:121-122 says it is 'observed relaying (or not) by that neighbour'. MEASURED over 180 runs (d=50..500, 30 seeds each): malicious trust max 0.250 (a d=500 vehicle inserted late, 2 observations), mean 0.014, 0/4,200 at or above 0.7. Honest trust min 0.667, mean 0.889, 6/37,788 (0.016%) below 0.7. min(honest) > max(malicious) in 180/180 runs. Disclosure is partial: build_project_document.py:139 ('synthetic observations tied to scenario ground truth'), FACULTY_PRESENTATION.md:94 ('Trust values are synthetic'), PROJECT_GUIDE.md:92-93. But FACULTY_PRESENTATION.md:84 cites 'Misbehaving vehicles never relay, yet reach is 100%' as evidence for the trust mechanism. The sensitivity sweep varies only COMM_RANGE_M and MALICIOUS_RATIO (run.py:113-114), never WATCHDOG_MISS_PROB or the attacker strategy.
+  IMPACT: Every trust-gated decision (CH election, tier 0, committee, endorsement counting) amounts to 'exclude the malicious set' with about 100% accuracy. Comparing proposed with no_reputation measures the value of perfect knowledge, not of a realistic reputation system.
+  ACTION: State explicitly that malicious trust is at most 0.5 by construction. Model imperfect detection: malicious vehicles that relay with probability p, on-off or whitewashing attackers, and observations derived from actually relayed frames. Add WATCHDOG_MISS_PROB and attack mode to the sensitivity sweep.
+
+[SCE-3] major/model-validity/high :: Forged-alert protection depends entirely on the oracle reputation gate, but the docs credit voting and BLS
+  @ experiment.py:152-156, corroboration.py:87-89, corroboration.py:94-107, FACULTY_PRESENTATION.md:46, FACULTY_PRESENTATION.md:85
+  EVID: The forger is a random malicious vehicle that has a neighbour (experiment.py:152-155). Colluders are up to 5 nearest malicious in-range neighbours, not limited to the committee (corroboration.py:88-89). accept() counts any signer with reputation >= 0.7 and never checks committee membership or proximity (corroboration.py:103). MEASURED over 180 runs: the full scheme formed a forged certificate in 4/16/26/29/29/30 of 30 runs (d=50..500), but the RSU registered it 0/180 times and 0 honest vehicles accepted it. voting_only registered it in exactly the runs with at least 3 colluders (4/16/26/29/29/30). no_voting registered it in 30/30 at every density. MEASURED with malicious trust set to 0.89 (an on-off attacker; experiment.forged_alert on d=200, runs 0-9): the FULL scheme let the RSU register the forged alert in 8/10 runs, which were all the runs with at least 3 colluders. Docs: FACULTY_PRESENTATION.md:46 says 'A forged alert gets no honest votes, so it is rejected', and :85 credits 'Quorum of 3 of 5 reputable witnesses plus BLS'.
+  IMPACT: The 0% forged-acceptance result follows from the trust model (SCE-2), not from the voting/BLS design. With at least 3 colluders, voting plus BLS alone never stops the attack.
+  ACTION: Reword the claims: the forged alert is rejected because of the reputation gate. Add attackers with honest-looking reputation (on-off, compromised trusted vehicles) to the forgery matrix. Consider binding endorsers to the committee or to proximity inside accept().
+
+[SCE-4] minor/oracle-leak/high :: The ground-truth malicious flag drives route and CHRoute voter selection (redundant today, but a latent leak)
+  @ infrastructure.py:23-24, protocols.py:172-176, experiment.py:57-59, experiment.py:117-119
+  EVID: infrastructure.py:24 `if role == 'CH' and trust[i] >= TRUST_CH_THRESHOLD and not malicious[i])`. protocols.py:176 `and not self.malicious[i]][:corroboration.COMMITTEE_SIZE]` applies the filter before the committee is truncated, so malicious vehicles never take a seat. experiment.py:59 and :119 pass sc['malicious']. These are routing and voter-selection decisions, not models of attacker behaviour. MEASURED (sweep.py, 180 runs): with the malicious flag zeroed, the route was identical in 180/180 runs; there were 0 malicious CHs and 0 route heads whose voter list changed. The filters are redundant only because trust is an oracle (SCE-2).
+  IMPACT: No effect on current numbers. In any experiment with imperfect trust, though, ground truth would silently remove malicious relays and voters and overstate CH-route robustness.
+  ACTION: Remove the `not malicious` terms and select route and voters by role and trust only. Model malicious voters' silence through their behaviour, as corroboration.plan already does.
+
+[SCE-5] minor/risk/high :: Simulation key management: anyone can derive any vehicle's BLS key, there is no PoP, and an unknown signer crashes accept()
+  @ corroboration.py:36-42, corroboration.py:57-61, corroboration.py:103
+  EVID: corroboration.py:37 derives the secret key as SHA-256('sim-key:'+id) mod (r-1) + 1. Output of audit/sce/crypto_check.py: '5 sk(v2) recomputable by attacker: True'. A forged alert by m1, signed with the recomputed keys of v2, v3 and v4, gives accept() = (True, 'BLS aggregate valid, 3 of 3 endorsers counted'). PopProve/PopVerify is never called (check 7: False), although FastAggregateVerify from the G2ProofOfPossession suite assumes PoP-checked keys. Rogue keys are impossible here only because verifiers derive public keys from IDs. A certificate with an unknown signer ID produced '6 unknown signer: EXCEPTION TypeError '>=' not supported between NoneType and float', because reputation_of returns None at corroboration.py:103. The simplification is disclosed at corroboration.py:23-24 and PROJECT_GUIDE.md:60-61.
+  IMPACT: Acceptable as a disclosed simulation shortcut, but the security results hold only because the simulated attacker does not use the derivable keys. A real receiver would crash on an unknown signer instead of rejecting it.
+  ACTION: Keep the disclosure prominent. Issue random keys from a simulated CA with PoP at registration so the forgery model is meaningful. Treat unknown signers as non-reputable: `(reputation_of(v) or 0.0)`.
+
+[SCE-6] info/works/high :: BLS aggregate certificate checks are real and correct, and the batch-authentication claims are accurate
+  @ corroboration.py:52-68, corroboration.py:94-107, infrastructure.py:66-80, experiment.py:127-133
+  EVID: audit/sce/crypto_check.py: a valid certificate gives (True, 'BLS aggregate valid, 3 of 3 endorsers counted'). Duplicate signers v2,v2,v2 give (False, 'BLS aggregate signature invalid') via `len(set(signer_ids)) == len(signer_ids)` (corroboration.py:60). A tampered incident position gives False. lru_cache wraps only pure functions (public_key, sign, verify_aggregate), and a cache hit returned the identical result (CacheInfo hits=1). The batch_authenticate docstring ('does not claim a multi-message cryptographic batch speedup') matches its per-item accept() loop and PROJECT_GUIDE.md:62-64. Caveats: experiment.py:127-128 passes only certificates for the single sc['alert'], so the batch always dedupes to at most 1 event. Duplicate signers are reported as 'signature invalid', while corroboration.py:9 says 'a repeat adds nothing' (it actually invalidates the certificate).
+  IMPACT: The cryptographic verification layer behaves as documented.
+  ACTION: Optionally return a distinct 'duplicate signer' reason and test batch_authenticate with several distinct events.
+
+[SCE-7] info/works/high :: The frozen-snapshot assumption for dissemination is physically justified (about 1 m of movement in the slowest run)
+  @ scenario.py:141-153, experiment.py:101-111, channel.py:109-131
+  EVID: MEASURED over 180 runs, all protocols: proposed t_last median 40-48 ms, max 61.9 ms; ch_route max 64.2 ms; flooding max 35.8 ms. The highest vehicle speed in any snapshot was 19.3 m/s. Bound: 19.3 m/s x 64.2 ms is at most 1.25 m per vehicle and at most 2.5 m of pair closing, under 1% of the 300 m range. The assumption is disclosed at PROJECT_GUIDE.md:91-92 and FACULTY_PRESENTATION.md:93.
+  IMPACT: Topology change during dissemination is negligible under the unit-disk model, so the snapshot does not bias the radio results.
+  ACTION: None; consider quoting the measured bound in the documentation.
+
+[SCE-8] info/works/high :: SUMO mobility runs cleanly: no teleports, collisions or finished trips; small insertion backlog at 500 vehicles
+  @ scenario.py:50-72, config.py:14-16
+  EVID: All 180 scenarios were re-run with identical SUMO arguments plus --statistic-output and with warnings enabled (sweep.py sumo_stats). Result: teleports 0, collisions 0, emergencyStops 0, warning lines 0. running == inserted in 180/180, so no vehicle finished its 30-edge random walk and the config.py:15 claim holds. Routes are random walks without U-turns (scenario.py:54-60), departures are U(0,30 s), the step length is 1 s and the vehicle type is the SUMO default `<vType id="car"/>` (Krauss). The fastest snapshot speed was 19.3 m/s on 13.89 m/s roads (speedFactor spread), and 20-38% of vehicles were stopped at incident time (traffic lights). Caveats: an insertion backlog left 1-4 vehicles un-inserted in 6/30 runs at d=500 (n=496-499) and in 1 run at d=300. One malicious vehicle had only 2 watchdog observations, contradicting config.py:16 ('>=30 trust observations'). run_sumo would hide teleports and collisions anyway because of --no-warnings (scenario.py:71).
+  IMPACT: The mobility input is sound for a snapshot study; the nominal 'density' slightly overstates the vehicles present at 500.
+  ACTION: Report the vehicles actually present (len(ids)), fix the config.py:16 comment, and drop --no-warnings or keep the statistic-output per run.
+
+[SCE-9] info/works/high :: Scenario generation is deterministic: the documented demo run reproduces exactly
+  @ scenario.py:25-26, scenario.py:106-113, FACULTY_PRESENTATION.md:72-74
+  EVID: Re-simulating d200_r02 (seed 30002) in the audit gave: flooding received 189 with 176 frames; proposed 200/200 with 28 frames; ch_route 89 with 14 frames; forged alert under full protection accepted_share 0.0. These match FACULTY_PRESENTATION.md:72-74 exactly ('189 / 200 | 176', '200 / 200 | 28', '89 / 200 | 14'). seed_for = BASE_SEED + 100*density + run is unique while run < 100.
+  IMPACT: Results are reproducible from the seed.
+  ACTION: None.
+
+[SCE-10] info/model-validity/high :: The incident is staged on a moving vehicle and does not stop or affect traffic in the experiment, only in demo.py
+  @ scenario.py:119, scenario.py:144, demo.py:382, demo.py:423
+  EVID: scenario.py:119 `run_sumo(routes, seed, t_incident + 1, fcd)` ends SUMO at the incident second, and scenario.py:144 picks a random honest vehicle as the source. The experiment path contains no stop and no TraCI call. MEASURED source speed at the 'crash' second, d=50..500: median 9.75/6.57/11.75/7.18/7.62/1.47 m/s; share moving faster than 5 m/s 0.73/0.60/0.70/0.67/0.53/0.43. Only demo.py freezes the vehicles (demo.py:382 `freeze(ids, True)`) and keeps the source stopped after the replay (demo.py:423). Disclosed at PROJECT_GUIDE.md:90-91 ('staged accident, not a physics collision detector').
+  IMPACT: There are no secondary traffic effects such as queues or braking, and the 'crashed' vehicle is often moving at speed. This is acceptable for single-snapshot dissemination but is not a crash model.
+  ACTION: Optionally stop the source through TraCI a few seconds before the snapshot so the scene matches the narrative, and keep the disclosure.
+
+[SCE-11] minor/model-validity/high :: The road network is a small straight 5x5 grid, not 'curved streets', with a 3-5 hop diameter at 300 m
+  @ config.py:10, network/build_urban.py:15-36, network/urban.net.xml
+  EVID: config.py:10 comment: 'curved streets, landscaped blocks and a central boulevard'. MEASURED from urban.net.xml: 80 normal edges; all 168/168 lanes have 2-point (straight) shapes, matching build_urban.py:31 `shape = f'{x1:.2f},{y1:.2f} {x2:.2f},{y2:.2f}'`. 72 edges have 2 lanes and 8 boulevard edges have 3; every lane is 13.89 m/s. There are 25 junctions (9 traffic_light, 16 priority), the area is 820 x 800 m and the directed edge length is 14.5 km. The source's hop distance to the farthest reachable vehicle in the 300 m radio graph was 3-5 (d=50/200/500, runs 0-4), so HOP_LIMIT=10 never binds. The source has a median of 13.5 (d=50) to 134 (d=500) one-hop neighbours. run_experiment.sh:23 still requires the unused network/road.net.xml.
+  IMPACT: Only shallow multi-hop dissemination is exercised, so results may not carry over to larger or sparser urban areas.
+  ACTION: Fix the comment, and add a larger map (for example 3 x 3 km or an OSM extract) to exercise multi-hop and hop-limit behaviour.
+
+[SCE-12] info/works/high :: The clustering and CH election code matches the documented algorithm
+  @ clustering.py:21-55, PROJECT_GUIDE.md:46-48
+  EVID: PROJECT_GUIDE.md:46-48: 'DBSCAN on coordinates (40 m, minimum 3 vehicles). Cluster representatives greedily cover members; relative speed breaks coverage ties. Trust must meet 0.7.' Code: clustering.py:31 `DBSCAN(eps=DBSCAN_EPS_M, min_samples=DBSCAN_MIN_PTS).fit_predict(xy)` (positions only); :41 candidates are limited to trusted[m]; :46 the key is (coverage, -rel_speed); :54 tier 0 = trusted CH or BRIDGE. MEASURED: every DBSCAN cluster got at least one CH in 180/180 runs (0 clusters without a CH).
+  IMPACT: The documentation describes the code accurately.
+  ACTION: None.
+
+[SCE-13] minor/model-validity/high :: Clustering degenerates: about 1 CH per cluster, 65% BRIDGE vehicles at d=50, and 230-vehicle DBSCAN chains at d=500
+  @ clustering.py:5-6, clustering.py:34-35, clustering.py:42-54
+  EVID: MEASURED (30 seeds per density, d=50/100/200/250/300/500): clusters 4.2/11.3/21.6/24.3/24.0/19.8; noise (BRIDGE) share 0.65/0.41/0.19/0.14/0.10/0.04; tier-0 share 0.68/0.48/0.28/0.22/0.17/0.07; most CHs in any one cluster 1/1/1/2/1/3; largest cluster 11/15/34/74/60/230 vehicles. Cause: CH coverage uses the 300 m radio disk (clustering.py:35 `reach = adj | np.eye`) while eps is 40 m, so the greedy set cover almost always stops after one head. BRIDGE means any DBSCAN noise vehicle (clustering.py:34), with no connectivity test, although clustering.py:5-6 justifies it as 'often the only link across a sparse gap'.
+  IMPACT: At low density two-thirds of vehicles share the top priority tier, so tiers give little suppression. At high density clusters become road-long chains and lose locality.
+  ACTION: Document this behaviour. Consider velocity or direction features, an eps that depends on density, or defining BRIDGE by articulation points or neighbour sets.
+
+[SCE-14] info/works/high :: RSU placement measured: 64% of road length within range, 50-80% of incidents in direct range, never partitioned
+  @ config.py:19-23, config.py:97-101, metrics.py:81-82
+  EVID: The RSUs sit on junctions B3 (160,590) and D1 (610,170) (config.py:100-101); the literal positions (200,600)/(600,200) at config.py:23 are always overwritten, so they are dead. MEASURED: 63.8% of road length lies within 300 m of an RSU, and the farthest road point is 667 m away. Share of incidents in direct RSU range, d=50..500: 0.63/0.70/0.50/0.70/0.73/0.80; share needing V2V relay: 0.37/0.30/0.50/0.30/0.27/0.20. The source's component always contained an RSU (0.00 partitioned at every density). proposed rsu_received was 1.00 at every density; ch_route 0.87/0.97/0.93/1.00/1.00/1.00, with NO_CH_ROUTE in 3 runs at d=50 and 1 at d=100. This is consistent with config.py:19-22 ('far corners are deliberately NOT covered').
+  IMPACT: The RSU-coverage claim holds. However, the rsu_relay_* metrics rest on only 6-15 of 30 runs per density.
+  ACTION: Report the sample size behind rsu_relay_* (the *_n columns already exist), and remove the dead literal at config.py:23.
+
+[SCE-15] minor/doc-mismatch/high :: RSU plausibility checks are weaker than documented: bounding-box location, unsigned created_s and hop_limit, and checks that cannot fail in simulation
+  @ rsu.py:13-15, rsu.py:42-49, rsu.py:65, corroboration.py:45-49
+  EVID: rsu.py:13 says 'the incident position lies inside the road network', but rsu.py:42 only tests the lane bounding box BOUNDS=(-6.4,-6.4,826.4,806.4). An audit call to rsu.validate with an alert at (275,270), inside a block with no lane, returned [] (accepted). The digest omits created_s and hop_limit (corroboration.py:48-49): crypto_check case 4 shows that changing hop_limit and created_s still gives (True, ...) with 'digest equal: True', yet the freshness and hop checks (rsu.py:44-49) read exactly those fields. In experiments received_s = created_s + delay_ms/1000 (rsu.py:65) with delay at most 2 s, so checks 4-5 can never fail. The forged alert uses the forger's real position, so only check 7 (the certificate) ever rejects anything.
+  IMPACT: The 8-check validation list overstates what protects the RSU. A relay could raise hop_limit or refresh created_s without invalidating the certificate.
+  ACTION: Sign created_s and hop_limit, or have the RSU use the signed incident_time_s. Test the location against lane geometry. Describe checks 1-6 as unit-tested sanity checks.
+
+[SCE-16] info/dead-code/high :: Dead and write-only helpers: infrastructure.cluster_votes is unused, and post-event trust updates are never fed back
+  @ infrastructure.py:47-63, infrastructure.py:103-113, experiment.py:124-126
+  EVID: A grep for cluster_votes finds only its definition (infrastructure.py:47) and a mention in build_project_document.py:190 ('a separate helper'); nothing calls it. trust_after_event output is stored (experiment.py:126, infrastructure.py:97-98) and displayed (presentation.py:20-21), but scenario.build never reads it and recomputes trust from scratch every run.
+  IMPACT: Code paths are documented as features but never exercised, and no experiment includes trust learning across events.
+  ACTION: Delete cluster_votes, and state that post-event trust updates are illustrative only.
+
+==================== MET
+[MET-2] major/reproducibility/high :: Checked-in processed results come from an older road network and cannot be reproduced; the demo run comes from the current network
+  @ results/urban/processed/runs.csv, results/urban/processed/summary.csv, results/urban/summaries/RESULTS.md, results/urban/summaries/experiment_config.json, config.py:100-101
+  EVID: Script: scratchpad/audit/met/repro.py and repro2.py (full path: C:/Users/Rudra/AppData/Local/Temp/claude/c--Users-Rudra-Desktop-Project-phase-project-phase-project-phase/fb87cded-b92e-4290-ae63-238de9110066/scratchpad/audit/met/). Reran all 8 checked-in scenarios with run_one(d, r, save=False). Output: 'runs.csv mismatching cells: 1586 of 3784' and 'summary.csv mismatching cells: 2218 of 4708'. In every scenario the incident second and source ID match, but the positions differ. Example: d50_r00 source v1 is at (702.32, 6.42) in the checked-in files and at (694.84, 4.8) now; proposed tx is 19 then and 17 now. The RSUs also moved. experiment_config.json ('generated': '2026-10-07T23:09:15') records RSU-1 [152.25, 604.92] and RSU-2 [630.2, 168.62]. The current config.RSU_POSITIONS is {'RSU-1': (160.0, 590.0), 'RSU-2': (610.0, 170.0)}, read from network/urban.net.xml (file time 2026-10-26). The old set is internally consistent: raw d*_r0{0,1} vs runs.csv gives 0 mismatches, and summary.csv recomputed from runs.csv gives 0 of 4620. The demo raw d200_r02 (RSU-1 at (160.0, 590.0), recorded 2026-10-29) reproduces with 0 metric diffs. So RESULTS.md and the dashboard describe a different road network from the demo and explain outputs.
+  IMPACT: No number in summary.csv, RESULTS.md or the dashboard can be regenerated from the current code. The headline tables and the showcase run describe two different RSU layouts and mobility traces.
+  ACTION: Regenerate the whole result set with the current code (python run.py experiment with EXP_RESULTS_DIR set to a clean folder, then replace results/urban). Record the git commit and a hash of NET_FILE in experiment_config.json so a mismatch can be detected later.
+
+[MET-3] minor/doc-mismatch/high :: Checked-in results have 2 seeds at 4 densities, but some documents claim 30 seeds
+  @ results/urban/summaries/experiment_config.json, FACULTY_PRESENTATION.md:99, config.py:12, report.py:265-267
+  EVID: experiment_config.json ends with '"densities": [50, 100, 200, 250], "runs": 2'. runs.csv has 88 rows (4 x 2 x 11), summary.csv 44 rows, forgery_runs.csv 24 rows (runs ['0','1']). There are no 300 or 500 results. README.md:177 is accurate: 'only two scenarios per population. It is preliminary evidence'. FACULTY_PRESENTATION.md:99 (untracked) says: 'Averages over 30 seeds per density are in `results/urban/processed/summary.csv`'. config.py:12 comment: '30 keeps every 95 % CI narrow vs. the effects (RESULTS.md)', yet RESULTS.md shows e.g. '66.0 ± 559.1'. RESULTS.md line 3 (report.py:266) says it was generated 'from `results/processed/`', but the real folder is results/urban/processed.
+  IMPACT: Presentation material overstates the statistical basis of the shown numbers by 15x.
+  ACTION: Fix FACULTY_PRESENTATION.md:99 and the config.py comment, or run the 30-seed experiment. Make report.results_md print config.RESULTS_DIR.
+
+[MET-4] minor/bug/high :: suppression_ratio counts vehicles stopped by the hop limit as suppressing, so blind flooding reports up to 11 % suppression
+  @ metrics.py:102, metrics.py:14, protocols.py:134-135
+  EVID: metrics.py:102: '"suppression_ratio": 1 - (t - 1) / honest.sum()'. The docstring (line 14) says 'honest non-source receivers that chose not to rebroadcast'. Vehicles marked EXPIRED (hop == HOP_LIMIT, protocols.py:134) are in the denominator but never transmit. handcheck.py S3 (12-vehicle chain, Flooding): 'EXPIRED: [10] FORWARD: 9' gives suppression_ratio 0.0999 (by hand, 0.0). Checked-in raw d250_r01 flooding {'FORWARD': 223, 'EXPIRED': 1} gives 0.0045, which RESULTS.md shows as 'Blind flooding ... 0.2 ± 2.8'. Current-code rerun d300_r01 flooding {'FORWARD': 187, 'EXPIRED': 23} gives suppression_ratio 0.1095. d500 r0/r1 give 0.0069 and 0.0048.
+  IMPACT: The baseline that by definition never suppresses shows non-zero suppression, and the full 300/500 experiment will show it. It also inflates every scheme's suppression wherever paths reach 10 hops.
+  ACTION: Leave hop-limited receivers out of the denominator (honest receivers with hop < HOP_LIMIT), or count decisions == 'SUPPRESS' directly.
+
+[MET-5] minor/model-validity/high :: Dropping NaN runs biases t90 and makes cross-scheme t90 comparisons unpaired
+  @ metrics.py:105, metrics.py:136-143, report.py:327, report.py:293
+  EVID: t90_ms is NaN when r < ceil(0.9e) (metrics.py:105), and summarize drops NaNs (line 138). Checked-in summary.csv: slotted1p t90 n = 0/2 (d50), 1/2 (d100), 1/2 (d250). RESULTS.md 'Change relative to the baselines' therefore prints '+nan ms' (50), '-0.9 ms' (100) and '+2.9 ms' (250), each from a single slotted1p run against 2 proposed runs. Current-code sweep (analyze_sweep.py), d50 with 15 runs: slotted1p t90 n=12/15. Unpaired proposed-minus-slotted1p = 37.43 - 35.43 = +2.0 ms, but on the 12 runs where both reached 90 % it is 36.58 - 35.43 = +1.15 ms. d300 (3 runs): flooding t90 n=2/3; the dropped run had reach 0.797.
+  IMPACT: A scheme that fails to reach 90 % loses its worst runs from the t90 mean, which flatters unreliable baselines. The difference table compares means over different scenario subsets.
+  ACTION: Compute t90 differences on runs where every compared scheme reached 90 % (paired). Report the share of runs reaching 90 % next to t90, and show *_n in RESULTS.md.
+
+[MET-6] minor/bug/high :: A single sample is reported with zero uncertainty (std = CI = 0 when n = 1)
+  @ metrics.py:141-142
+  EVID: metrics.py:141-142: 'std = v.std(ddof=1) if v.size > 1 else 0.0' and 'ci = ... if v.size > 1 else 0.0'. Run: summarize([39.416, nan]) returns (39.416, 0.0, 0.0, 1). RESULTS.md shows '39.4 ± 0.0' (slotted1p t90 at 100 vehicles, t90_ms_n=1). The RSU relayed columns at 50 vehicles show '17.82 ± 0.00 | 45.0 ± 0.0' with 'Relayed: n' = 1.
+  IMPACT: Tables and error bars suggest exact values where the CI is undefined. With 30 seeds this still happens for the rsu_relay_* columns, where n is the number of out-of-range incidents (5-6 of 15 runs in the sweep, and 1 at d250/d500 in the 3-run check).
+  ACTION: Return NaN for std and CI when n < 2, and print n (or 'n=1') in report._fmt.
+
+[MET-7] minor/model-validity/high :: t_last_ms (and mean_delay_ms) only count vehicles that were reached, so lower reach looks faster and a failed run scores 0 ms
+  @ metrics.py:106-107, report.py:283
+  EVID: metrics.py:106: '"t_last_ms": slots_to_ms(rx[-1])', where rx contains only receivers plus the source at 0. Checked-in summary.csv d50: slotted1p t_last 24.68 ms at reachability 0.45, proposed 56.21 ms at 1.0. RESULTS.md 'Last reached (ms)' shows '24.7 ± 31.8' against '56.2 ± 138.6'. handcheck.py S6 (isolated source): 't_last_ms': 0.0, while reachability is NaN. The same applies to any run whose quorum fails (rx = [0]). t_last_ms and mean_delay_ms are also not defined in the module docstring.
+  IMPACT: The headline 'Last reached' column rewards schemes that stop early. A latent quorum failure would add a perfect 0 ms to the mean (none occurred in 39 sweep runs).
+  ACTION: Report t_last only together with reach, or define it as NaN unless r == e (and NaN when r == 1). Document both metrics.
+
+[MET-8] minor/bug/high :: rsu_tx_before is counted at registration time (decode + 4.3 ms BLS verify) but is labelled 'before reception' and 'frames until RSU'
+  @ metrics.py:84, protocols.py:116, rsu.py:76, report.py:307
+  EVID: protocols.py:116 records the RSU copy at 't + self.verify'. metrics.py:84 counts 'sum(tx["end"] <= slot for tx in log)' at that slot. rsu.py:76 stores it as 'transmissions_before_reception', and RESULTS.md labels it 'Relayed: frames until RSU'. On checked-in d200_r02: flooding rsu_tx_before 121, but only 46 frames had ended when the RSU decoded the copy (delay 19.292 ms, decoded at 14.989). slotted1p: 20 vs 10. proposed: 9 vs 8. ch_route: 14 vs 14.
+  IMPACT: Frames sent after the RSU already had the alert are charged to 'frames until RSU'. This inflates chatty schemes 2-2.6x, while no_security (verify = 0) is measured over a different window.
+  ACTION: Count frames ended by the decode slot (slot - verify) and keep delay as registration time, or rename the field and the column to 'frames until registration'.
+
+[MET-11] minor/reproducibility/high :: run_one saves by default, so every demo, single and experiment run writes into tracked results/urban
+  @ experiment.py:98, experiment.py:134-144, demo.py:317, run.py:36, run.py:91, experiment.py:232-233
+  EVID: experiment.py:98 'def run_one(density, run, protocols=config.PROTOCOLS, save=True)'. When saving it writes '<run_id>__<timestamp>.json.gz' (lines 139-142), overwrites '<run_id>.json.gz' (143-144) and calls infrastructure.persist into config.RESULTS_DIR (134). It is called with the default by demo.py:317 'experiment.run_one(density, run_index)', run.py:91 (single), run.py:36 (showcase) and every matrix job (_job, line 233). Observed: 12 copies of d200_r02 (8 tracked and 3 untracked timestamped copies plus the alias, 968K total), all with the same metrics md5 6d480f78. git status shows ' M results/urban/raw/d200_r02.json.gz', ' M results/urban/infrastructure/backhaul.sqlite3' and 3 '??' copies. HEAD and working-tree d200_r02 differ only in '/recorded_at'. The sqlite rows are identical to HEAD (9/9/1400/2), yet the binary is modified.
+  IMPACT: Every demo dirties git with a content-identical change. A 30-seed experiment adds about 2 files per job to a tracked folder (estimated ~18 MB from the observed 22-110 KB per run). `single -d 50 -r 0` would silently replace the old-network raw file that runs.csv was derived from (inferred from the code, not run).
+  ACTION: Default save=False for demo and single, or write timestamped archives to a gitignored folder. Add results/urban/raw/*__*.json.gz and backhaul.sqlite3 to .gitignore. Skip writing when the content is unchanged.
+
+[MET-12] minor/risk/medium :: The test suite writes into the repo's tracked backhaul.sqlite3, which now mixes two road networks
+  @ validation/test_pipeline.py:32-33, experiment.py:134-135, infrastructure.py persist()
+  EVID: test_pipeline.py:32-33 does 'monkeypatch.setattr(experiment, "RAW", str(tmp_path))' and then 'experiment.run_one(100, 1)' with save=True. persist is passed config.RESULTS_DIR, not RAW (experiment.py:134), so it writes results/urban/infrastructure/backhaul.sqlite3. In the sqlite (HEAD and working tree), the d100_r01 dataset has RSUs [(160.0, 590.0), (610.0, 170.0)] and incident_xy [19.37, 795.2], which matches today's rerun. The checked-in raw d100_r01.json.gz has RSUs [(152.25, 604.92), ...] and incident [-17.12, 794.82], and the sqlite d50_r00 event is old-network ([702.32, 6.42]). No d100_r01__* archive exists, which rules out a `single` run. The attribution is an inference.
+  IMPACT: Running pytest changes tracked data, and the backhaul and analytics views combine records from different code and network versions.
+  ACTION: In the test, also redirect the output folder (monkeypatch config.RESULTS_DIR, or call with save=False and test persist separately with tmp_path). Derive the sqlite path from the same variable as RAW.
+
+[MET-14] minor/risk/high :: Report step crashes with ZeroDivisionError when a baseline's mean is 0
+  @ report.py:324
+  EVID: report.py:324: 'ch = lambda k, b: 100 * (g["proposed"][k] - g[b][k]) / g[b][k]', with no zero check. In the sweep, slotted1p had collision_losses == 0 in d50_r06. report.results_md on the summary aggregated from that run gives 'ZeroDivisionError float division by zero'. Not reachable with --runs N at d50, because run 0 has collisions (latent).
+  IMPACT: A small or low-density experiment can crash after the CSVs are written, so RESULTS.md and the dashboard are never produced.
+  ACTION: Guard the division (print 'n/a' when the baseline is 0).
+
+[MET-15] info/doc-mismatch/high :: Module docstring is incomplete or inaccurate for 7 metrics (airtime_ms, accepted, t90 semantics)
+  @ metrics.py:4-29, metrics.py:41-46, metrics.py:94, metrics.py:105, metrics.py:110
+  EVID: collision_ratio, t_last_ms, mean_delay_ms, cbr_peak and airtime_ms are in METRICS (lines 41-46) but not in the docstring. airtime_ms is the mean channel-busy time per vehicle, not airtime: S1 gives airtime_ms 1.183 ms, while 3 frames x 39 slots = 1.521 ms were on air. 'accepted' is documented as 'obtained a quorum certificate', yet S6 (security=None) gives 'accepted': 1.0. t90 uses k90 = ceil(0.9e) including the source, so for e <= 9 it means 100 %: S4 (e=5) gives 'k90 = 5', t90_ms 2.288 == t_last_ms 2.288 ('smallest e where ceil(0.9e) < e: 10'). The float ceil is exact for e <= 5000 (checked).
+  IMPACT: Readers can misread three plotted metrics. No numeric error at the densities used (e = nv >= 50 in all runs).
+  ACTION: Document the five missing metrics, rename airtime_ms (e.g. busy_ms_per_vehicle), and state that t90 counts the source and that accepted=1 when security is off.
+
+[MET-1] info/works/high :: Core metric formulas match hand calculations on tiny scenarios
+  @ metrics.py:55-121
+  EVID: handcheck.py uses a fixed-backoff RNG stub with geometry, Flooding, simulate and run_metrics (frame = 39 slots, AIFS = 5, CBR window = 7692 slots). S1 (3-chain at 250 m) log [(0,5,44,1,0,0),(1,49,88,1,1,0),(2,93,132,0,1,0)] gives 'ALL MATCH (21 metrics checked)': redundant_tx 1, dup_rx 2, srb 0, reachability 1, t90 = 88 slots = 1.144 ms, cbr_100ms = 91/7692 (sender plus in-range vehicles busy), quorum_ms NaN. S2 (RSU hears both relays) log [(0,5,44,2,0,0),(1,49,88,1,2,0),(2,95,134,0,3,0)] gives 'ALL MATCH (18 metrics checked)': dup_rx = 5 raw dups - 1 RSU second copy = 4, and a frame that only informs the RSU is not redundant. The reachability denominator uses vehicles only (metrics.py:59), and e == nv in all 39 sweep runs and all 9 checked-in raw files. All traffic ended inside the 100 ms CBR window in every sweep run (busy share after the window = 0.000).
+  IMPACT: The basic counting (redundant, duplicate, RSU subtraction, reach, srb, CBR, collision bookkeeping) is correct.
+  ACTION: Keep. handcheck.py could become a regression test.
+
+[MET-17] info/works/high :: RSU registration and the rsu_* NaN logic behave as documented
+  @ metrics.py:80-88, metrics.py:111-120, rsu.py:55-80
+  EVID: rsu_nan.py (3-node layouts). A, RSU out of range: rsu_reachable 0, rsu_received nan, relay nan. B, RSU only behind a black-hole relay: rsu_received 0.0, rsu_relay_received 0.0, delay nan. C, RSU in direct range of source: received 1.0, delay 0.572 (44 slots), hops 1, rsu_needs_relay 0, relay_* nan. D, via one honest relay: received 1.0, delay 1.144, hops 2, relay_tx_before 2. S2: one registration with rsu_dup_copies 1. Hop check: EXPIRED vehicles never relay (protocols.py:134), so an RSU copy has hop <= HOP_LIMIT.
+  IMPACT: RSU success, delay and relay metrics are well defined and correctly NaN-gated (subject to MET-8 for rsu_tx_before).
+  ACTION: None.
+
+[MET-9] info/works/high :: Comparison is paired by snapshot; per-scheme RNG streams are deterministic, independent and order-free, but they are not common random numbers
+  @ experiment.py:106-111, experiment.py:161
+  EVID: Every arm shares sc/net (same positions, source, RSUs, malicious set, trust). rng = 'np.random.default_rng([sc["seed"], config.PROTOCOLS.index(name)])'. run_one(50,0, protocols=['ch_route','proposed','flooding']) against the full run gives 'differing cells = 0'. Because MAC draws differ per scheme, even the identical vote phase differs: the per-run spread of quorum_ms across secure schemes was 0.026-0.078 ms at d50, d100, d250, d300 and d500. d200_r02: flooding 12.103, slotted1p 12.077, proposed 12.051.
+  IMPACT: Fair: no scheme reuses or is favoured by another's stream. Within-run MAC noise is independent across schemes but small (<0.08 ms against t90 differences of several ms).
+  ACTION: Keep. Optionally state in the docs that pairing is at the snapshot level, not at the MAC-draw level.
+
+[MET-10] info/works/high :: The demo run d200_r02 reproduces exactly, and save=False has no side effects
+  @ experiment.py:98-145, results/urban/raw/d200_r02.json.gz
+  EVID: repro.py: 'run_one(200,2) took 3.5s'. '[working tree] recorded_at=2026-10-29T17:00:35 ... metric diffs=0' and '[HEAD] recorded_at=2026-10-25T12:48:59 ... metric diffs=0', checked across all 11 protocols and the forgery transmissions. All 12 archived d200_r02 copies (2026-10-08 to 10-29) have metrics md5 6d480f78. After 49 run_one(save=False) calls, git status and the mtimes of results/ and __pycache__ were unchanged ('git status unchanged', 'results/ and __pycache__ mtimes unchanged'), and the EXP_RESULTS_DIR folder stayed empty.
+  IMPACT: The simulation is deterministic per seed. The showcase and demo numbers can be trusted as reproducible.
+  ACTION: None.
+
+[MET-13] info/works/high :: No crash in a 50/100 x 15-run sweep or extra 250/300/500 runs; the 'genuine alert failed RSU validation' assert is not reachable in practice
+  @ metrics.py:88, metrics.py:126-133, experiment.py:98
+  EVID: sweep.py: d in {50,100}, r in 0..14 with save=False gives 'errors: 0 ok: 30'. Extra d in {250,300,500}, r in 0..2 gives 'errors: 0 ok: 9'. The 8 checked-in scenarios, d200_r02 and a subset run add 10 more calls (49 total, 0 exceptions). Inference from code: a genuine copy can only fail rsu.validate on location, hop or certificate. The position is an FCD lane position inside BOUNDS (scenario.py:38-42). RSU hop <= 10 because hop-10 vehicles are EXPIRED. cert_ok is set by corroboration.accept on the voters' own reputable signatures before any ALERT exists. dup_rx >= 0 holds because RSU duplicates return 'dup' only after has[v] (protocols.py:117-120). No quorum failure occurred in the 39 sweep runs (accepted == 1 everywhere).
+  IMPACT: A full experiment is unlikely to abort in metrics.check or the RSU assert. The remaining crash risk is in the report step (MET-14).
+  ACTION: None for the asserts. Consider logging instead of asserting in production sweeps.
+
+[MET-16] info/works/high :: Summary aggregation is correct (mean, ddof=1 std, Student-t CI) and the checked-in summary equals the aggregate of runs.csv
+  @ metrics.py:136-143, experiment.py:257-269
+  EVID: summarize([3.0,5.5,4.25,9.0,nan,7.5]) gives (5.85, 2.42126000256065, 3.006391375470313, 5). scipy.stats.t.interval gives mean 5.85, std(ddof=1) 2.42126000256065 and half-width 3.006391375470313, identical. experiment._aggregate over the checked-in runs.csv against summary.csv: 'mismatching cells 0 of 4620'. The per-metric n is saved as {k}_n (e.g. t90_ms_n), so NaN exclusion is traceable.
+  IMPACT: The statistics code is correct for n >= 2. Its problems are the n=1 case (MET-6) and NaN-subset bias (MET-5), not the formula.
+  ACTION: None beyond MET-5 and MET-6.
+
+==================== RAD
+[RAD-1] major/unfair-baseline/high :: Blind-flooding baseline has no jitter beyond CW_MIN=3, so most of its reachability loss comes from the baseline design
+  @ protocols.py:227-229, protocols.py:70-73, channel.py:65
+  EVID: Code: Flooding.first_copy -> self.decide(v,'FORWARD',...) -> self.ch.enqueue(...) in the same slot the copy is decoded. The only randomness is channel.py:65 `self.backoff[node] = self.rng.integers(0, CW_MIN + 1)`, which spreads relays over 0-3 slots (0-39 us). A secured alert is 50 slots (650 us) long. Every receiver of a frame therefore enqueues in the same slot.
+Measured with scratch radio/harness.py on the same snapshots (10 seeds each at densities 50/200/500; summary in radio/results/summary.txt):
+- Reachability, repo flooding: 0.974 / 0.975 / 0.941 (100% in 4/10, 1/10, 1/10 runs).
+- Flooding + U[0,5 ms) RAD (the same RAD Proposed gets): 1.000 / 1.000 / 0.998 (100% in 10/10, 10/10, 7/10 runs).
+- Flooding with CW=31 on ALERT frames only: 1.000 in 30/30 runs.
+- Alert frames do not drop with jitter: 43.9 / 175.2 / 413.6 becomes 45.0 / 180.0 / 448.8 with RAD.
+- collision_ratio: 0.69 / 0.91 / 0.96 becomes 0.55 / 0.86 / 0.94 with RAD and 0.53 / 0.74 / 0.85 with CW31.
+- Demo run d200 r2: reach 0.945 -> 1.000 (both RAD and CW31); RSU delay 19.3 -> 18.0 ms.
+protocols.py:12 cites Ni et al. 1999 for flooding, and :258 credits RAD to the same paper. That RFC 5148 recommends jitter for flooded MANET traffic is external context (inference), not measured here.
+  IMPACT: The transmission and collision storm is real (frame counts stay at about the number of vehicles even with jitter). The reachability gap is not robust: 'full reach vs flooding 189/200 (94.5%)' (FACULTY_PRESENTATION.md:72,83) depends on a flooding variant with no jitter, which most implementations would not use.
+  ACTION: Add a 'flooding + RAD' (or CW 15/31) baseline, or state the no-jitter assumption next to every reachability comparison. Base claims on frames, collisions and airtime rather than on reach versus flooding.
+
+[RAD-2] major/bug/high :: Flooding relays before its own certificate verification, so saved records show transmission before reception and flooding delays are understated
+  @ protocols.py:123, protocols.py:137, protocols.py:227-229, protocols.py:70-73
+  EVID: Code: on_alert sets `self.now = accepted_at = t + self.verify` (331 slots = 4.3 ms) and calls first_copy(v, s, accepted_at). Flooding.first_copy then enqueues immediately at reception slot t. Slotted1P (protocols.py:236) and Proposed (:262) start their timers at accepted_at instead.
+- unit_checks.out: 'vehicle 1 starts relaying at slot 54 but its own acceptance is slot 378'.
+- Saved results/urban/raw/d200_r02.json.gz: 166 of 169 flooding FORWARD vehicles have tx_ms < decided_ms (e.g. v0 rx_ms=17.121, tx_ms=14.313). Slotted1p: 0/30. Proposed: 0/21.
+- Scratch FloodVerify variant (relays at accepted_at): t90 21.2->29.9, 25.1->31.5, 29.6->32.7 ms at densities 50/200/500; RSU delay 17.7->20.5, 19.1->22.2, 17.6->19.1 ms.
+- Demo run d200 r2: flooding RSU delay 19.3 -> 23.5 ms, against proposed 22.5 ms.
+  IMPACT: This contradicts protocols.py:8-9 ('verifies the certificate before it accepts... rejected alert is not... forwarded'): flooding uses cert_ok before verification has finished. Flooding latency is underestimated by about one verification per hop. The limitation listed at FACULTY_PRESENTATION.md:97 ('Proposed slower to the RSU than flooding, 22.5 vs 19.3 ms') is produced by this artifact, and the explainer and dashboard show relays transmitting before they receive.
+  ACTION: In Flooding.first_copy, set self.timers[v] = t (accepted_at) and FORWARD in expire(), as Slotted1P does. Then regenerate results and add a test that every relay's tx_start >= its first_rx.
+
+[RAD-3] major/unfair-baseline/high :: Slotted1P is implemented without the RAD that Proposed gets; adding the same RAD to Slotted1P matches Proposed's frame count
+  @ protocols.py:233-236, protocols.py:258-262
+  EVID: Slotted1P's timer is `t + k * TAU_SLOTS`, while Proposed adds `rad = rng.integers(0, ms_to_slots(RAD_MS))`. The scratch variant slotted1p_rad adds the same U[0,385)-slot RAD, on the same seeds.
+Results for densities 50 / 200 / 500:
+- Alert frames: slotted1p_rad 12.1 / 18.5 / 23.0; proposed 11.6 / 21.3 / 27.7; repo slotted1p 15.8 / 49.4 / 145.2.
+- Paired difference at d500 (slotted1p_rad minus proposed): [-7,-6,2,0,3,1,-36,0,-6,2].
+- Collision losses: 6.9 / 226 / 1112, against proposed 14.6 / 178 / 912.
+- t90: 38.8 / 29.3 / 32.8 ms, against proposed 37.6 / 34.5 / 42.1 ms.
+- Reachability: 0.976 / 0.999 / 0.993 (minimum 0.86 / 0.995 / 0.970), against proposed 1.000 in 30/30 runs.
+Related measurement: Proposed with every vehicle in tier 0 (no_cluster_forwarding) sends 210.9 alert frames at d500, so the coverage test alone is a weak suppressor; the tier delay does most of the suppressing.
+  IMPACT: Most of the frame and collision reduction over the state-of-the-art baseline comes from RAD (Ni et al. 1999), not from trust or clustering. Proposed's distinct measured advantage is reachability robustness (1.000 against 0.976 at d50) and, at d200/d500, it is slower than slotted1p+RAD.
+  ACTION: Report slotted1p+RAD (and flooding+RAD) as baselines, or attribute the frame savings explicitly to RAD. Frame the contribution as robustness of reachability.
+
+[RAD-4] minor/model-validity/high :: Slotted1P loses reachability at low density through synchronized relays plus suppression on any duplicate in a 2-D road network
+  @ protocols.py:232-241, protocols.py:123
+  EVID: At d50 slotted1p mean reach is 0.884 (100% in 4/10 runs; r1 0.50, r9 0.58, r6 0.86), although every vehicle was connected (e = nv in 30/30 runs). Classifying all 58 misses: 35 'every honest holder suppressed on a duplicate', 10 'a neighbour forwarded but the frame was lost at v', 13 'no neighbour had it'.
+Deep dive on d50 r1 (deep_dive.out):
+- Five slot-1 relays started at slots 1710-1713. Their timers were identical (reception + 331 + 385 slots), and all five delivered 0 new copies.
+- 5 of the 11 alert frames shared a start slot with another alert frame.
+- Holders v4, v14, v18 and v24 then SUPPRESSED after hearing v38's duplicate, yet their unreached neighbours were 346-460 m from every sender they had heard.
+Adding RAD raises d50 reach to 0.976.
+  IMPACT: The suppression rule is faithful to the paper (designed for 1-D highways). The loss is amplified by a deterministic verification delay that is identical for every vehicle, combined with CW=3. The cause should be explained when slotted1p's low-density reach is reported.
+  ACTION: Explain the mechanism alongside the results. Consider per-vehicle processing jitter, which would apply to all schemes.
+
+[RAD-5] minor/risk/high :: At the project's own 150 m sensitivity setting, Proposed loses reachability to flooding, entirely because of HOP_LIMIT=10
+  @ run.py:113-126, config.py:24, protocols.py:134-135
+  EVID: The sensitivity sweep in run.py:113 runs COMM_RANGE_M 150/300/450 at d200 and plots reachability. With EXP_COMM_RANGE_M=150, seeds r0-r5:
+- Proposed received 180 / 157 / 177 vehicles against flooding 185 / 193 / 198 in r1 / r2 / r5. Mean reach is 0.910 against 0.958.
+- Proposed misses in r2: hop_limit 24, no neighbour had it 13, only malicious neighbours had it 6.
+- With EXP_HOP_LIMIT=20, Proposed reaches 200 / 200 / 200 and flooding 199 / 199 / 198.
+- hops150.out for r2: Proposed had 23 EXPIRED and 33 FORWARD decisions; flooding had 25 EXPIRED and 148 FORWARD, so its redundancy compensated.
+At 300 m, Proposed reached 100% in 30/30 runs.
+  IMPACT: A 'less reliable at short range' reading would be wrong about the cause. The sparse tier-0 backbone produces longer first-copy paths that hit the 10-hop limit, not suppression errors.
+  ACTION: Report reachability against vehicles reachable within the hop limit, or document the effect. Optionally make the tiering hop-aware.
+
+[RAD-6] minor/model-validity/high :: The reachability denominator counts vehicles reachable only through never-relaying vehicles or beyond the hop limit (no effect at default settings)
+  @ metrics.py:59-60, metrics.py:11-12
+  EVID: metrics.py:59: `comp = reachable(adj[:nv, :nv], source)` treats malicious vehicles as relays, while the docstring at :11-12 says 'reachable in principle'. Comparisons below are against e computed with honest relays only and with a 10-hop limit.
+- At 300 m: e == e_honest == e_10hop == nv in 30/30 runs, so no effect.
+- At 150 m, e > e_honest in 3/12 runs: d50 r4 12 vs 6 (every scheme capped at 0.500), d50 r5 8 vs 5, d200 r0 199 vs 181 (proposed reached exactly the cap of 181).
+- d200 r1: e_10hop = 190 < e = 200.
+- At 150 m d50, 4/6 runs had accepted=0 (voters 0-2 < QUORUM 3), so reach = 1/e for every scheme (r2: 1/34 = 0.029).
+  IMPACT: No effect at the default settings. In the range sweep, reachability mixes radio, misbehaviour, hop-limit and corroboration failures.
+  ACTION: Also report reach over vehicles reachable via honest relays within the hop limit, and report 'alert never released' runs separately.
+
+[RAD-7] minor/oracle-leak/high :: CHRoute voter selection and shortest_route read the ground-truth malicious flag (no measured effect)
+  @ protocols.py:172-176, infrastructure.py:23-24, experiment.py:57-59
+  EVID: - protocols.py:175-176: `... >= corroboration.TRUST_CH_THRESHOLD and not self.malicious[i]][:corroboration.COMMITTEE_SIZE]`. The flag is applied before the size cut, so the head picks only honest voters.
+- infrastructure.py:24: `if role == 'CH' and trust[i] >= TRUST_CH_THRESHOLD and not malicious[i]`.
+- Measured: removing the flag changed 0 of 30 routes. The highest trust of any malicious vehicle across the 30 seeds was 0.25 (< 0.7), so the trust gate already excludes them.
+- Flooding, Slotted1P and Proposed use the flag only for the misbehaving vehicle's own DROP (protocols.py:132-133), which is legitimate behaviour modelling.
+  IMPACT: No effect at the current parameters. It would leak ground truth as soon as a malicious vehicle passes the trust gate (for example on-off attackers or a higher WATCHDOG_MISS_PROB).
+  ACTION: Remove `not malicious` from decision code. Model misbehaving CH voters as silent in CHRoute.on_receive instead.
+
+[RAD-8] info/model-validity/high :: Trust that feeds Proposed's tiers separates malicious and honest vehicles almost perfectly
+  @ scenario.py:133, clustering.py:33, clustering.py:54
+  EVID: - scenario.py:133: `failed = vid in malicious_ids or miss[i]`, so a malicious vehicle fails every one of its at least 30 observations.
+- Over 30 seeds: highest malicious trust 0.25, lowest honest trust 0.690, and only 1 honest vehicle below the 0.7 threshold.
+- The trust gate barely changes Proposed: no_reputation vs proposed alert frames 12.2 / 19.7 / 28.8 vs 11.6 / 21.3 / 27.7; reach 0.998 / 1 / 1 vs 1 / 1 / 1.
+  IMPACT: Trust-aware tiering is evaluated only with oracle-quality reputation; its robustness to reputation errors is untested.
+  ACTION: Add a sensitivity run with intermittent (on-off) misbehaviour or noisier watchdog observations.
+
+[RAD-9] minor/incomplete/high :: The hidden-terminal test does not distinguish hidden terminals, and key forwarding invariants are untested
+  @ validation/test_channel.py:41-45, validation/test_protocols.py
+  EVID: The test uses backoffs {0:1, 2:1}, so both senders start in slot 6. A scratch GlobalCS subclass (everyone hears everyone, so no hidden terminals) passes the same assertions (deep_dive.out (d): 'GlobalCS ... PASS').
+A scenario where the second sender starts mid-frame does distinguish them: with Channel the middle node decodes nothing; with GlobalCS node 2 defers to slot 49 and the middle node decodes both frames.
+No test covers: the frame_slots values, the frozen-backoff residual (B must start at 51), the hop limit, RSUs never relaying, flooding relay timing versus verification (would catch RAD-2), Proposed's tier ordering, or CHRoute. The 10 existing tests pass.
+  IMPACT: Regressions in carrier sensing or relay timing would go undetected.
+  ACTION: Add the mid-frame hidden-terminal case, an assertion on the frozen-backoff start slot, chain tests for hop limit and RSU behaviour, and a per-scheme tx_start >= first_rx invariant.
+
+[RAD-10] minor/doc-mismatch/high :: The presentation describes collision_losses as destroyed alerts, but most are copies at vehicles that already have the alert
+  @ metrics.py:17, FACULTY_PRESENTATION.md:12, FACULTY_PRESENTATION.md:72
+  EVID: The metric definition is accurate ('in-range receptions destroyed by an overlapping transmission'). The presentation says 'collisions destroy the alerts' and reports '9,509 (90.6% of receptions)'.
+Breakdown of the 9,509 flooding losses in demo run d200 r2 (deep_dive.out (b)):
+- 5,645 at receivers that already had the alert
+- 726 half-duplex
+- 103 at RSUs
+- 3,035 (32%) at receivers that did not yet have it
+Proposed's 138 losses split into 126 already-had, 2 at RSUs and 10 harmful.
+  IMPACT: The size of the harm caused by the storm is overstated about threefold in the narrative.
+  ACTION: Report collisions that hit vehicles without the alert separately from total lost receptions.
+
+[RAD-11] info/dead-code/high :: DATA_RATE_MBPS is never used; the physical-layer constants are hard-coded in channel.py
+  @ config.py:41, channel.py:26, config.py:2-3
+  EVID: A grep finds DATA_RATE_MBPS only at its definition, config.py:41. channel.py:26 hard-codes `40 + math.ceil((16 + 6 + 8 * (...)) / 48) * 8`. This contradicts config.py:2-3 ('Nothing numeric that changes an outcome is defined anywhere else'). build_project_document.py:136 already acknowledges it.
+  IMPACT: Setting EXP_DATA_RATE_MBPS would silently do nothing in a sensitivity run.
+  ACTION: Derive bits per symbol from DATA_RATE_MBPS (rate x 8 us), or delete the constant.
+
+[RAD-12] info/risk/high :: ch_route chooses its path by distance only and ignores whether each head can reach quorum
+  @ infrastructure.py:18-44, protocols.py:170-203
+  EVID: d200 r8: route ['v186','v133','RSU-2']. v133's committee was only ['v133','v49'], 2 voters against QUORUM 3, giving 'insufficient distinct votes received' and rsu_received 0. This happened in 1 of 30 runs; 2-hop routes otherwise reached the RSU in 40.6 ms. PROJECT_GUIDE.md:59 documents that 'a missing route or lost quorum prevents forwarding'.
+  IMPACT: ch_route can pick a route that cannot succeed when a feasible one exists.
+  ACTION: Restrict route candidates to heads with at least QUORUM-1 eligible voters in range, or report this as a known failure mode.
+
+[RAD-13] info/works/high :: Channel MAC arithmetic and the simulate() event loop are correct
+  @ channel.py:21-27, channel.py:67-103, channel.py:109-131
+  EVID: unit_checks.out:
+- frame_slots equals the 802.11p 10 MHz OFDM formula (32+8 us preamble/SIGNAL, 16+6 bits, 48 bits per 8 us symbol): 300 B -> 496 us -> 39 slots; proposal 48; 4-signer alert 50; vote 21.
+- AC_VO for OCB: AIFSN 2, CW 3.
+- Frozen backoff: B starts at 51 = A.end 44 + AIFS 5 + residual 2.
+- Hidden terminal starting mid-frame (slot 35 against 5-44): both frames lost.
+- Back-to-back frame starting at A.end: no loss.
+- A timer due at slot 1000 fires exactly (frame on air 1005-1044).
+- Frame ends are always >= t+1, so jumping never skips one.
+- Order within a slot: receptions, then timers, then contention.
+Caveats (identical for all schemes): AIFS is rounded from 58 to 65 us (channel.py:21); no EIFS after corrupted frames; carrier-sense range equals decode range.
+  IMPACT: The radio model is a sound basis for comparing schemes.
+  ACTION: Document the missing EIFS and the AIFS rounding.
+
+[RAD-14] info/works/high :: Forwarding invariants hold in all 330 audited disseminations, and the harness reproduces run_one exactly
+  @ protocols.py:113-138, protocols.py:70-73, experiment.py:98-115
+  EVID: integrity_all.out, 11 schemes x 30 seeds: 0 senders with more than one alert, 0 RSU transmissions, 0 alert frames from malicious vehicles, 0 hops above 10, 0 overlapping transmissions by one node, 0 FORWARD decisions without a transmission, 0 transmissions without FORWARD/SOURCE.
+harness.py: 0 enqueues while a frame was pending or on air (240 runs).
+Chain test (unit_checks.out): the vehicle at hop 10 is EXPIRED and vehicles 11-13 are never reached; an RSU in the chain never relays.
+The harness reproduces official run_one(save=False) metrics with 0 mismatches. Demo run d200 r2 matches FACULTY_PRESENTATION.md:72-73: flooding 176 frames / 0.945 / 9509 / 19.3 ms; proposed 28 / 1.0 / 138 / 22.5 ms.
+  IMPACT: Each vehicle decides once, duplicates are handled, RSUs never relay and the hop limit is enforced as documented; results are reproducible.
+  ACTION: None.
+
+[RAD-15] info/works/high :: Proposed's timers and coverage test work as documented and use no ground truth
+  @ protocols.py:255-282, clustering.py:54
+  EVID: timer_check.out:
+- TAU = RAD = 385 slots. The 10 timer windows (tier, slot) are disjoint and ordered: tier 0 slot 0 is 0-384 ... tier 1 slot 4 is 3465-3849. Empirical offsets fall inside their windows (n=40).
+Coverage test:
+- It reads the adjacency rows of the senders it has heard (protocols.py:271-274). Under the unit-disk model this equals what position beacons would allow (idealised, not a leak).
+- 0 of 617 SUPPRESS decisions (d50 r1, d200 r2, d500 r8) had a vehicle neighbour still lacking the alert.
+Outcomes:
+- Proposed reach was 1.000 in 30/30 runs at 300 m.
+- 0 vehicles were reached by flooding but not by Proposed.
+- No malicious flag appears in Proposed's decisions.
+  IMPACT: The headline Proposed results are internally consistent.
+  ACTION: None, apart from RAD-3 and RAD-5.
+
+[RAD-16] info/works/high :: Slotted1P follows Wisitpongphan's slot and suppression rules
+  @ protocols.py:36-40, protocols.py:232-244
+  EVID: distance_slot bands (timer_check.out): 240.5-300 m -> slot 0, 180.5-240 -> 1, 120.5-180 -> 2, 60.5-120 -> 3, 0-60 -> 4, which is floor(Ns(1-D/R)) with the farthest first. The slot uses the distance to the sender of the first copy (:234). Any duplicate before the slot cancels the timer, giving SUPPRESS (:238-241); otherwise the vehicle forwards with probability 1 (:243-244). test_slotted_1p_suppresses_on_duplicate passes.
+  IMPACT: The implementation matches the paper; the fairness concerns are about missing jitter, not the rules (RAD-3, RAD-4).
+  ACTION: None.
+
+==================== DEM
+[DEM-01] critical/doc-mismatch/high :: The Panel Review deck describes deleted modules, parameters, test count and a demo command, none of which exist in the current code
+  @ docs/VERIFICATION_REPORT.md:13-83, config.py:36, config.py:54-65, config.py:100-101, clustering.py:21-46, protocols.py:97, protocols.py:196, infrastructure.py:18-28, run.py:161-189
+  EVID: Commit 0c39b11 deleted these files (`git show --stat 0c39b11`): trust.py (208 lines), cluster_head.py (127), accident.py (291), bls_auth.py (491), broadcast.py (175), routing.py (336), graphs.py (193), ecdsa_auth.py (201) and main.py (54). Running `ls` on them now returns 'No such file or directory'.
+
+Old config (df48e8c:config.py): `DBSCAN_EPS = 80.0`, `VELOCITY_WEIGHT_POSITION = 0.6`, `MAX_CHAIN_SIGNERS = 14`, `GPSR_RANGE_M = 300.0`, `TRUST_WEIGHT_FWD = 0.30`, and 5 entries in RSU_LOCATIONS.
+
+Current code:
+- Clustering: config.py:64-65 `DBSCAN_EPS_M = 40.0`, `DBSCAN_MIN_PTS = 3`. clustering.py:31 runs DBSCAN on xy only; speed is used only as a greedy tie-break (:45-46). There is no velocity weighting.
+- Trust: `(successes + 1.0) / (successes + failures + 2.0)` (clustering.py:22), plus `(20 * prior + 1) / 21` after an event (infrastructure.py:110). There is no Tf/Tc/Ts/Th or RSU-feedback R.
+- Voting: a committee of the 5 nearest reputable neighbours with quorum 3 (config.py:54-55, protocols.py:97). This is a majority of the committee, not '>50% of the cluster'. There is no chain-of-custody and no 14-signer cap.
+- Routing: ch_route is Dijkstra over trusted cluster heads (infrastructure.py:18-28) with 3 votes per head (protocols.py:196). There is no GPSR and no 4-tier fallback; PROJECT_GUIDE.md:59 says 'there is no hidden fallback'.
+- RSUs: 2 (config.py:100-101).
+- A case-insensitive grep for ecdsa|gpsr|MAX_CHAIN|VWCA over all *.py finds nothing, and requirements.txt has no ECDSA library.
+
+Tests: `grep -h '^def test_' validation/*.py | wc -l` gives 39. df48e8c had 94.
+
+Size: there are now 30 .py files with 4,598 lines. That includes 7 test files and 2 copies (documentation_website/documentation_portal.py, portal/downloads/config.py). df48e8c had 39 .py files / 6,315 lines (25 non-test files / 4,766 lines). The deck's '32 modules / ~4,500 lines' matches neither version.
+
+Demo command:
+- `python main.py --gui --density 250 --steps 200 --seed 4` gives "can't open file ... main.py".
+- `python run.py demo --gui --density 250 --steps 200 --seed 4` gives 'run.py: error: unrecognized arguments: --gui --steps 200 --seed 4'.
+
+Deck claims that still hold: 300 m range (config.py:36), a BLS12-381 aggregate via py_ecc, a 3-of-5 majority, and rsu.py and metrics.py exist (both rewritten). graphs.py has been replaced by figures.py.
+  IMPACT: If the deck is presented as describing this repository, a reviewer who opens or runs the code will find none of these modules, parameters, the test count or the command.
+  ACTION: Rebuild the deck from the current config and code: DBSCAN 40 m / MinPts 3, Beta watchdog trust, a 3-of-5 BLS committee, 2 RSUs, the Dijkstra cluster-head route, 39 tests and `python run.py demo`. Alternatively, state explicitly that the deck describes commit df48e8c and demo from that checkout.
+
+[DEM-02] critical/reproducibility/high :: The deck's result numbers come from the old harness and cannot be produced by the current code
+  @ docs/RESEARCH_PAPER.md:374-391, docs/VERIFICATION_REPORT.md:132-137, metrics.py:41-46, config.py:11, config.py:59-60, presentation.py:37, results/urban/processed/summary.csv
+  EVID: Where the deck numbers come from: RESEARCH_PAPER.md Table I, produced by the old comparison.py harness (5 runs; densities 50, 100, 150, 200, 250, 300, 500). It contains rows such as '| 50 | 100% → 96% | ... | 94.25% | 906.4 → 0 |' and '| 500 | 100% → 88% | ... | 99.59% | 129,278.0 → 0 |', with PDR for the proposed scheme between 80% and 100%. VERIFICATION_REPORT.md:135 gives 'PDR 100%, 1/1 delivered, 311.12 ms'.
+
+The current METRICS list (metrics.py:41-46) has no 'duplicates', 'overhead reduction' or 'PDR', and config.py:11 has no density 150.
+
+What the checked-in summary.csv shows (2 runs per density), proposed vs flooding:
+- Frames: d50 49.5→17.0 (65.7% fewer), d100 95.5→26.5 (72.3%), d200 181.0→24.5 (86.5%), d250 230.5→29.5 (87.2%).
+- Proposed suppression_ratio is 77.3–90.2%, not 100%.
+- Proposed dup_rx is 129–1168, i.e. above zero.
+- Reachability is 96.0–100% for flooding and 100% for proposed. This is the reverse of 'flooding 100 vs proposed 80-100'.
+
+A fresh `run_one(200, 2)` with the current code (scratch script C:/Users/Rudra/AppData/Local/Temp/claude/c--Users-Rudra-Desktop-Project-phase-project-phase-project-phase/fb87cded-b92e-4290-ae63-238de9110066/scratchpad/audit/dem/scripts/demo_numbers.py) gives RSU delays of 19.292 ms (flooding), 22.477 ms (proposed) and 40.638 ms (ch_route). None is near 311 ms.
+
+There is no BLS timing benchmark: config.py:59-60 charges fixed costs (`BLS_SIGN_MS = 1.4`, `BLS_VERIFY_MS = 4.3`), and presentation.py:37 says 'no multi-message cryptographic speedup is claimed'.
+  IMPACT: Every headline number on the results slides (duplicate counts, 94–99.6% reduction, 100% suppression, PDR comparison, 311 ms, the BLS batch table) would be contradicted by running the current code.
+  ACTION: Replace the slide numbers with outputs of `python run.py experiment` (preferably the full 30-seed configuration) and of the d200_r02 demo run, using the metric names the code actually reports (transmissions, reachability, suppression_ratio, collision_losses, t90_ms, rsu_delay_ms). Drop the BLS batch-timing table or reintroduce a benchmark.
+
+[DEM-03] major/doc-mismatch/high :: Tracked documentation still describes the deleted system and the removed AI narrator
+  @ docs/RESEARCH_PAPER.md:1, docs/RESEARCH_PAPER.md:210, docs/VERIFICATION_REPORT.md:3, PROJECT_MEMORY.md:7, Project_Complete_Explanation.docx
+  EVID: - `git log -- docs/RESEARCH_PAPER.md docs/VERIFICATION_REPORT.md PROJECT_MEMORY.md` shows the last change was df48e8c, and `git diff --quiet HEAD -- docs PROJECT_MEMORY.md` shows no changes since. These files survived the 0c39b11 restructure.
+- RESEARCH_PAPER.md:1 is titled 'Trust-Aware Velocity-Weighted Clustering with GPSR Routing and Tiered Batch Authentication...'; :210 says 'DBSCAN then runs with ε=80 m, MinPts=2'.
+- VERIFICATION_REPORT.md:3 says '`pytest -q` → 94 passed'. It cites trust.py, cluster_head.py, broadcast.py, routing.py, bls_auth.py, ecdsa_auth.py, docs/ALGORITHMS.md and docs/DEMO_GUIDE.md, all of which are absent.
+- PROJECT_MEMORY.md:7 says '**94 passed**'; 18 lines in it match trust.py|routing.py|bls_auth|main.py|GPSR|94 passed.
+- Text extracted from Project_Complete_Explanation.docx still contains 'Groq' 4 times, 'narrat' 8 times, 'Tamil' 3 times and '--narrate' once, although narrator.py is deleted in the working tree (git status shows ' D narrator.py').
+  IMPACT: Collaborators and reviewers reading the repository get descriptions that contradict the running code.
+  ACTION: Move these files to a clearly labelled legacy folder or delete them. Regenerate the .docx with build_project_document.py after fixing its stale command table (DEM-13).
+
+[DEM-04] major/reproducibility/high :: Checked-in aggregate results are a 2-run snapshot from an older network and do not reproduce with the current code
+  @ results/urban/summaries/experiment_config.json, results/urban/processed/runs.csv, results/urban/processed/summary.csv, portal/data.js, FACULTY_PRESENTATION.md:88, FACULTY_PRESENTATION.md:99
+  EVID: experiment_config.json records: generated 2026-10-07, `densities: [50, 100, 200, 250]`, `runs: 2`, and RSU positions `{'RSU-1': [152.25, 604.92], 'RSU-2': [630.2, 168.62]}`. The current network gives (160.0, 590.0) and (610.0, 170.0) (config.py:100-101).
+
+The raw files d50, d100, d200_r00/r01 and d250 carry the old RSU coordinates; all d200_r02 files carry the new ones.
+
+Re-running cells with the current code (save=False; script C:/Users/Rudra/AppData/Local/Temp/claude/c--Users-Rudra-Desktop-Project-phase-project-phase-project-phase/fb87cded-b92e-4290-ae63-238de9110066/scratchpad/audit/dem/scripts/repro_saved.py) gives the same incident time and source vehicle but different results:
+- d50_r00 flooding: saved tx=48, reach=0.920; now tx=50, reach=1.000.
+- d200_r00 proposed: saved tx=21; now 29.
+- d200_r00 flooding: saved 177 / 0.945; now 180 / 0.970.
+
+Every summary.csv row has runs=2. portal/data.js equals summary.csv (44 rows, 0 mismatched cells).
+
+FACULTY_PRESENTATION.md:99 says 'Averages over 30 seeds per density are in results/urban/processed/summary.csv', and :88 claims '30 seeds per density'. README.md:177, by contrast, correctly says 'only two scenarios per population... preliminary'.
+  IMPACT: The portal, dashboard and RESULTS.md numbers cannot be regenerated from the repository as it stands, and FACULTY_PRESENTATION overstates the statistical basis.
+  ACTION: Re-run `python run.py experiment` on the current network (the full configuration if time allows), then run `python build_portal_assets.py` and refresh the dashboard. Correct FACULTY_PRESENTATION.md lines 88 and 99.
+
+[DEM-05] minor/bug/high :: Running the tests, the demo or `single` writes into tracked results, and identical d200_r02 records keep accumulating
+  @ validation/test_pipeline.py:31-33, experiment.py:134-144, demo.py:317, demo.py:324, infrastructure.py:133-134, .gitignore:1-5
+  EVID: Root cause in the test: test_pipeline.py:32 does `monkeypatch.setattr(experiment, "RAW", str(tmp_path))` and then calls run_one(100, 1). But experiment.py:134 calls `infrastructure.persist(..., config.RESULTS_DIR, ...)`, which is not redirected.
+- In a scratch copy of the repo, running only that test changed results/urban/infrastructure/backhaul.sqlite3 from sha1 fc0dfb01… to d86f85f0…, while the raw file count stayed at 20.
+- The repo database (opened read-only) has `datasets: ['d100_r01', 'd200_r02']`, which is consistent with the test's run_one(100, 1). git status shows ' M results/urban/infrastructure/backhaul.sqlite3'.
+
+Demo and `single`: each call to run_one(save=True) writes `d200_r02__<timestamp>.json.gz` and overwrites the tracked alias file (experiment.py:139-144). git status shows ' M results/urban/raw/d200_r02.json.gz' plus 3 untracked `d200_r02__20261029T…json.gz`; 8 more timestamped copies are committed. All 12 d200_r02 files hash to the same value (d4348d51c9) once recorded_at and backhaul metadata are removed, about 968 KB of duplicates.
+
+Other tracked files that get rewritten:
+- demo.py:324 sends SUMO's error log to tracked results/urban/sumo_gui_errors.log (13 KB of 'emergency braking' warnings at time=115, caused by freeze()).
+- `run.py sync` rewrites tracked cloud_export.json (infrastructure.py:133-134).
+
+.gitignore covers only .env*, __pycache__/ and .pytest_cache/. That part works: the caches are untracked. Nothing ignores raw/*__*.json.gz, the sqlite file or the log.
+
+Not committed: eps_sensitivity.py, narrator.py and validation/test_narrator.py are deleted but the deletion is not committed, and FACULTY_PRESENTATION.md is untracked.
+  IMPACT: Every test or demo run dirties git and adds about 90 KB. The dashboard's 'stored events' tile counts events written by test runs.
+  ACTION: In the test, also monkeypatch config.RESULTS_DIR, or use save=False. Make demo.run use run_one(..., save=False) or a temporary results directory. Gitignore raw/*__*.json.gz, sumo_gui_errors.log and the sqlite file (or regenerate them). Commit or restore the pending deletions and decide whether to track FACULTY_PRESENTATION.md.
+
+[DEM-06] info/works/high :: The demo replay is driven by the recorded run, and its run-time consistency checks hold (verified without opening a GUI)
+  @ demo.py:202-305, demo.py:315-453, run.py:136-140
+  EVID: Stages, in order, and what drives each:
+- Stage 0 (terminal only): run_one(200, 2) re-simulates (4.44 s measured), then build(history_s=15) runs (0.52 s), then traci.start launches sumo-gui.exe with `--seed 30002 --collision.action none --time-to-teleport -1 --additional-files network/urban.add.xml`. The command was captured by a fake TraCI and not executed; sumo-gui.exe exists.
+- Stage 1, clustering: live TraCI stepping `traci.simulationStep(step["t"] + 1)` (:367) moves the cars. Colours, rings and banner come from show_clusters running DBSCAN/elect_roles on the headless FCD history.
+- Stage 2, accident: freeze() is applied live; the marker comes from the recorded snapshot. The asserts at :377-379 compare GUI positions and clustering with the recording.
+- Stages 3–5: flooding, proposed and ch_route are replayed from raw['protocols'] in 0.5 ms bins; ch_route also draws raw['infrastructure']['route']. Each ends with run_block and the assert at :304.
+- Stage 6: the forged alert (voting_reputation) is replayed from raw['forgery'].
+- Stage 7: traffic resumes live for 8 steps.
+
+Where the panel numbers come from: reached, transmissions, forwarded, suppressed, dropped and collisions are computed from P['transmissions'] and P['vehicles']; the RSU lines come from P['rsu_event'] via report.rsu_lines.
+
+Measured (scratch scripts in C:/Users/Rudra/AppData/Local/Temp/claude/c--Users-Rudra-Desktop-Project-phase-project-phase-project-phase/fb87cded-b92e-4290-ae63-238de9110066/scratchpad/audit/dem/scripts/):
+- demo_flow_mock.py (full demo.run with a fake TraCI): 'demo.run completed; all in-demo assertions passed', 208 simulationStep calls, 77.2 s of pace sleeps, 0 overlay add/remove errors.
+- gui_options_drift.py: headless sumo with the demo's options reproduces the snapshot with maximum drift 0.0050–0.0068 m on 12 runs (d200 r0–7, d500 r0–2, d50 r2), below the 0.05 assert.
+- replay_mock.py on 20 freshly generated runs × 14 variants: 280/280 replay asserts pass.
+
+Windows and failure handling:
+- Replay and after-traffic screenshots are skipped on Windows (:297, :432), as documented in PROJECT_GUIDE.md:36-38.
+- A FatalTraCIError becomes a RuntimeError naming the log file (:437-439); the finally block closes TraCI and terminates or kills SUMO (:440-452).
+- An AssertionError is not caught (run.py only handles KeyboardInterrupt), so it would end in a traceback.
+  IMPACT: The GUI shows the experiment's own snapshot and recorded numbers, and checks this at run time. One residual assumption: the sumo-gui and sumo binaries behave identically; only sumo was run.
+  ACTION: No change needed. Optionally turn the asserts into explicit checks with a friendly message, since `python -O` strips asserts.
+
+[DEM-07] minor/ux/high :: Visible demo glitches: the forger stays red and drives off while the crashed car turns yellow; stale cluster-head rings; label colours ignored; invisible white legend swatches; overlapping labels
+  @ demo.py:208-210, demo.py:415-428, demo.py:76-82, demo.py:43-44, demo.py:339-340, FACULTY_PRESENTATION.md:64-65, results/urban/figures/sumo_1_clusters.png
+  EVID: - Wrong car marked as the crash: replay() sets every vehicle to IDLE and then the alert source to CRASH (:208-210). After the forged replay only the label and ring are restored (:419-420), and :423 unfreezes every vehicle except sc['source_id']. The fake-TraCI run ends with 'final colours: real crash v164 (255, 220, 0, 255) | forger v34 (227, 30, 30, 255)'. So during 'TRAFFIC RESUMES' the crashed car shows as yellow ('Alert pending') and the red 'Incident vehicle' (the forger) drives away.
+- Stale rings: show_clusters' `rep-*` rings are never removed. The mock reports 'rep rings left on map after traffic resumes: 20'; they stay at snapshot positions while cars move.
+- Label colours ignored: `def label(key, text, x, y, color=(0, 0, 0, 255))` never uses `color`, and the POI is added with (0,0,0,0) (:81). So label('service', ..., RSU_OK/RSU_BAD) at :426-427 has no colour effect, and FACULTY_PRESENTATION.md:64-65 'The label turns green' / 'the RSU label turns red' does not happen. Only the site square changes colour (:260).
+- Invisible swatches: ISOLATED and REJECT are (255,255,255,255) (:43-44) on a white legend card (255,255,255,245) (:339-340). The 'Isolated vehicle' swatch is visibly empty in the tracked sumo_1_clusters.png; 'Alert rejected' would be invisible too.
+- Overlaps in the tracked screenshots: the '1' in 'RSU-1: listening' is hidden under a cluster-head ring; 'EMERGENCY SERVICES: local outbox' (label at 1120,-6) is drawn over the red cross (x 915–955); 'ACCIDENT EVT-30002-v164-1' sits over a road and a ring.
+- Stale banner in the screenshot: sumo_1_clusters.png reads 't = 113 s ... 39 isolated 31 vehicles changed cluster', which is the second-to-last history line. The incident-second line from the mock is 't = 114 s ... 37 isolated 14 vehicles changed cluster'. The cause cannot be determined without a GUI.
+- What is fine: the legend card (x 890–1350), heading card (y 930–1015), banner (y 884) and services box all lie outside scenario.BOUNDS (-6.4, -6.4, 826.4, 806.4), so they do not cover the road network.
+  IMPACT: The end of the live demo marks the wrong car as the crashed vehicle, and the slides describe a label colour change that does not occur.
+  ACTION: After the forged replay, restore vehicle colours (crash vehicle CRASH, everyone else IDLE) and keep the forger frozen or recoloured. Remove the rep-* rings before unfreezing. Either pass the colour through (POI text colour) or drop the parameter. Give white swatches an outline or grey fill. Offset the RSU and services labels.
+
+[DEM-08] minor/ux/high :: The web viewer shows final results about 70 s before the GUI replay reaches them, and the demo is silent for about 7 s before SUMO-GUI opens
+  @ demo.py:317-331, experiment.py:136-144, results_viewer.html:17, results_viewer.html:23
+  EVID: - demo.run calls `experiment.run_one(density, run_index)` (save=True) at :317, before traci.start at :331. run_one immediately writes `<run>__<timestamp>.json.gz` and the alias (experiment.py:139-144).
+- The viewer polls with `setInterval(()=>refresh(true),5000)` (:23). When records[0] changes it deliberately does not restore the previous selection (`!(automatic&&records[0]?.id!==previousFirst)`), then load() calls pick(0). It therefore displays the flooding result's RSU registration, transmissions, RSU delay and the full run_block of the newest run.
+- Measured with demo_flow_mock.py: imports 2.12 s + run_one 4.44 s + build 0.52 s before SUMO-GUI is even launched, with no terminal output during run_one. Replay sleeps total 77.2 s at pace 0.35 (frames: flooding 42, proposed 103, ch_route 23, forged 11). The browser therefore shows the outcome within about 10 s, while the GUI needs about 80 s to reach it.
+- Any new record also resets a viewer who is reading another result back to result 1.
+- run_one simulates all 11 schemes plus 3 forgery variants, although the demo shows 3 schemes plus 1 forgery variant.
+  IMPACT: An audience watching both screens sees the outcome before the 'live' replay, and the presenter faces a silent pause at start-up.
+  ACTION: Either describe the viewer explicitly as a post-run inspector, or have the demo simulate with save=False and save after the replay ends. Print a 'preparing scenario...' line before run_one. Optionally simulate only the schemes being shown.
+
+[DEM-09] minor/bug/high :: Some live banner and panel numbers are not the recorded ones (forged honest count, quorum from current config, lagging collisions)
+  @ demo.py:286-287, demo.py:224, demo.py:273, demo.py:253, demo.py:267, demo.py:220
+  EVID: - Forged honest count: the banner shows `f"{counts['reached'] - 1} honest vehicles accepted it"`, where `reached` counts every receiver, including colluding misbehaving vehicles. replay_mock.py on d200_r02 for voting_only and no_voting prints 'banner says 199 honest accepted; recorded honest_reached=180, received=200'. The default demo replays only voting_reputation, where 0 = 0, so this is latent.
+- Values from current config instead of the recording: the quorum and committee text use `config.QUORUM` / `config.COMMITTEE_SIZE` (:224, :273; report.corroboration_lines), and the ring radius uses `config.COMM_RANGE_M` (:253). None of these are stored in the raw file.
+- Lagging collisions: collisions count only transmissions that ended before the last processed bin (:267). On pre-existing saved records the live panel ended at 7310 vs a final 7388 (d250_r01 slotted1p) and 92 vs 112 (d50_r01 slotted1p). There was no mismatch on freshly generated runs.
+- End time ignores receptions: `end` (:220) ignores rx_ms. The stale record d100_r00 slotted1p has receptions at 45.149 ms after the last frame ended at 41.574 ms, which gives 'ASSERT FAIL: the replay must end on the experiment's own numbers' (279/280 saved replays pass). This is not reachable through `run.py demo`, which always re-simulates first (:317-318).
+  IMPACT: The banner would show a wrong honest count if the demo is extended to other forged variants or to stale records, and the live panel can briefly disagree with the final block.
+  ACTION: Compute the banner's honest count like metrics.honest_reached (exclude the source and malicious vehicles). Include rx_ms when computing `end`. Store QUORUM, COMMITTEE_SIZE and COMM_RANGE_M in scenario_record and read them from the raw file.
+
+[DEM-10] minor/bug/high :: Web API: one partially written raw file breaks /api/runs, and every 5 s poll decompresses all raw files
+  @ web_results.py:34-47, web_results.py:122-123, results_viewer.html:23, experiment.py:141-144
+  EVID: - run_metadata() calls experiment.load_raw on every raw file just to read recorded_at and the scenario ID (:38-46).
+- Measured cost: 0.18–0.19 s per /api/runs with the current 20 files (web_probe.py), and 2.27 s per poll with 180 files, the size of the full 6×30 matrix (poll_cost.py).
+- Raw files are written in place with gzip.open(..., 'wt') (experiment.py:141-144), so a partially written file is visible while it is being written. A truncated .json.gz raises EOFError, which is not in `except (ValueError, KeyError, OSError)` (:122).
+- With such a file present, the client gets 'RemoteDisconnected Remote end closed connection without response' (partial_http.py). The whole run list fails, while /api/results for other runs still returns 200.
+- Scripts are in C:/Users/Rudra/AppData/Local/Temp/claude/c--Users-Rudra-Desktop-Project-phase-project-phase-project-phase/fb87cded-b92e-4290-ae63-238de9110066/scratchpad/audit/dem/scripts/.
+  IMPACT: The viewer can go blank ('Could not load results') during experiment runs, and the server's CPU cost grows with the number of saved results.
+  ACTION: Take the timestamp from the file name or mtime instead of decompressing, cache by mtime, and catch Exception per file and skip bad files. Write raw files to a temporary name and then os.replace them.
+
+[DEM-11] minor/ux/high :: Viewer UI glitches: '?' mojibake separator, only three stats, a 'documentation' link that reloads the same page, and a Latin-1 RESULTS.md
+  @ results_viewer.html:17, results_viewer.html:15, results_viewer.html:7, web_results.py:96-97, results/urban/summaries/RESULTS.md, portal/downloads/RESULTS.md
+  EVID: - Mojibake: `od -c` on line 17 shows `time+' ? '+record.scenario`, a literal ASCII 0x3F. It is also present at HEAD, where the removed language selector used the same `' ? '`. The rest of the file uses real UTF-8 '·' and '—', so run options render as e.g. '29 Oct 2026, 5:00:35 PM ? d200_r02'.
+- Three stats only: pick() renders exactly 3 tiles: 'RSU registration', 'Radio transmissions', 'Incident-to-RSU delay' (:15). /api/results returns 33 metric keys per result (web_probe.py); everything else appears only in the expandable text report.
+- Self-link: the header link '← Project documentation · All 12 sections' has href="/" (:7), and '/' serves results_viewer.html itself (web_results.py:96-97), not /index.html.
+- Duplicate entries: the run selector lists 19 records, 11 of which are content-identical d200_r02 re-runs.
+- Encoding: RESULTS.md (in summaries and in both portal copies) is ISO-8859. 'mean \261 95' appears with 73 0xB1 bytes, which show as '�' in UTF-8 viewers. The current report._write already writes UTF-8, so the file predates that fix.
+  IMPACT: Cosmetic, but it looks broken during a presentation, and the web viewer exposes few of the available metrics.
+  ACTION: Replace ' ? ' with ' · '. Add tiles for reachability, collision losses and t90, or group them under the report. Point the header link to /index.html. Regenerate RESULTS.md (it will be UTF-8) and rebuild the portal assets. Consider collapsing identical re-runs.
+
+[DEM-12] info/works/high :: Web viewer endpoints, path confinement and tests work
+  @ web_results.py:16-26, web_results.py:50-60, web_results.py:72-91, web_results.py:127, validation/test_web_results.py
+  EVID: `python -B -m pytest -p no:cacheprovider validation/test_web_results.py -q` gives '5 passed in 2.86s', and git status is unchanged afterwards.
+
+Random-port server (web_probe.py):
+- /api/runs returns 200 with 20 runs and 19 records (the alias is hidden).
+- /api/results returns 200 for 3 runs, each with 14 results (11 schemes + 3 forged variants).
+- /, /simulation, /index.html (with the RELAY_LOCAL_APP injection), /data.js and /downloads/source.zip return 200.
+- /assets/..%2f..%2fconfig.py, /downloads/..\..\config.py, /%2e%2e/web_results.py, /README.md and /check.mjs return 404.
+- /api/results with run=../../config, run=d999_r00, or no run returns 400.
+
+Other checks:
+- The server binds 127.0.0.1 (:127).
+- NaN values become null (:72-81).
+- Responses carry nosniff and no-store headers.
+- The UI writes data only through textContent and new Option(), not innerHTML.
+- portal/downloads/source.zip contains the current working files (48 entries, no narrator.py).
+
+Gap: /api/results is not exercised by the tests.
+  IMPACT: The local viewer is safe to run beside the demo, and path traversal is blocked.
+  ACTION: Add tests for /api/results and for a corrupt raw file (see DEM-10).
+
+[DEM-13] minor/doc-mismatch/high :: Current docs and scripts reference removed or nonexistent commands, sections and functions
+  @ FACULTY_PRESENTATION.md:101-114, build_project_document.py:231, portal/app.js:74, documentation_website/portal/app.js:74, config.py:3-4, config.py:19-23, COLLABORATOR_ASSIGNMENTS.md:19, run.py:1-11
+  EVID: - FACULTY_PRESENTATION.md:114 `python run.py explain` fails with 'run.py explain: error: the following arguments are required: run_id'.
+- FACULTY_PRESENTATION.md:101-108 lists as 'not yet implemented' five items that exist:
+  - malicious ratio 10/20/30%: run.py:114 sweeps MALICIOUS_RATIO [0.0, 0.1, 0.2, 0.3]
+  - colluding forged alert: experiment.py:148-169
+  - incident far from the RSUs: the rsu_relay_* metrics
+  - 50 vs 500 vehicles: config.py:11
+  - 150 m range: run.py:113 sweeps [150, 300, 450]
+- build_project_document.py:231 lists `python run.py demo --narrate --language ta`, which fails with 'unrecognized arguments: --narrate --language ta', and `python run.py assistant d200_r02 --language en --offline`, which fails with "invalid choice: 'assistant'".
+- portal/app.js:74 and documentation_website/portal/app.js:74 say '...and generate an explanation in your preferred language.' No explain endpoint or language selector remains; web_results.py only routes /, /simulation, /api/runs, /api/results and portal assets.
+- config.py:3-4 says 'Full justification table: PROJECT_GUIDE.md section 13', but PROJECT_GUIDE.md has only 4 '##' sections (lines 3, 40, 66, 81).
+- config.py:23 hardcodes RSU positions (200,600)/(600,200), which :100-101 then overwrites with the junction coordinates (160,590)/(610,170).
+- COLLABORATOR_ASSIGNMENTS.md:19 says 'Add unit tests for `select_representative_cluster`', but no such function exists; clustering.py defines only beta_trust and elect_roles.
+- The run.py docstring (1-11) omits web, dashboard, sync and dispatch, and does not mention that the default demo includes ch_route.
+  IMPACT: Copy-paste commands fail, and readers are told that implemented features are missing or that removed ones exist.
+  ACTION: Fix each line listed. Remove the narrator rows from build_project_document.py and regenerate the .docx. Remove the 'preferred language' sentence from both app.js copies. Delete the dead RSU literal in config.py.
+
+[DEM-14] minor/dead-code/high :: Duplicate portal and static-server copies, plus dead code in demo.py
+  @ documentation_website/, documentation_portal.py, build_portal_assets.py:12, portal/downloads/config.py, demo.py:97-132, demo.py:68, demo.py:91-92, demo.py:222-223, demo.py:147-150, network/road.net.xml
+  EVID: Duplicated portal:
+- `diff -rq portal documentation_website/portal` shows only app.js differing (3 lines), plus files present only in portal/ (README.md, check.mjs, package.json, vercel.json, downloads/config.py, downloads/source.zip).
+- data.js, index.html, styles.css, assets/summary.csv and downloads/*.md|txt have identical sha1 hashes.
+- documentation_portal.py and documentation_website/documentation_portal.py differ only in default port and docstring (8766 vs 9000).
+- build_portal_assets.py:12 refreshes only ROOT/'portal', so the copy has to be synced by hand; both app.js and SNAPSHOT.txt are modified in lockstep in the working tree.
+- None of documentation_portal.py, build_portal_assets.py, build_project_document.py or create_portal_document.py is imported by run.py or validation/.
+- `cmp config.py portal/downloads/config.py` reports the files identical.
+
+Dead code in demo.py:
+- render_legend (:97-132, a PIL-drawn legend) has no caller; `grep render_legend` finds only its definition.
+- `_presentation_dir` is set (:91-92) and never read.
+- `busiest` (:222-223) is computed on every replay and never used.
+- The caption strings in LEGEND_* are ignored by legend(), which hard-codes captions by item count (:147-150).
+
+Legacy network file: network/road.net.xml is referenced only by run_experiment.sh:23; config uses network/urban.net.xml.
+  IMPACT: Maintenance burden: the stale text in DEM-13 already exists in both portal copies.
+  ACTION: Keep one portal and one static server, or have build_portal_assets.py generate documentation_website. Delete render_legend, _presentation_dir and busiest. Drop the road.net.xml check, or the file itself if unused.
+
+[DEM-15] minor/doc-mismatch/high :: run_demo.sh and run_experiment.sh use old paths and counts, so their screenshots never reach the dashboard
+  @ run_demo.sh:5, run_demo.sh:13, run_experiment.sh:23, run_experiment.sh:27, run_experiment.sh:34, run_experiment.sh:37, run_experiment.sh:39
+  EVID: - Both scripts pass `--shots results/figures`, but the dashboard collects screenshots from `os.path.join(config.RESULTS_DIR, "figures")` = results/urban/figures (run.py:39-50).
+- run_experiment.sh:39 says 'Open results/dashboard.html'; the actual file is results/urban/dashboard.html (report.py:401).
+- run_experiment.sh:37 says '5 densities x 30 seeds x 10 schemes'; config has 6 densities (config.py:11) and 11 schemes (config.py:71).
+- run_experiment.sh:23 checks for network/road.net.xml.
+- run_demo.sh:5 says 'both schemes', but the default is three (run.py:185).
+- run_experiment.sh:27 runs the full pytest suite, which mutates the tracked sqlite (DEM-05).
+- README.md:188 only partly acknowledges this ('Some comments and output paths in the helpers reflect older project settings').
+- On Windows the replay and after-traffic screenshots are skipped by design (demo.py:297, :432), so only sumo_1 and sumo_2 exist in results/urban/figures.
+  IMPACT: Following the helper scripts produces screenshots that never appear in the dashboard and prints wrong paths and counts.
+  ACTION: Point --shots at results/urban/figures and correct the dashboard path, the counts and the network check. Run pytest only after the test isolation fix in DEM-05.
+
+[DEM-16] info/works/high :: README, PROJECT_GUIDE and portal content match the current parameters and commands; the generated-output pipeline works
+  @ README.md:146-177, README.md:237, PROJECT_GUIDE.md:36-64, portal/app.js, portal/data.js, validation/test_pipeline.py:105-120
+  EVID: - README.md:146 ('50, 100, 200, 250, 300, and 500 with 30 independent seeds') matches config.py:11-12, and the seed rule at :175 matches scenario.py:25-26. README:177 discloses 'only two scenarios per population... preliminary'. The '44-row' claim at README:237 matches the 44 rows in data.js. The subcommands listed by `run.py --help` (sync, dispatch, dashboard, web, experiment, single, explain, sensitivity, demo) match the commands in README sections 6–9.
+- PROJECT_GUIDE.md:46-51 (DBSCAN 40 m / 3, trust 0.7, (s+1)/(s+f+2), (20·p+1)/21) matches config.py:33 and :64-65, clustering.py:22 and infrastructure.py:110. PROJECT_GUIDE.md:36-38 documents the Windows screenshot skip.
+- portal/app.js says 'DBSCAN uses a 40 m neighborhood and at least three vehicles', gives a 'trust threshold of 0.7', 'Dijkstra' and '3 of 5', and shows the seed rule; all match the code. portal/data.js equals summary.csv cell for cell (0 mismatches).
+- test_full_pipeline_writes_every_output, run in a scratch copy with --basetemp in scratch, gives '1 passed in 50.90s': raw files, CSVs, every figure, the summaries and dashboard.html were all generated by `run.py experiment`.
+  IMPACT: The current user-facing setup docs are largely accurate; the problems are concentrated in the legacy docs, the deck and the stale data (DEM-01 to DEM-04).
+  ACTION: Keep README and PROJECT_GUIDE as the source of truth when rewriting the deck.
+
+[DEM-17] info/works/high :: The demo-run numbers in FACULTY_PRESENTATION §7 are reproduced exactly by the current code
+  @ FACULTY_PRESENTATION.md:70-77
+  EVID: A fresh experiment.run_one(200, 2) in scratch (demo_numbers.py) gives:
+- flooding: reached 189/200 (94.5%), frames 176, collisions 9509 (90.6%), RSU 19.292 ms, alert_tx 170, redundant 143
+- proposed: 200/200, frames 28, collisions 138 (8.7%), RSU 22.477 ms
+- ch_route: 89/200, frames 14, collisions 0, RSU 40.638 ms
+- forged (voting_reputation): honest accepted 0 of 180, rejected 73, frames 7
+
+These match the document's table and both the working-tree and HEAD copies of d200_r02.json.gz.
+
+One gap: ch_route's 14 frames are {'PROPOSAL':1, 'VOTE':5, 'ALERT':2, 'CPROPOSAL':1, 'CVOTE':5}. Line :77 ('Frame counts include 1 proposal and 5 votes in every row') is therefore incomplete for that row.
+  IMPACT: These figures are safe to present as single-run demo evidence.
+  ACTION: Keep them, and add a note that the ch_route row also contains 1 cluster proposal and 5 cluster votes.
+

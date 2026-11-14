@@ -88,3 +88,17 @@ def test_ablation_switches():
     flat = Proposed(dist, adj, np.zeros(4, bool), np.zeros(4, int), slots=False)
     simulate(flat, adj, 0, np.random.default_rng(0))
     assert all(flat.rec[v]["slot"] == 0 for v in (1, 2))                  # no distance slots
+
+
+def test_unknown_signer_is_untrusted_not_a_crash():
+    """Audit SCE-5: a signer missing from the reputation table counts as not reputable."""
+    cert = corroboration.certificate(ALERT, "n0", ["n1", "n2", "x9"])
+    ok, reason = corroboration.accept(ALERT, cert, {"n1": 0.9, "n2": 0.9}.get)
+    assert not ok and "2 reputable" in reason
+
+
+def test_creation_time_and_hop_limit_are_signed():
+    """Audit SCE-15: a relay cannot refresh the alert or extend its hop limit without breaking the certificate."""
+    cert = corroboration.certificate(ALERT, "n0", ["n1", "n2", "n3"])
+    for field, value in (("hop_limit", ALERT["hop_limit"] + 5), ("created_s", ALERT["created_s"] + 30)):
+        assert not corroboration.accept({**ALERT, field: value}, cert, lambda v: 0.9)[0], field

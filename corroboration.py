@@ -43,10 +43,11 @@ def public_key(vehicle_id):
 
 
 def digest(alert):
-    """The bytes every endorser signs: the event's identity, never the hop count."""
+    """The bytes every endorser signs: the event's identity plus its creation time and hop limit, so a relay
+    cannot refresh or extend the alert. The per-frame hop COUNT is not signed (it changes at every hop)."""
     x, y = alert["incident_position"]
     return (f"{alert['event_id']}|{alert['message_type']}|{alert['source_vehicle']}|{alert['sequence_number']}"
-            f"|{x:.2f}|{y:.2f}|{alert['incident_time_s']:.3f}").encode()
+            f"|{x:.2f}|{y:.2f}|{alert['incident_time_s']:.3f}|{alert['created_s']:.3f}|{alert['hop_limit']}").encode()
 
 
 @lru_cache(maxsize=None)
@@ -100,7 +101,7 @@ def accept(alert, cert, reputation_of, use_reputation=True):
         return False, "certificate not signed by the alert's source"
     if not verify_aggregate(signers, digest(alert), bytes.fromhex(cert["aggregate"])):
         return False, "BLS aggregate signature invalid"
-    endorsers = [v for v in signers[1:] if not use_reputation or reputation_of(v) >= TRUST_CH_THRESHOLD]
+    endorsers = [v for v in signers[1:] if not use_reputation or (reputation_of(v) or 0.0) >= TRUST_CH_THRESHOLD]  # unknown = untrusted
     if len(endorsers) < QUORUM:
         kind = "reputable " if use_reputation else ""
         return False, f"only {len(endorsers)} {kind}endorser(s), {QUORUM} needed"

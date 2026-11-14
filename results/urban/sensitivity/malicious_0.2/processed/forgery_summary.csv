@@ -1,0 +1,4 @@
+density,variant,runs,certificate_formed,certificate_formed_std,certificate_formed_ci95,certificate_formed_n,accepted_share,accepted_share_std,accepted_share_ci95,accepted_share_n,rsu_registered,rsu_registered_std,rsu_registered_ci95,rsu_registered_n,transmissions,transmissions_std,transmissions_ci95,transmissions_n
+200,voting_reputation,30,1.0,0.0,0.0,30,0.0,0.0,0.0,30,0.0,0.0,0.0,30,6.933333333333334,0.36514837167011066,0.1363486428088469,30
+200,voting_only,30,1.0,0.0,0.0,30,1.0,0.0,0.0,30,1.0,0.0,0.0,30,24.533333333333335,3.191943882201947,1.191891433801681,30
+200,no_voting,30,0.0,0.0,0.0,30,1.0,0.0,0.0,30,1.0,0.0,0.0,30,19.133333333333333,2.885556580905873,1.077484535272974,30
