@@ -9,8 +9,9 @@ What every vehicle does with an emergency alert.
    alert is not acted on and not forwarded.
 
 2. Forwarding rule: each vehicle decides ONCE, on the first certified copy it accepts.
-     Flooding    rebroadcast immediately                                (Ni et al. 1999)
+     Flooding    rebroadcast as soon as the copy is verified            (Ni et al. 1999)
      Slotted1P   wait S(D)*tau (far first); any duplicate -> suppress    (Wisitpongphan et al. 2007)
+     (+RAD)      the two baselines above with the proposed scheme's U[0, RAD) jitter added
      Proposed    wait (tier*Ns + S(D))*tau + RAD; then rebroadcast only if some beacon
                  neighbour is still uncovered by every sender heard so far
                  (coverage test after Peng & Lu 2000; tiers from clustering.py)
@@ -49,11 +50,12 @@ class Protocol:
         self.verify = ms_to_slots(BLS_VERIFY_MS) if security else 0
         self.has = np.zeros(n, bool)                 # holds an ACCEPTED alert
         self.seen = np.zeros(n, bool)                # has processed a certified copy (accepted or rejected)
-        self.first_rx = np.full(n, -1)               # slot at which the alert was accepted
+        self.first_rx = np.full(n, -1)               # slot at which the alert was accepted (after verification)
+        self.first_decode = np.full(n, -1)           # slot at which the first certified copy was decoded
         self.first_from = np.full(n, -1)
         self.hop = np.full(n, -1)                    # hops the accepted copy had travelled
         self.heard = [set() for _ in range(n)]      # every sender of a certified copy this node decoded
-        self.rsu_rx = []                             # (rsu, sender, slot, hop) for every copy an RSU decoded
+        self.rsu_rx = []                             # (rsu, sender, decoded slot, registered slot, hop) per RSU copy
         self.timers = {}                             # vehicle -> slot of its forwarding decision
         self.vote_at, self.votes, self.vote_log = {}, [], []
         self.release_at, self.cert, self.cert_ok, self.cert_reason = None, None, security is None, "no corroboration"
@@ -92,7 +94,8 @@ class Protocol:
                 self.vote_at[v] = t + ms_to_slots(BLS_VERIFY_MS + BLS_SIGN_MS + rank * VOTE_SLOT_MS)
             return None
         if tx["kind"] == "VOTE":
-            if v == self.source and self.release_at is None:
+            # report collection: one vote per distinct endorser, however often its frame is heard
+            if v == self.source and self.release_at is None and s not in self.votes:
                 self.votes.append(s)
                 if len(self.votes) >= QUORUM:        # a majority of the committee has endorsed
                     self.release_at = t + self.verify
@@ -113,13 +116,14 @@ class Protocol:
     def on_alert(self, v, s, t):
         self.heard[v].add(s)
         if self.rsu[v]:
-            self.rsu_rx.append((v, s, t + self.verify, int(self.hop[s]) + 1))
+            self.rsu_rx.append((v, s, t, t + self.verify, int(self.hop[s]) + 1))   # decoded, then verified
         if self.seen[v]:
             if self.has[v]:
                 self.duplicate(v, s, t)
                 return "dup"
             return None
         self.seen[v] = True
+        self.first_decode[v] = t
         self.now = accepted_at = t + self.verify      # the receiver verifies the certificate first
         if not self.cert_ok:
             if not self.rsu[v]:
@@ -169,11 +173,12 @@ class CHRoute(Protocol):
 
     def first_copy(self, v, s, t):
         if v in self.route[1:-1]:
+            # Chosen by role and reputation only: the head cannot see who is malicious. A misbehaving
+            # member that is asked simply never answers (on_receive), like the main committee.
             voters = [i for i in range(len(self.clusters))
                       if i != v and i != self.source and self.adj[v, i]
                       and self.clusters[i] == self.clusters[v]
-                      and self.reputation[i] >= corroboration.TRUST_CH_THRESHOLD
-                      and not self.malicious[i]][:corroboration.COMMITTEE_SIZE]
+                      and self.reputation[i] >= corroboration.TRUST_CH_THRESHOLD][:corroboration.COMMITTEE_SIZE]
             # The head's signed proposal counts as its own distinct endorsement.
             self.rounds[v] = {'voters': [v, *voters], 'received': {v}, 'certificate': None}
             self.local_timers[('proposal', v, v)] = t + TAU_SLOTS + ms_to_slots(BLS_SIGN_MS)
@@ -185,7 +190,7 @@ class CHRoute(Protocol):
         if kind.startswith('CPROPOSAL:'):
             head = int(kind.split(':')[1])
             voters = self.rounds[head]['voters']
-            if v in voters:
+            if v in voters and not self.malicious[v]:      # behaviour of the attacker itself: it stays silent
                 self.local_timers[('vote', head, v)] = t + ms_to_slots(BLS_SIGN_MS + BLS_VERIFY_MS + voters.index(v) * VOTE_SLOT_MS)
             return None
         if kind.startswith('CVOTE:'):
@@ -224,16 +229,33 @@ class CHRoute(Protocol):
         self.decide(v, "FORWARD", "authenticated cluster head on the shortest available route")
 
 
+def _rad(proto):
+    """Random assessment delay U[0, RAD_MS) in slots (Ni et al. 1999), or 0 when switched off."""
+    return int(proto.ch.rng.integers(0, ms_to_slots(RAD_MS))) if proto.rad else 0
+
+
 class Flooding(Protocol):
+    """Every new copy is rebroadcast once it has been verified (t is the acceptance slot). rad=True adds jitter."""
+    def __init__(self, *args, rad=False, **kw):
+        super().__init__(*args, **kw)
+        self.rad = rad
+
     def first_copy(self, v, s, t):
-        self.decide(v, "FORWARD", "blind flooding: every new copy is rebroadcast")
+        self.timers[v] = t + _rad(self)
+
+    def expire(self, v, t):
+        self.decide(v, "FORWARD", "flooding: every new copy is rebroadcast" + (" after a random delay" if self.rad else ""))
 
 
 class Slotted1P(Protocol):
+    def __init__(self, *args, rad=False, **kw):
+        super().__init__(*args, **kw)
+        self.rad = rad
+
     def first_copy(self, v, s, t):
         k = distance_slot(self.dist[v, s])
         self.rec[v] = {"slot": k}
-        self.timers[v] = t + k * TAU_SLOTS
+        self.timers[v] = t + k * TAU_SLOTS + _rad(self)     # RAD < tau, so slot order is kept
 
     def duplicate(self, v, s, t):
         if v in self.timers:
@@ -258,8 +280,7 @@ class Proposed(Protocol):
         # Random assessment delay inside the slot (Ni et al. 1999): without it every
         # vehicle in the same distance slot decides at the same instant, before it can
         # hear the others, and they all rebroadcast. Uniform [0, RAD_MS) keeps slot order.
-        rad = int(self.ch.rng.integers(0, ms_to_slots(RAD_MS))) if self.rad else 0
-        self.timers[v] = t + (self.tier[v] * N_SLOTS + k) * TAU_SLOTS + rad
+        self.timers[v] = t + (self.tier[v] * N_SLOTS + k) * TAU_SLOTS + _rad(self)
 
     def expire(self, v, t):
         if not self.coverage:

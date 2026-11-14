@@ -16,14 +16,15 @@ Model (all deliberate simplifications, see PROJECT_GUIDE.md "Limitations"):
 import math
 import numpy as np
 
-from config import COMM_RANGE_M, SLOT_US, SIFS_US, AIFSN, CW_MIN, PAYLOAD_BYTES, MAC_OVERHEAD_BYTES
+from config import COMM_RANGE_M, SLOT_US, SIFS_US, AIFSN, CW_MIN, PAYLOAD_BYTES, MAC_OVERHEAD_BYTES, DATA_RATE_MBPS
 
 AIFS_SLOTS = math.ceil((SIFS_US + AIFSN * SLOT_US) / SLOT_US)   # 58 us -> 5 slots
 
 
 def frame_slots(payload_bytes):
-    """Airtime of a frame at 6 Mbit/s: 40 us preamble + 8 us per 48 data bits, in 13 us slots."""
-    air_us = 40 + math.ceil((16 + 6 + 8 * (payload_bytes + MAC_OVERHEAD_BYTES)) / 48) * 8
+    """Airtime in 13 us slots: 40 us preamble + SIGNAL, then one 8 us OFDM symbol per DATA_RATE_MBPS * 8 data bits
+    (48 bits at 6 Mbit/s); 16 service + 6 tail bits. AIFS below is rounded up to whole slots (58 -> 65 us)."""
+    air_us = 40 + math.ceil((16 + 6 + 8 * (payload_bytes + MAC_OVERHEAD_BYTES)) / (DATA_RATE_MBPS * 8)) * 8
     return math.ceil(air_us / SLOT_US)
 
 

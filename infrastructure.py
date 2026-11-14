@@ -15,13 +15,14 @@ import corroboration
 from config import QUORUM, TRUST_CH_THRESHOLD, HOP_LIMIT
 
 
-def shortest_route(xy, adj, roles, trust, malicious, source, rsu_nodes):
-    """Shortest distance path to any RSU, using reputable CHs as intermediates."""
+def shortest_route(xy, adj, roles, trust, source, rsu_nodes):
+    """Shortest distance path to any RSU, using reputable CHs as intermediates (role and reputation only:
+    the planner cannot know who is malicious; a misbehaving head on the route simply drops the alert)."""
     rsu_nodes = {int(i) for i in rsu_nodes}
     source = int(source)
     allowed = {source, *rsu_nodes}
     allowed.update(i for i, role in enumerate(roles)
-                   if role == 'CH' and trust[i] >= TRUST_CH_THRESHOLD and not malicious[i])
+                   if role == 'CH' and trust[i] >= TRUST_CH_THRESHOLD)
     queue = [(0.0, 0, source, [source])]
     best = {(source, 0): 0.0}
     while queue:

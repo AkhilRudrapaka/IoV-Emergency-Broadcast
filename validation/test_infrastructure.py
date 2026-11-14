@@ -15,13 +15,13 @@ def test_shortest_route_excludes_untrusted_and_non_heads():
     xy = np.array([[0., 0.], [100., 0.], [200., 0.], [400., 0.]])
     _, adj = geometry(xy)
     result = infrastructure.shortest_route(xy, adj, ['MEMBER', 'CH', 'CH'],
-                     [.9, .9, .9], [False]*3, 0, {3})
+                     [.9, .9, .9], 0, {3})
     assert result['status'] == 'ROUTE_FOUND'
     assert result['nodes'][0] == 0 and result['nodes'][-1] == 3
     assert result['distance_m'] == 400
     json.dumps(result)  # persisted route contains plain Python types
     blocked = infrastructure.shortest_route(xy, adj, ['MEMBER', 'MEMBER', 'CH'],
-                     [.9, .9, .1], [False]*3, 0, {3})
+                     [.9, .9, .1], 0, {3})
     assert blocked['status'] == 'NO_CH_ROUTE'
 
 
