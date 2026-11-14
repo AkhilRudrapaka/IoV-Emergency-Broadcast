@@ -1,0 +1,984 @@
+{
+ "generated": "14 November 2026, 10:37",
+ "pairs": [
+  {
+   "pair": {
+    "pair_id": "P001",
+    "created": "2026-11-13T11:34:20+05:30",
+    "baseline": "flooding_rad",
+    "scenario": {
+     "scenario_id": "d200_r23",
+     "density": 200,
+     "run": 23,
+     "seed": 30023,
+     "network": "network/urban.net.xml",
+     "incident": {
+      "vehicle": "v62",
+      "x": 1.6,
+      "y": 283.82,
+      "lane": "A1A2_1",
+      "time_s": 70.0,
+      "event_id": "EVT-30023-v62-1"
+     },
+     "selection": {
+      "method": "seeded order (selection seed 10000); first unused scenario whose incident is on the road network and at least 50 m from every incident used before",
+      "selection_seed": 10000,
+      "rank": 0,
+      "repeat_of": null
+     }
+    },
+    "runs": {
+     "baseline": {
+      "approach": "baseline",
+      "algorithm": "Flooding + random delay",
+      "schemes": [
+       "flooding_rad"
+      ],
+      "status": "finished",
+      "pid": 22524,
+      "requested": "2026-11-13T19:25:26+05:30",
+      "started": "2026-11-13T19:25:31+05:30",
+      "finished": "2026-11-13T19:26:26+05:30",
+      "message": null,
+      "fingerprint": "d2ae64723ca78a86d4fbf95ba2e8e33cbc9b3048ac3de66eaadaf787d041c8f5",
+      "record": "raw\\d200_r23.json.gz",
+      "exit_code": 0
+     },
+     "proposed": {
+      "approach": "proposed",
+      "algorithm": "Proposed (full) with its CH-to-CH route stage",
+      "schemes": [
+       "proposed",
+       "ch_route"
+      ],
+      "status": "finished",
+      "pid": 22948,
+      "requested": "2026-11-13T19:26:28+05:30",
+      "started": "2026-11-13T19:26:33+05:30",
+      "finished": "2026-11-13T19:28:21+05:30",
+      "message": null,
+      "fingerprint": "d2ae64723ca78a86d4fbf95ba2e8e33cbc9b3048ac3de66eaadaf787d041c8f5",
+      "record": "raw\\d200_r23.json.gz",
+      "exit_code": 0
+     }
+    }
+   },
+   "fingerprint": "d2ae64723ca78a86d4fbf95ba2e8e33cbc9b3048ac3de66eaadaf787d041c8f5",
+   "rows": {
+    "flooding_rad": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 33.852,
+     "transmissions": 186,
+     "collision_losses": 8644,
+     "rsu_delay_ms": 22.36,
+     "rsu_dup_copies": 14,
+     "dup_rx": 1367
+    },
+    "flooding": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 33.566,
+     "transmissions": 186,
+     "collision_losses": 9450,
+     "rsu_delay_ms": 27.118,
+     "rsu_dup_copies": 9,
+     "dup_rx": 566
+    },
+    "slotted1p": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 34.346,
+     "transmissions": 45,
+     "collision_losses": 1453,
+     "rsu_delay_ms": 22.165,
+     "rsu_dup_copies": 9,
+     "dup_rx": 581
+    },
+    "slotted1p_rad": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 34.398,
+     "transmissions": 26,
+     "collision_losses": 191,
+     "rsu_delay_ms": 23.699,
+     "rsu_dup_copies": 8,
+     "dup_rx": 568
+    },
+    "proposed": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 39.429,
+     "transmissions": 23,
+     "collision_losses": 11,
+     "rsu_delay_ms": 23.829,
+     "rsu_dup_copies": 7,
+     "dup_rx": 687
+    },
+    "ch_route": {
+     "received": 57,
+     "reachability": 0.285,
+     "t90_ms": null,
+     "transmissions": 14,
+     "collision_losses": 0,
+     "rsu_delay_ms": 40.638,
+     "rsu_dup_copies": 0,
+     "dup_rx": 48
+    }
+   }
+  },
+  {
+   "pair": {
+    "pair_id": "P002",
+    "created": "2026-11-13T11:34:20+05:30",
+    "baseline": "flooding",
+    "scenario": {
+     "scenario_id": "d200_r02",
+     "density": 200,
+     "run": 2,
+     "seed": 30002,
+     "network": "network/urban.net.xml",
+     "incident": {
+      "vehicle": "v164",
+      "x": 683.67,
+      "y": 588.4,
+      "lane": "D3E3_1",
+      "time_s": 114.0,
+      "event_id": "EVT-30002-v164-1"
+     },
+     "selection": {
+      "method": "seeded order (selection seed 10000); first unused scenario whose incident is on the road network and at least 50 m from every incident used before",
+      "selection_seed": 10000,
+      "rank": 1,
+      "repeat_of": null
+     }
+    },
+    "runs": {
+     "baseline": {
+      "approach": "baseline",
+      "algorithm": "Blind flooding",
+      "schemes": [
+       "flooding"
+      ],
+      "status": "finished",
+      "pid": 23676,
+      "requested": "2026-11-13T19:28:22+05:30",
+      "started": "2026-11-13T19:28:27+05:30",
+      "finished": "2026-11-13T19:29:17+05:30",
+      "message": null,
+      "fingerprint": "397f81ab56d100519fcbc8dad1ab58ef7bd403ef7cc8b3fd8f092449f2fb876a",
+      "record": "raw\\d200_r02.json.gz",
+      "exit_code": 0
+     },
+     "proposed": {
+      "approach": "proposed",
+      "algorithm": "Proposed (full) with its CH-to-CH route stage",
+      "schemes": [
+       "proposed",
+       "ch_route"
+      ],
+      "status": "finished",
+      "pid": 9100,
+      "requested": "2026-11-13T19:29:18+05:30",
+      "started": "2026-11-13T19:29:22+05:30",
+      "finished": "2026-11-13T19:31:11+05:30",
+      "message": null,
+      "fingerprint": "397f81ab56d100519fcbc8dad1ab58ef7bd403ef7cc8b3fd8f092449f2fb876a",
+      "record": "raw\\d200_r02.json.gz",
+      "exit_code": 0
+     }
+    }
+   },
+   "fingerprint": "397f81ab56d100519fcbc8dad1ab58ef7bd403ef7cc8b3fd8f092449f2fb876a",
+   "rows": {
+    "flooding": {
+     "received": 196,
+     "reachability": 0.98,
+     "t90_ms": 27.898,
+     "transmissions": 182,
+     "collision_losses": 9971,
+     "rsu_delay_ms": 24.284,
+     "rsu_dup_copies": 9,
+     "dup_rx": 456
+    },
+    "flooding_rad": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 30.329,
+     "transmissions": 186,
+     "collision_losses": 9407,
+     "rsu_delay_ms": 22.919,
+     "rsu_dup_copies": 13,
+     "dup_rx": 1156
+    },
+    "slotted1p": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 28.626,
+     "transmissions": 37,
+     "collision_losses": 775,
+     "rsu_delay_ms": 22.139,
+     "rsu_dup_copies": 11,
+     "dup_rx": 769
+    },
+    "slotted1p_rad": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 31.096,
+     "transmissions": 26,
+     "collision_losses": 268,
+     "rsu_delay_ms": 22.984,
+     "rsu_dup_copies": 10,
+     "dup_rx": 577
+    },
+    "proposed": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 38.012,
+     "transmissions": 28,
+     "collision_losses": 138,
+     "rsu_delay_ms": 22.477,
+     "rsu_dup_copies": 12,
+     "dup_rx": 911
+    },
+    "ch_route": {
+     "received": 89,
+     "reachability": 0.445,
+     "t90_ms": null,
+     "transmissions": 14,
+     "collision_losses": 0,
+     "rsu_delay_ms": 40.638,
+     "rsu_dup_copies": 0,
+     "dup_rx": 25
+    }
+   }
+  },
+  {
+   "pair": {
+    "pair_id": "P003",
+    "created": "2026-11-13T11:34:21+05:30",
+    "baseline": "slotted1p",
+    "scenario": {
+     "scenario_id": "d200_r15",
+     "density": 200,
+     "run": 15,
+     "seed": 30015,
+     "network": "network/urban.net.xml",
+     "incident": {
+      "vehicle": "v3",
+      "x": 815.2,
+      "y": 723.84,
+      "lane": "E4E3_0",
+      "time_s": 102.0,
+      "event_id": "EVT-30015-v3-1"
+     },
+     "selection": {
+      "method": "seeded order (selection seed 10000); first unused scenario whose incident is on the road network and at least 50 m from every incident used before",
+      "selection_seed": 10000,
+      "rank": 2,
+      "repeat_of": null
+     }
+    },
+    "runs": {
+     "baseline": {
+      "approach": "baseline",
+      "algorithm": "Slotted 1-persistence",
+      "schemes": [
+       "slotted1p"
+      ],
+      "status": "finished",
+      "pid": 19408,
+      "requested": "2026-11-13T19:31:12+05:30",
+      "started": "2026-11-13T19:31:17+05:30",
+      "finished": "2026-11-13T19:32:08+05:30",
+      "message": null,
+      "fingerprint": "52f461205a4b4589224af38166484ba64f4f932f2e398ea3f6e1b9cc1bea5862",
+      "record": "raw\\d200_r15.json.gz",
+      "exit_code": 0
+     },
+     "proposed": {
+      "approach": "proposed",
+      "algorithm": "Proposed (full) with its CH-to-CH route stage",
+      "schemes": [
+       "proposed",
+       "ch_route"
+      ],
+      "status": "finished",
+      "pid": 15772,
+      "requested": "2026-11-13T19:32:08+05:30",
+      "started": "2026-11-13T19:32:13+05:30",
+      "finished": "2026-11-13T19:34:14+05:30",
+      "message": null,
+      "fingerprint": "52f461205a4b4589224af38166484ba64f4f932f2e398ea3f6e1b9cc1bea5862",
+      "record": "raw\\d200_r15.json.gz",
+      "exit_code": 0
+     }
+    }
+   },
+   "fingerprint": "52f461205a4b4589224af38166484ba64f4f932f2e398ea3f6e1b9cc1bea5862",
+   "rows": {
+    "slotted1p": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 39.312,
+     "transmissions": 37,
+     "collision_losses": 1017,
+     "rsu_delay_ms": 27.131,
+     "rsu_dup_copies": 5,
+     "dup_rx": 612
+    },
+    "flooding": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 32.89,
+     "transmissions": 186,
+     "collision_losses": 9004,
+     "rsu_delay_ms": 27.131,
+     "rsu_dup_copies": 11,
+     "dup_rx": 912
+    },
+    "flooding_rad": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 36.244,
+     "transmissions": 186,
+     "collision_losses": 8308,
+     "rsu_delay_ms": 30.212,
+     "rsu_dup_copies": 19,
+     "dup_rx": 1600
+    },
+    "slotted1p_rad": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 40.638,
+     "transmissions": 28,
+     "collision_losses": 178,
+     "rsu_delay_ms": 27.56,
+     "rsu_dup_copies": 11,
+     "dup_rx": 759
+    },
+    "proposed": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 46.553,
+     "transmissions": 26,
+     "collision_losses": 134,
+     "rsu_delay_ms": 32.409,
+     "rsu_dup_copies": 14,
+     "dup_rx": 847
+    },
+    "ch_route": {
+     "received": 100,
+     "reachability": 0.5,
+     "t90_ms": null,
+     "transmissions": 21,
+     "collision_losses": 0,
+     "rsu_delay_ms": 64.155,
+     "rsu_dup_copies": 0,
+     "dup_rx": 71
+    }
+   }
+  },
+  {
+   "pair": {
+    "pair_id": "P004",
+    "created": "2026-11-13T11:34:22+05:30",
+    "baseline": "slotted1p_rad",
+    "scenario": {
+     "scenario_id": "d200_r11",
+     "density": 200,
+     "run": 11,
+     "seed": 30011,
+     "network": "network/urban.net.xml",
+     "incident": {
+      "vehicle": "v16",
+      "x": 608.4,
+      "y": 608.9,
+      "lane": "D4D3_1",
+      "time_s": 74.0,
+      "event_id": "EVT-30011-v16-1"
+     },
+     "selection": {
+      "method": "seeded order (selection seed 10000); first unused scenario whose incident is on the road network and at least 50 m from every incident used before",
+      "selection_seed": 10000,
+      "rank": 3,
+      "repeat_of": null
+     }
+    },
+    "runs": {
+     "baseline": {
+      "approach": "baseline",
+      "algorithm": "Slotted 1-p + random delay",
+      "schemes": [
+       "slotted1p_rad"
+      ],
+      "status": "finished",
+      "pid": 6980,
+      "requested": "2026-11-14T00:48:33+05:30",
+      "started": "2026-11-14T00:48:36+05:30",
+      "finished": "2026-11-14T00:49:18+05:30",
+      "message": null,
+      "fingerprint": "303259bbb50646612e93ded9d42aa7efdcf30195df952e9fdc3326e06f7b00fb",
+      "record": "raw\\d200_r11.json.gz",
+      "exit_code": 0
+     },
+     "proposed": {
+      "approach": "proposed",
+      "algorithm": "Proposed (full) with its CH-to-CH route stage",
+      "schemes": [
+       "proposed",
+       "ch_route"
+      ],
+      "status": "finished",
+      "pid": 23188,
+      "requested": "2026-11-14T00:49:19+05:30",
+      "started": "2026-11-14T00:49:21+05:30",
+      "finished": "2026-11-14T00:50:57+05:30",
+      "message": null,
+      "fingerprint": "303259bbb50646612e93ded9d42aa7efdcf30195df952e9fdc3326e06f7b00fb",
+      "record": "raw\\d200_r11.json.gz",
+      "exit_code": 0
+     }
+    }
+   },
+   "fingerprint": "303259bbb50646612e93ded9d42aa7efdcf30195df952e9fdc3326e06f7b00fb",
+   "rows": {
+    "slotted1p_rad": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 29.211,
+     "transmissions": 30,
+     "collision_losses": 660,
+     "rsu_delay_ms": 22.893,
+     "rsu_dup_copies": 7,
+     "dup_rx": 534
+    },
+    "flooding": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 30.706,
+     "transmissions": 186,
+     "collision_losses": 9234,
+     "rsu_delay_ms": 23.543,
+     "rsu_dup_copies": 8,
+     "dup_rx": 744
+    },
+    "flooding_rad": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 28.743,
+     "transmissions": 186,
+     "collision_losses": 8855,
+     "rsu_delay_ms": 22.282,
+     "rsu_dup_copies": 19,
+     "dup_rx": 1112
+    },
+    "slotted1p": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 27.885,
+     "transmissions": 46,
+     "collision_losses": 1395,
+     "rsu_delay_ms": 22.165,
+     "rsu_dup_copies": 11,
+     "dup_rx": 602
+    },
+    "proposed": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 34.606,
+     "transmissions": 25,
+     "collision_losses": 180,
+     "rsu_delay_ms": 24.284,
+     "rsu_dup_copies": 10,
+     "dup_rx": 725
+    },
+    "ch_route": {
+     "received": 94,
+     "reachability": 0.47,
+     "t90_ms": null,
+     "transmissions": 14,
+     "collision_losses": 0,
+     "rsu_delay_ms": 40.638,
+     "rsu_dup_copies": 0,
+     "dup_rx": 30
+    }
+   }
+  },
+  {
+   "pair": {
+    "pair_id": "P005",
+    "created": "2026-11-13T11:48:47+05:30",
+    "baseline": "slotted1p",
+    "scenario": {
+     "scenario_id": "d200_r12",
+     "density": 200,
+     "run": 12,
+     "seed": 30012,
+     "network": "network/urban.net.xml",
+     "incident": {
+      "vehicle": "v0",
+      "x": 525.68,
+      "y": 804.8,
+      "lane": "D4C4_0",
+      "time_s": 79.0,
+      "event_id": "EVT-30012-v0-1"
+     },
+     "selection": {
+      "method": "seeded order (selection seed 10000); first unused scenario whose incident is on the road network and at least 50 m from every incident used before",
+      "selection_seed": 10000,
+      "rank": 4,
+      "repeat_of": null
+     }
+    },
+    "runs": {
+     "baseline": {
+      "approach": "baseline",
+      "algorithm": "Slotted 1-persistence",
+      "schemes": [
+       "slotted1p"
+      ],
+      "status": "finished",
+      "pid": 10516,
+      "requested": "2026-11-13T19:36:58+05:30",
+      "started": "2026-11-13T19:37:03+05:30",
+      "finished": "2026-11-13T19:37:55+05:30",
+      "message": null,
+      "fingerprint": "ff111826f6f89db6defe850df44f1ce0b291b9c60293705a0caa928726f58807",
+      "record": "raw\\d200_r12.json.gz",
+      "exit_code": 0
+     },
+     "proposed": {
+      "approach": "proposed",
+      "algorithm": "Proposed (full) with its CH-to-CH route stage",
+      "schemes": [
+       "proposed",
+       "ch_route"
+      ],
+      "status": "finished",
+      "pid": 21860,
+      "requested": "2026-11-13T19:37:56+05:30",
+      "started": "2026-11-13T19:38:01+05:30",
+      "finished": "2026-11-13T19:39:46+05:30",
+      "message": null,
+      "fingerprint": "ff111826f6f89db6defe850df44f1ce0b291b9c60293705a0caa928726f58807",
+      "record": "raw\\d200_r12.json.gz",
+      "exit_code": 0
+     }
+    }
+   },
+   "fingerprint": "ff111826f6f89db6defe850df44f1ce0b291b9c60293705a0caa928726f58807",
+   "rows": {
+    "slotted1p": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 32.188,
+     "transmissions": 54,
+     "collision_losses": 1691,
+     "rsu_delay_ms": 22.126,
+     "rsu_dup_copies": 10,
+     "dup_rx": 646
+    },
+    "flooding": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 33.592,
+     "transmissions": 186,
+     "collision_losses": 8647,
+     "rsu_delay_ms": 27.157,
+     "rsu_dup_copies": 11,
+     "dup_rx": 819
+    },
+    "flooding_rad": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 34.333,
+     "transmissions": 186,
+     "collision_losses": 8257,
+     "rsu_delay_ms": 23.595,
+     "rsu_dup_copies": 17,
+     "dup_rx": 1203
+    },
+    "slotted1p_rad": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 34.593,
+     "transmissions": 27,
+     "collision_losses": 253,
+     "rsu_delay_ms": 23.062,
+     "rsu_dup_copies": 6,
+     "dup_rx": 657
+    },
+    "proposed": {
+     "received": 200,
+     "reachability": 1.0,
+     "t90_ms": 38.753,
+     "transmissions": 32,
+     "collision_losses": 160,
+     "rsu_delay_ms": 24.18,
+     "rsu_dup_copies": 15,
+     "dup_rx": 1043
+    },
+    "ch_route": {
+     "received": 44,
+     "reachability": 0.22,
+     "t90_ms": null,
+     "transmissions": 9,
+     "collision_losses": 0,
+     "rsu_delay_ms": null,
+     "rsu_dup_copies": null,
+     "dup_rx": 0
+    }
+   }
+  }
+ ],
+ "skipped_pairs": [],
+ "sumo_figures": {
+  "sumo_P002_baseline_traffic.png": {
+   "pair": "P002",
+   "scenario": "d200_r02",
+   "seed": 30002,
+   "approach": "baseline",
+   "capture": "003.png",
+   "stage": "live traffic",
+   "scheme": "live SUMO traffic",
+   "radio_ms": null,
+   "sim_time_s": 114.0,
+   "record_fingerprint": "397f81ab56d10051"
+  },
+  "sumo_P002_baseline_incident.png": {
+   "pair": "P002",
+   "scenario": "d200_r02",
+   "seed": 30002,
+   "approach": "baseline",
+   "capture": "004.png",
+   "stage": "Incident",
+   "scheme": "incident",
+   "radio_ms": null,
+   "sim_time_s": 114.0,
+   "record_fingerprint": "397f81ab56d10051"
+  },
+  "sumo_P002_baseline_alert.png": {
+   "pair": "P002",
+   "scenario": "d200_r02",
+   "seed": 30002,
+   "approach": "baseline",
+   "capture": "005.png",
+   "stage": "Alert",
+   "scheme": "incident",
+   "radio_ms": null,
+   "sim_time_s": 114.0,
+   "record_fingerprint": "397f81ab56d10051"
+  },
+  "sumo_P002_proposed_clusters.png": {
+   "pair": "P002",
+   "scenario": "d200_r02",
+   "seed": 30002,
+   "approach": "proposed",
+   "capture": "006.png",
+   "stage": "Cluster / CH",
+   "scheme": "incident",
+   "radio_ms": null,
+   "sim_time_s": 114.0,
+   "record_fingerprint": "397f81ab56d10051"
+  },
+  "sumo_P002_proposed_votes.png": {
+   "pair": "P002",
+   "scenario": "d200_r02",
+   "seed": 30002,
+   "approach": "proposed",
+   "capture": "008.png",
+   "stage": "Votes",
+   "scheme": "Proposed (full)",
+   "radio_ms": 8.5,
+   "sim_time_s": 114.0,
+   "record_fingerprint": "397f81ab56d10051"
+  },
+  "sumo_P002_proposed_certificate.png": {
+   "pair": "P002",
+   "scenario": "d200_r02",
+   "seed": 30002,
+   "approach": "proposed",
+   "capture": "009.png",
+   "stage": "Certificate",
+   "scheme": "Proposed (full)",
+   "radio_ms": 12.5,
+   "sim_time_s": 114.0,
+   "record_fingerprint": "397f81ab56d10051"
+  },
+  "sumo_P002_proposed_forwarding.png": {
+   "pair": "P002",
+   "scenario": "d200_r02",
+   "seed": 30002,
+   "approach": "proposed",
+   "capture": "017.png",
+   "stage": "Forwarding / Route",
+   "scheme": "Proposed (full)",
+   "radio_ms": 46.5,
+   "sim_time_s": 114.0,
+   "record_fingerprint": "397f81ab56d10051"
+  },
+  "sumo_P002_proposed_rsu.png": {
+   "pair": "P002",
+   "scenario": "d200_r02",
+   "seed": 30002,
+   "approach": "proposed",
+   "capture": "025.png",
+   "stage": "RSU",
+   "scheme": "Proposed (full)",
+   "radio_ms": 80.9,
+   "sim_time_s": 114.0,
+   "record_fingerprint": "397f81ab56d10051"
+  },
+  "sumo_P002_proposed_route.png": {
+   "pair": "P002",
+   "scenario": "d200_r02",
+   "seed": 30002,
+   "approach": "proposed",
+   "capture": "031.png",
+   "stage": "RSU",
+   "scheme": "CH shortest-path delivery",
+   "radio_ms": 40.6,
+   "sim_time_s": 114.0,
+   "record_fingerprint": "397f81ab56d10051"
+  },
+  "sumo_P002_proposed_forged.png": {
+   "pair": "P002",
+   "scenario": "d200_r02",
+   "seed": 30002,
+   "approach": "proposed",
+   "capture": "035.png",
+   "stage": "RSU",
+   "scheme": "FORGED ALERT | Voting + BLS + reputation (full)",
+   "radio_ms": 17.1,
+   "sim_time_s": 114.0,
+   "record_fingerprint": "397f81ab56d10051"
+  },
+  "sumo_P002_proposed_final.png": {
+   "pair": "P002",
+   "scenario": "d200_r02",
+   "seed": 30002,
+   "approach": "proposed",
+   "capture": "037.png",
+   "stage": "RSU",
+   "scheme": "Proposed (full)",
+   "radio_ms": null,
+   "sim_time_s": 134.0,
+   "record_fingerprint": "397f81ab56d10051"
+  },
+  "sumo_P002_baseline_final.png": {
+   "pair": "P002",
+   "scenario": "d200_r02",
+   "seed": 30002,
+   "approach": "baseline",
+   "capture": "016.png",
+   "stage": "RSU",
+   "scheme": "Blind flooding",
+   "radio_ms": null,
+   "sim_time_s": 134.0,
+   "record_fingerprint": "397f81ab56d10051"
+  },
+  "sumo_P002_baseline_forwarding.png": {
+   "pair": "P002",
+   "scenario": "d200_r02",
+   "seed": 30002,
+   "approach": "baseline",
+   "capture": "012.png",
+   "stage": "Forwarding / Route",
+   "scheme": "Blind flooding",
+   "radio_ms": 29.5,
+   "sim_time_s": 114.0,
+   "record_fingerprint": "397f81ab56d10051"
+  },
+  "sumo_P001_baseline_forwarding.png": {
+   "pair": "P001",
+   "scenario": "d200_r23",
+   "seed": 30023,
+   "approach": "baseline",
+   "capture": "010.png",
+   "stage": "Forwarding / Route",
+   "scheme": "Flooding + random delay",
+   "radio_ms": 21.0,
+   "sim_time_s": 70.0,
+   "record_fingerprint": "d2ae64723ca78a86"
+  },
+  "sumo_P003_baseline_forwarding.png": {
+   "pair": "P003",
+   "scenario": "d200_r15",
+   "seed": 30015,
+   "approach": "baseline",
+   "capture": "010.png",
+   "stage": "Forwarding / Route",
+   "scheme": "Slotted 1-persistence",
+   "radio_ms": 23.0,
+   "sim_time_s": 102.0,
+   "record_fingerprint": "52f461205a4b4589"
+  },
+  "sumo_P004_baseline_forwarding.png": {
+   "pair": "P004",
+   "scenario": "d200_r11",
+   "seed": 30011,
+   "approach": "baseline",
+   "capture": "011.png",
+   "stage": "Forwarding / Route",
+   "scheme": "Slotted 1-p + random delay",
+   "radio_ms": 32.5,
+   "sim_time_s": 74.0,
+   "record_fingerprint": "303259bbb5064661"
+  }
+ },
+ "dashboard_figures": {
+  "dash_overview.png": {
+   "file": "P002_final_narrow.png",
+   "pair": "P002",
+   "note": "after both runs of the pair finished",
+   "taken": "2026-11-14 00:23:57",
+   "section": 1,
+   "part": 1
+  },
+  "dash_scenario.png": {
+   "file": "P002_final_narrow.png",
+   "pair": "P002",
+   "note": "after both runs of the pair finished",
+   "taken": "2026-11-14 00:23:57",
+   "section": 2,
+   "part": 1
+  },
+  "dash_outcome.png": {
+   "file": "P002_final_narrow.png",
+   "pair": "P002",
+   "note": "after both runs of the pair finished",
+   "taken": "2026-11-14 00:23:57",
+   "section": 4,
+   "part": 1
+  },
+  "dash_comparison.png": {
+   "file": "P002_final_narrow.png",
+   "pair": "P002",
+   "note": "after both runs of the pair finished",
+   "taken": "2026-11-14 00:23:57",
+   "section": 5,
+   "part": 1
+  },
+  "dash_comparison_2.png": {
+   "file": "P002_final_narrow.png",
+   "pair": "P002",
+   "note": "after both runs of the pair finished",
+   "taken": "2026-11-14 00:23:57",
+   "section": 5,
+   "part": 2
+  },
+  "dash_evidence.png": {
+   "file": "P002_final_narrow.png",
+   "pair": "P002",
+   "note": "after both runs of the pair finished",
+   "taken": "2026-11-14 00:23:57",
+   "section": 6,
+   "part": 1
+  },
+  "dash_live_baseline.png": {
+   "file": "P005_baseline_live.png",
+   "pair": "P005",
+   "note": "during the baseline-only run (LIVE)",
+   "taken": "2026-11-13 19:37:29",
+   "trigger": "Forwarding / Route, Slotted 1-persistence, +18.0 ms",
+   "section": 3,
+   "part": 1
+  },
+  "dash_outcome_baseline.png": {
+   "file": "P005_after_baseline_narrow.png",
+   "pair": "P005",
+   "note": "after the baseline-only run, before the proposed-only run",
+   "taken": "2026-11-13 11:49:42",
+   "kept_from": "first P005 runs (record fingerprint unchanged); contains no SUMO capture",
+   "section": 4,
+   "part": 1
+  },
+  "dash_comparison_withheld.png": {
+   "file": "P005_after_baseline_narrow.png",
+   "pair": "P005",
+   "note": "after the baseline-only run, before the proposed-only run",
+   "taken": "2026-11-13 11:49:42",
+   "kept_from": "first P005 runs (record fingerprint unchanged); contains no SUMO capture",
+   "section": 5,
+   "part": 1
+  },
+  "dash_live_proposed.png": {
+   "file": "P005_proposed_live.png",
+   "pair": "P005",
+   "note": "during the proposed-only run (LIVE)",
+   "taken": "2026-11-13 19:38:30",
+   "trigger": "Forwarding / Route, Proposed (full), +17.5 ms",
+   "section": 3,
+   "part": 1
+  }
+ },
+ "multiseed_200": {
+  "flooding": {
+   "transmissions": 185.76666666666668,
+   "collision_losses": 9631.766666666666,
+   "reachability": 0.9988333333333335,
+   "t90_ms": 31.81576666666667,
+   "rsu_delay_ms": 22.00986666666666,
+   "rsu_received": 1.0,
+   "dup_rx": 785.2666666666667
+  },
+  "flooding_rad": {
+   "transmissions": 185.96666666666667,
+   "collision_losses": 9186.533333333333,
+   "reachability": 0.9998333333333334,
+   "t90_ms": 31.386333333333333,
+   "rsu_delay_ms": 20.570333333333334,
+   "rsu_received": 1.0,
+   "dup_rx": 1232.7
+  },
+  "slotted1p": {
+   "transmissions": 54.666666666666664,
+   "collision_losses": 2069.733333333333,
+   "reachability": 0.9963333333333334,
+   "t90_ms": 32.53553333333333,
+   "rsu_delay_ms": 20.669566666666665,
+   "rsu_received": 1.0,
+   "dup_rx": 634.6666666666666
+  },
+  "slotted1p_rad": {
+   "transmissions": 24.1,
+   "collision_losses": 187.66666666666666,
+   "reachability": 0.9920000000000001,
+   "t90_ms": 34.00756666666667,
+   "rsu_delay_ms": 20.539133333333332,
+   "rsu_received": 1.0,
+   "dup_rx": 579.2
+  },
+  "proposed": {
+   "transmissions": 26.433333333333334,
+   "collision_losses": 151.36666666666667,
+   "reachability": 1.0,
+   "t90_ms": 35.291533333333334,
+   "rsu_delay_ms": 21.400599999999994,
+   "rsu_received": 1.0,
+   "dup_rx": 865.2333333333333
+  },
+  "ch_route": {
+   "transmissions": 10.8,
+   "collision_losses": 0.0,
+   "reachability": 0.35850000000000004,
+   "t90_ms": null,
+   "rsu_delay_ms": 30.54582142857143,
+   "rsu_received": 0.9333333333333333,
+   "dup_rx": 21.633333333333333
+  }
+ },
+ "observations": [
+  "At 200 vehicles the proposed method's broadcast sent 26.4 \u00b1 1.4 frames per alert, 7.0 times fewer than blind flooding (185.8 \u00b1 0.3; its CH-to-CH route stage is a separate dissemination, counted in its own row); paired over the seeds the difference is -159.3 \u00b1 1.4 frames. <span class='src'>(summary.csv, paired.csv)</span>",
+  "Against the strongest baseline, slotted 1-p + random delay (24.1 \u00b1 1.0 frames), the proposed method shows more frames than it at 200 vehicles (paired difference +2.3 \u00b1 1.6). <span class='src'>(summary.csv, paired.csv)</span>",
+  "Receptions lost to collisions: 151 \u00b1 35 for the proposed method against 9632 \u00b1 208 for blind flooding and 188 \u00b1 55 for slotted 1-p + random delay (no significant difference than the latter: -36 \u00b1 55). <span class='src'>(summary.csv, paired.csv)</span>",
+  "The proposed method reached 100 % of the reachable vehicles in every run at every density. Blind flooding reached 99.9 \u00b1 0.1 % and slotted 1-persistence 99.6 \u00b1 0.5 % at 200 vehicles. <span class='src'>(summary.csv)</span>",
+  "Delay is the trade-off: the proposed method needed 35.3 \u00b1 1.8 ms to reach 90 % of the reachable vehicles against 31.8 \u00b1 1.1 ms for blind flooding (+3.5 \u00b1 1.7 ms paired; significantly slower). <span class='src'>(summary.csv, paired.csv)</span>",
+  "First RSU registration took 21.4 \u00b1 1.9 ms with the proposed method and 22.0 \u00b1 1.9 ms with blind flooding (paired -0.6 \u00b1 1.0 ms: no significant difference); every scheme delivered to an RSU in 100 \u00b1 0 % of the runs. <span class='src'>(summary.csv, paired.csv)</span>",
+  "The CH-to-CH route stage used 10.8 \u00b1 1.7 frames and lost no receptions, but by design it informs only the vehicles along and around the route (35.9 \u00b1 4.3 % reach) and delivered to the RSU in 93 \u00b1 9 % of the runs (it has no fallback). <span class='src'>(summary.csv)</span>",
+  "With full protection no honest vehicle accepted a forged alert and no RSU registered one, at any density; without the reputation gate 13 %, 53 %, 87 %, 97 %, 97 %, 100 % of honest vehicles accepted it (50, 100, 200, 250, 300, 500 vehicles). <span class='src'>(forgery_summary.csv)</span>",
+  "Against the strongest baseline, slotted 1-p + random delay, paired over the seeds at every density, the proposed method is mixed: frames on air worse at 100, 200 vehicles; receptions lost better at 250, 300, 500 vehicles; worse at 100 vehicles; reach better at 50, 100, 500 vehicles; time to 90 % better at 50 vehicles; worse at 300, 500 vehicles; first RSU registration worse at 50, 200, 300 vehicles (a density not named shows no significant difference). <span class='src'>(paired.csv)</span>",
+  "In the comparison pairs, the proposed method's broadcast used fewer frames than the replayed baseline in 5 of 5 pairs (its CH-to-CH route stage is counted separately in the pair tables; single runs illustrate, the seeds above decide). <span class='src'>(pair records)</span>"
+ ]
+}

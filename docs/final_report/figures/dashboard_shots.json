@@ -1,0 +1,89 @@
+{
+ "taken_with": "Microsoft Edge headless, window 1000 px wide, device scale factor 2",
+ "figures": {
+  "dash_overview.png": {
+   "file": "P002_final_narrow.png",
+   "pair": "P002",
+   "note": "after both runs of the pair finished",
+   "taken": "2026-11-14 00:23:57",
+   "section": 1,
+   "part": 1
+  },
+  "dash_scenario.png": {
+   "file": "P002_final_narrow.png",
+   "pair": "P002",
+   "note": "after both runs of the pair finished",
+   "taken": "2026-11-14 00:23:57",
+   "section": 2,
+   "part": 1
+  },
+  "dash_outcome.png": {
+   "file": "P002_final_narrow.png",
+   "pair": "P002",
+   "note": "after both runs of the pair finished",
+   "taken": "2026-11-14 00:23:57",
+   "section": 4,
+   "part": 1
+  },
+  "dash_comparison.png": {
+   "file": "P002_final_narrow.png",
+   "pair": "P002",
+   "note": "after both runs of the pair finished",
+   "taken": "2026-11-14 00:23:57",
+   "section": 5,
+   "part": 1
+  },
+  "dash_comparison_2.png": {
+   "file": "P002_final_narrow.png",
+   "pair": "P002",
+   "note": "after both runs of the pair finished",
+   "taken": "2026-11-14 00:23:57",
+   "section": 5,
+   "part": 2
+  },
+  "dash_evidence.png": {
+   "file": "P002_final_narrow.png",
+   "pair": "P002",
+   "note": "after both runs of the pair finished",
+   "taken": "2026-11-14 00:23:57",
+   "section": 6,
+   "part": 1
+  },
+  "dash_live_baseline.png": {
+   "file": "P005_baseline_live.png",
+   "pair": "P005",
+   "note": "during the baseline-only run (LIVE)",
+   "taken": "2026-11-13 19:37:29",
+   "trigger": "Forwarding / Route, Slotted 1-persistence, +18.0 ms",
+   "section": 3,
+   "part": 1
+  },
+  "dash_outcome_baseline.png": {
+   "file": "P005_after_baseline_narrow.png",
+   "pair": "P005",
+   "note": "after the baseline-only run, before the proposed-only run",
+   "taken": "2026-11-13 11:49:42",
+   "kept_from": "first P005 runs (record fingerprint unchanged); contains no SUMO capture",
+   "section": 4,
+   "part": 1
+  },
+  "dash_comparison_withheld.png": {
+   "file": "P005_after_baseline_narrow.png",
+   "pair": "P005",
+   "note": "after the baseline-only run, before the proposed-only run",
+   "taken": "2026-11-13 11:49:42",
+   "kept_from": "first P005 runs (record fingerprint unchanged); contains no SUMO capture",
+   "section": 5,
+   "part": 1
+  },
+  "dash_live_proposed.png": {
+   "file": "P005_proposed_live.png",
+   "pair": "P005",
+   "note": "during the proposed-only run (LIVE)",
+   "taken": "2026-11-13 19:38:30",
+   "trigger": "Forwarding / Route, Proposed (full), +17.5 ms",
+   "section": 3,
+   "part": 1
+  }
+ }
+}
