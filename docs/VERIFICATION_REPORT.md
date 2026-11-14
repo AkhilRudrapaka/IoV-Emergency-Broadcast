@@ -1,3 +1,5 @@
+> **LEGACY DOCUMENT.** It describes the architecture of commit `df48e8c` (trust.py, GPSR routing, 5 RSUs, 94 tests, `main.py`), which was deleted in commit `0c39b11`. None of its modules, parameters or numbers match the current code. Current design: [docs/SYSTEM_DESIGN.md](SYSTEM_DESIGN.md); audit: [docs/AUDIT.md](AUDIT.md).
+
 # Pre-Viva Verification Report
 
 **Date:** 2026-09-05 · **Basis:** `pytest -q` → 94 passed; full 7-density sweep re-run from source; canonical
