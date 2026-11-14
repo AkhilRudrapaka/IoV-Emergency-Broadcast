@@ -11,18 +11,26 @@ Vehicle metrics (definitions after Ni et al. 1999 unless noted):
   reachability      r / e: vehicles that received / vehicles connected to the source
                     in the radio graph (reachable in principle, same e for every scheme)
   srb               saved rebroadcast (r - t) / r, t = certified-alert frames incl. the source's
-  suppression_ratio share of honest non-source receivers that chose not to rebroadcast
+  suppression_ratio SUPPRESS / (SUPPRESS + FORWARD) over the decisions of honest non-source vehicles.
+                    Vehicles that cannot relay are outside the denominator: hop-limited (EXPIRED),
+                    misbehaving (DROP), rejecting (REJECT). Blind flooding is therefore exactly 0.
   redundant_tx      certified-alert frames that delivered the alert to no new vehicle or RSU
   dup_rx            successful receptions by vehicles that already had the alert
-  collision_losses  in-range receptions destroyed by an overlapping transmission
-  t90_ms            time until 90 % of the e reachable vehicles have the alert
+  collision_losses  in-range receptions destroyed by an overlapping transmission (most hit vehicles
+  collision_ratio   that already had the alert); ratio = lost / (lost + decoded)
+  t90_ms            time until ceil(0.9 e) vehicles have the alert, the source counted (NaN if never)
+  t_last_ms         time the LAST reached vehicle got it; mean_delay_ms: mean over reached vehicles.
+                    Both cover reached vehicles only: read them together with reachability.
   cbr_100ms         channel busy ratio over the first 100 ms (ETSI TS 102 687 T_CBR),
-                    averaged over the reachable vehicles
+                    averaged over the reachable vehicles; cbr_peak = the busiest vehicle's value
+  airtime_ms        mean channel-busy time per reachable vehicle (sensed, own frames included)
+  accepted          1 if receivers accept the alert (quorum certificate, or no corroboration in use)
 
 RSU metrics (rsu.py registers the event; NaN when no RSU is reachable / none received):
   rsu_received      1 if an RSU registered the event, 0 if one was reachable but none did
-  rsu_delay_ms      incident -> first RSU registration
-  rsu_tx_before     transmissions on air up to that registration
+  rsu_arrival_ms    incident -> an RSU first DECODES a copy (radio delivery latency)
+  rsu_delay_ms      incident -> first RSU REGISTRATION = arrival + BLS verification (service latency)
+  rsu_tx_before     frames that had ended when that first copy was decoded
   rsu_dup_copies    further copies of the same event decoded by RSUs afterwards
   rsu_hops          hops the registered copy had travelled
   rsu_relay_*       the same three, only for incidents OUTSIDE direct RSU range, i.e. the
@@ -38,7 +46,7 @@ import rsu
 from channel import slots_to_ms, ms_to_slots
 from config import CBR_WINDOW_MS
 
-METRICS = ["transmissions", "alert_tx", "vote_tx", "accepted", "quorum_ms",
+METRICS = ["transmissions", "alert_tx", "vote_tx", "accepted", "quorum_ms", "rsu_arrival_ms",
            "redundant_tx", "dup_rx", "collision_losses", "collision_ratio",
            "reachability", "srb", "suppression_ratio", "t90_ms", "t_last_ms", "mean_delay_ms",
            "cbr_100ms", "cbr_peak", "airtime_ms",
@@ -52,7 +60,7 @@ def reachable(adj, source):
     return comp == comp[source]
 
 
-def run_metrics(adj, source, malicious, proto, log, n_vehicles, names, alert, genuine=True):
+def run_metrics(adj, source, malicious, proto, log, n_vehicles, names, alert, genuine=True, now_s=None):
     """adj covers vehicles then RSUs; the first n_vehicles nodes are vehicles.
     Returns (metrics dict, RSU event record or None, every copy an RSU decoded)."""
     nv = n_vehicles
@@ -65,6 +73,9 @@ def run_metrics(adj, source, malicious, proto, log, n_vehicles, names, alert, ge
     k90 = math.ceil(0.9 * e)
     honest = got & ~malicious[:nv]
     honest[source] = False
+
+    decisions = [proto.rec.get(v, {}).get("decision") for v in range(nv) if v != source and not malicious[v]]
+    suppressed, forwarded = decisions.count("SUPPRESS"), decisions.count("FORWARD")
 
     ok = sum(tx["new"] + tx["dup"] + tx["other"] for tx in log)
     lost = sum(tx["lost"] for tx in log)
@@ -80,11 +91,13 @@ def run_metrics(adj, source, malicious, proto, log, n_vehicles, names, alert, ge
     rsu_nodes = np.flatnonzero(proto.rsu)
     rsu_reachable = bool(adj[np.ix_(rsu_nodes, np.flatnonzero(comp))].any()) if rsu_nodes.size else False
     needs_relay = rsu_reachable and not adj[source, rsu_nodes].any()
-    receptions = [{"rsu": names[u], "sender": names[s], "delay_ms": round(slots_to_ms(slot), 3), "hop": hop,
-                   "transmissions_before": sum(tx["end"] <= slot for tx in log),
+    receptions = [{"rsu": names[u], "sender": names[s], "arrival_ms": round(slots_to_ms(arrived), 3),
+                   "delay_ms": round(slots_to_ms(slot), 3), "hop": hop,
+                   "transmissions_before": sum(tx["end"] <= arrived for tx in log),
                    "vehicles_reached": int((got & (proto.first_rx[:nv] <= slot)).sum())}
-                  for u, s, slot, hop in proto.rsu_rx]
-    event, rejected = rsu.register(alert, receptions, (proto.cert_ok, proto.cert_reason) if proto.sec else None)
+                  for u, s, arrived, slot, hop in proto.rsu_rx]
+    event, rejected = rsu.register(alert, receptions, (proto.cert_ok, proto.cert_reason) if proto.sec else None,
+                                   clock_s=now_s)          # now_s: simulation time the dissemination started
     assert not (genuine and rejected), f"a genuine alert failed RSU validation: {rejected}"
     rsu_first = len({rx_["rsu"] for rx_ in receptions})      # first copies at each RSU are not vehicle duplicates
 
@@ -99,7 +112,7 @@ def run_metrics(adj, source, malicious, proto, log, n_vehicles, names, alert, ge
         "collision_ratio": lost / (ok + lost) if ok + lost else 0.0,
         "reachability": r / e if e > 1 else NAN,
         "srb": (r - t) / r if released else NAN,
-        "suppression_ratio": 1 - (t - 1) / honest.sum() if honest.sum() else NAN,
+        "suppression_ratio": suppressed / (suppressed + forwarded) if suppressed + forwarded else NAN,
         "honest_reached": int(honest.sum()),
         "honest_reachable": int((comp & ~malicious[:nv]).sum()) - (0 if malicious[source] else 1),
         "t90_ms": slots_to_ms(rx[k90 - 1]) if r >= k90 and e > 1 else NAN,
@@ -111,6 +124,7 @@ def run_metrics(adj, source, malicious, proto, log, n_vehicles, names, alert, ge
         "rsu_reachable": int(rsu_reachable),
         "rsu_received": (1.0 if event else 0.0) if rsu_reachable else NAN,
         "rsu_delay_ms": event["delay_ms"] if event else NAN,
+        "rsu_arrival_ms": event["arrival_ms"] if event else NAN,
         "rsu_tx_before": event["transmissions_before_reception"] if event else NAN,
         "rsu_dup_copies": event["duplicate_copies"] if event else NAN,
         "rsu_hops": event["hops"] if event else NAN,
@@ -134,10 +148,11 @@ def check(m):
 
 
 def summarize(values):
-    """mean, sample std, 95 % CI half-width (Student t), n -- NaNs (undefined runs) excluded."""
+    """mean, sample std, 95 % CI half-width (Student t), n -- NaNs (undefined runs) excluded.
+    With a single value the spread is unknown, so std and CI are NaN (never a misleading +-0)."""
     v = np.array([x for x in values if not math.isnan(x)], float)
     if v.size == 0:
         return NAN, NAN, NAN, 0
-    std = v.std(ddof=1) if v.size > 1 else 0.0
-    ci = student_t.ppf(0.975, v.size - 1) * std / math.sqrt(v.size) if v.size > 1 else 0.0
+    std = v.std(ddof=1) if v.size > 1 else NAN
+    ci = student_t.ppf(0.975, v.size - 1) * std / math.sqrt(v.size) if v.size > 1 else NAN
     return float(v.mean()), float(std), float(ci), int(v.size)

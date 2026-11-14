@@ -16,7 +16,7 @@ import numpy as np
 import sumo
 
 from config import (NET_FILE, BASE_SEED, DEPART_WINDOW_S, ROUTE_EDGES, INCIDENT_WINDOW_S,
-                    MALICIOUS_RATIO, WATCHDOG_MISS_PROB, COMM_RANGE_M, HOP_LIMIT)
+                    MALICIOUS_RATIO, WATCHDOG_MISS_PROB, MALICIOUS_COOPERATION, COMM_RANGE_M, HOP_LIMIT)
 from clustering import beta_trust
 
 SUMO_BIN = os.path.join(sumo.SUMO_HOME, "bin", "sumo.exe" if os.name == "nt" else "sumo")
@@ -118,8 +118,10 @@ def build(density, run, workdir=None, history_s=0):
         write_routes(routes, density, rng)
         run_sumo(routes, seed, t_incident + 1, fcd)
 
-        # Watchdog trust: once per 1 s beacon period, every vehicle that has at
-        # least one neighbour is observed relaying (or not) by that neighbour.
+        # Watchdog trust (an abstraction of routine relayed traffic, which is not simulated packet by packet):
+        # once per 1 s beacon period, every vehicle with at least one neighbour is observed relaying or not.
+        # An honest relay is missed with WATCHDOG_MISS_PROB; a misbehaving one fails unless it cooperates
+        # (MALICIOUS_COOPERATION > 0 models an on-off attacker that behaves well while watched).
         ok, bad, history = {}, {}, []
         for t, ids, xy, speed, angle, lane in read_fcd(fcd):
             if len(ids) > 1:
@@ -128,9 +130,11 @@ def build(density, run, workdir=None, history_s=0):
             else:
                 seen = np.zeros(len(ids), bool)
             miss = np_rng.random(len(ids)) < WATCHDOG_MISS_PROB
+            # drawn only when enabled, so the default (0) keeps every earlier seed's random stream identical
+            coop = np_rng.random(len(ids)) < MALICIOUS_COOPERATION if MALICIOUS_COOPERATION > 0 else np.zeros(len(ids), bool)
             for i, vid in enumerate(ids):
                 if seen[i]:
-                    failed = vid in malicious_ids or miss[i]
+                    failed = (vid in malicious_ids and not coop[i]) or miss[i]
                     bad[vid] = bad.get(vid, 0) + failed
                     ok[vid] = ok.get(vid, 0) + (not failed)
             last = (t, ids, xy, speed, angle, lane)

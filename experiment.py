@@ -56,7 +56,7 @@ def arms(sc, net, alert, source, genuine=True):
     sec, sec_norep = plan(), plan(use_reputation=False)
     route = infrastructure.shortest_route(
         np.vstack([sc['xy'], list(config.RSU_POSITIONS.values())]), adj,
-        roles['full'][0], sc['trust'], sc['malicious'], source, set(np.flatnonzero(is_rsu)))
+        roles['full'][0], sc['trust'], source, set(np.flatnonzero(is_rsu)))
 
     def proposed(tiers="full", security=sec, **kw):
         return Proposed(dist, adj, malicious, tier[tiers], is_rsu, security, **kw)
@@ -65,7 +65,9 @@ def arms(sc, net, alert, source, genuine=True):
         "ch_route": (lambda: CHRoute(dist, adj, malicious, route['nodes'], is_rsu, sec,
                                     roles['full'][2], sc['trust']), roles['full']),
         "flooding": (lambda: Flooding(dist, adj, malicious, is_rsu, sec), None),
+        "flooding_rad": (lambda: Flooding(dist, adj, malicious, is_rsu, sec, rad=True), None),
         "slotted1p": (lambda: Slotted1P(dist, adj, malicious, is_rsu, sec), None),
+        "slotted1p_rad": (lambda: Slotted1P(dist, adj, malicious, is_rsu, sec, rad=True), None),
         "proposed": (proposed, roles["full"]),
         "no_rad": (lambda: proposed(rad=False), roles["full"]),
         "no_slots": (lambda: proposed(slots=False), roles["full"]),
@@ -82,7 +84,8 @@ def run_arm(make, role, sc, net, alert, source, rng, genuine=True):
     proto = make()
     proto.names = names
     log = simulate(proto, adj, source, rng)
-    m, event, receptions = run_metrics(adj, source, malicious, proto, log, nv, names, alert, genuine)
+    m, event, receptions = run_metrics(adj, source, malicious, proto, log, nv, names, alert, genuine,
+                                       now_s=sc["incident_time_s"])   # the RSUs' own clock, not the alert's claim
     record = protocol_record(sc, names, dist, adj, proto, log, role)
     record.update(metrics=m, rsu_event=event, rsu_receptions=receptions, corroboration=corroboration_record(names, proto))
     if isinstance(proto, CHRoute):
@@ -92,10 +95,15 @@ def run_arm(make, role, sc, net, alert, source, rng, genuine=True):
              'accepted': round_.get('accepted', False), 'certificate': round_['certificate'],
              'reason': round_.get('reason', 'insufficient distinct votes received')}
             for head, round_ in proto.rounds.items()]
+        # a route head whose local quorum failed never reaches a decision: give its record the reason (decision unchanged)
+        failed = {row['cluster_head']: row['reason'] for row in record['cluster_consensus'] if not row['accepted']}
+        for v in record['vehicles']:
+            if v['decision'] == 'UNDECIDED' and not v['reason'] and v['id'] in failed:
+                v['reason'] = f"route head: local quorum failed ({failed[v['id']]}), so it does not forward"
     return m, record
 
 
-def run_one(density, run, protocols=config.PROTOCOLS, save=True):
+def run_one(density, run, protocols=config.PROTOCOLS, save=True, archive=True):
     from datetime import datetime
     started_at = datetime.now().astimezone()
     sc = build(density, run)
@@ -116,7 +124,7 @@ def run_one(density, run, protocols=config.PROTOCOLS, save=True):
     forged_rows, raw["forgery"] = forged_alert(sc, net, base)
     route = infrastructure.shortest_route(
         np.vstack([sc['xy'], list(config.RSU_POSITIONS.values())]), adj,
-        role, sc['trust'], sc['malicious'], sc['source'], set(np.flatnonzero(is_rsu)))
+        role, sc['trust'], sc['source'], set(np.flatnonzero(is_rsu)))
     route['vehicle_ids'] = [names[i] for i in route['nodes']]
     raw['infrastructure'] = {'route': route, 'model': 'incident mobility snapshot'}
     if 'ch_route' in raw['protocols']:
@@ -137,9 +145,11 @@ def run_one(density, run, protocols=config.PROTOCOLS, save=True):
         os.makedirs(RAW, exist_ok=True)
         raw['recorded_at'] = started_at.isoformat()
         record_id = sc['run_id'] + '__' + started_at.strftime('%Y%m%dT%H%M%S%f')
-        # Preserve each invocation, even when the same seed is replayed again.
-        with gzip.open(os.path.join(RAW, record_id + '.json.gz'), 'wt') as f:
-            json.dump(raw, f)
+        # Preserve each interactive invocation (demo, single), even when the same seed is replayed again.
+        # Matrix jobs skip it: 180 timestamped duplicates per experiment only slowed the viewer's run list.
+        if archive:
+            with gzip.open(os.path.join(RAW, record_id + '.json.gz'), 'wt') as f:
+                json.dump(raw, f)
         with gzip.open(os.path.join(RAW, f"{sc['run_id']}.json.gz"), "wt") as f:
             json.dump(raw, f)
     return rows, forged_rows
@@ -212,6 +222,9 @@ def protocol_record(sc, names, dist, adj, proto, log, roles):
         tx = next((x for x in log if x["sender"] == v and x["kind"] == "ALERT"), None)
         vehicles.append({
             "id": names[v], "rx_ms": round(slots_to_ms(proto.first_rx[v]), 3) if proto.has[v] else None,
+            # lifecycle: first certified copy decoded -> certificate check -> accepted (rx_ms) or rejected
+            "decoded_ms": round(slots_to_ms(proto.first_decode[v]), 3) if proto.first_decode[v] >= 0 else None,
+            "verified": bool(proto.has[v]) if proto.sec else None,
             "hop": int(proto.hop[v]),
             "from": names[f] if f >= 0 else None, "dist_m": round(float(dist[v, f]), 1) if f >= 0 else 0.0,
             "neighbors": int(adj[v].sum()), "copies_heard": len(proto.heard[v]),
@@ -230,7 +243,7 @@ def protocol_record(sc, names, dist, adj, proto, log, roles):
 
 
 def _job(args):
-    return run_one(*args)
+    return run_one(*args, archive=False)
 
 
 def run_matrix(densities=config.DENSITIES, runs=config.RUNS_PER_DENSITY, workers=None, progress=print):
@@ -275,10 +288,32 @@ def write_outputs(rows, forged):
     _write_csv("runs.csv", rows)
     _write_csv("summary.csv", summary)
     forgery = _aggregate(forged, "variant", config.FORGERY, FORGERY_METRICS) if forged else []
+    _write_csv("paired.csv", paired(rows))
     if forged:
         _write_csv("forgery_runs.csv", forged)
         _write_csv("forgery_summary.csv", forgery)
     return summary, forgery
+
+
+PAIRED_METRICS = ["transmissions", "collision_losses", "reachability", "t90_ms", "rsu_arrival_ms", "rsu_delay_ms"]
+
+
+def paired(rows, target="proposed", others=None, metrics=PAIRED_METRICS):
+    """target minus each other scheme, per scenario (same snapshot), over the runs where both values are
+    defined: mean, 95 % CI, n. Unlike a difference of means, every pair comes from the same scenario."""
+    by = {(r["density"], r["run"], r["protocol"]): r for r in rows}
+    out = []
+    for d in sorted({r["density"] for r in rows}):
+        runs = sorted({r["run"] for r in rows if r["density"] == d})
+        for b in others or [p for p in config.BASELINES if p != target]:
+            row = {"density": d, "baseline": b}
+            for k in metrics:
+                diffs = [by[d, r, target][k] - by[d, r, b][k] for r in runs
+                         if (d, r, target) in by and (d, r, b) in by]
+                mean, _, ci, n = summarize([x for x in diffs if not np.isnan(x)])
+                row.update({k: mean, f"{k}_ci95": ci, f"{k}_n": n})
+            out.append(row)
+    return out
 
 
 def load_raw(run_id):

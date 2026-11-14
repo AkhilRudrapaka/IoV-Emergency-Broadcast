@@ -34,6 +34,6 @@ else
     $PY run.py demo --pace 0 --no-wait --shots results/figures >/dev/null
     echo "saved to results/figures/sumo_*.png"
 fi
-echo "== 5/5 main experiment (5 densities x 30 seeds x 10 schemes, plus the forged-alert test) =="
+echo "== 5/5 main experiment (6 densities x 30 seeds x 13 schemes, plus the forged-alert test) =="
 $PY run.py experiment
 echo "Done. Open results/dashboard.html   |   live demo: ./run_demo.sh"

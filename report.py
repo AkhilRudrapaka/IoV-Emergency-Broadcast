@@ -5,6 +5,7 @@ Every number is read from saved results.
 """
 import base64
 import datetime
+import hashlib
 import json
 import os
 import platform
@@ -28,7 +29,13 @@ def _write(name, text):
 def save_config(extra=None):
     params = {k: getattr(config, k) for k in dir(config) if k.isupper()}
     sumo_version = subprocess.run([SUMO_BIN, "--version"], capture_output=True, text=True).stdout.splitlines()[0]
+    git = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True)
+    dirty = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"], capture_output=True, text=True).stdout
+    with open(config.NET_FILE, "rb") as f:
+        net_hash = hashlib.sha256(f.read()).hexdigest()[:16]
     record = {"generated": datetime.datetime.now().isoformat(timespec="seconds"),
+              "git_commit": (git.stdout.strip() + ("+uncommitted changes" if dirty.strip() else "")) or "unknown",
+              "network": {"file": config.NET_FILE, "sha256_16": net_hash, "rsu_positions": config.RSU_POSITIONS},
               "python": platform.python_version(), "sumo": sumo_version,
               "overrides": {k: v for k, v in os.environ.items() if k.startswith("EXP_")},
               "parameters": params, **(extra or {})}
@@ -253,17 +260,22 @@ def explain(raw, proto="proposed", forged=None, max_suppress=8):
 
 
 # ------------------------------------------------------------------ results tables
-def _fmt(r, k, pct=False, dec=1):
-    s = 100 if pct else 1
-    return f"{s * r[k]:.{dec}f} ± {s * r[k + '_ci95']:.{dec}f}"
+def _fmt(r, k, pct=False, dec=1, show_n=True):
+    s, n = 100 if pct else 1, r.get(k + "_n")
+    if n == 0 or r[k] != r[k]:
+        return "n/a"
+    if r[k + "_ci95"] != r[k + "_ci95"]:                     # one value: no spread to report
+        return f"{s * r[k]:.{dec}f} (n=1)"
+    fewer = show_n and n is not None and r.get("runs") is not None and n < r["runs"]   # defined in only n runs: say so
+    return f"{s * r[k]:.{dec}f} ± {s * r[k + '_ci95']:.{dec}f}" + (f" (n={n:.0f})" if fewer else "")
 
 
-def results_md(summary, forgery):
+def results_md(summary, forgery, paired=None):
     densities = sorted({r["density"] for r in summary})
     row = lambda d, p: next((x for x in summary if x["density"] == d and x["protocol"] == p), None)
     lines = [f"# Results: {config.TITLE}", "",
              f"Generated {datetime.date.today().isoformat()} by `python run.py experiment` from "
-             "`results/processed/`. Values: mean ± 95 % CI over "
+             f"`{config.RESULTS_DIR}/processed/` (provenance: summaries/experiment_config.json). Values: mean ± 95 % CI over "
              f"{summary[0]['runs']:.0f} independent scenarios per density, one alert each. "
              "Nothing in this file is typed by hand.", "",
              "\"Frames on air\" counts everything transmitted for one alert: the proposal, the votes and every "
@@ -311,20 +323,21 @@ def results_md(summary, forgery):
             r = row(d, p)
             if r:
                 lines.append(f"| {d:.0f} | {config.LABELS[p]} | {_fmt(r, 'rsu_received', True)} | {_fmt(r, 'rsu_delay_ms', dec=2)} | "
-                             f"{r['rsu_relay_received_n']:.0f} | {_fmt(r, 'rsu_relay_received', True)} | "
-                             f"{_fmt(r, 'rsu_relay_delay_ms', dec=2)} | {_fmt(r, 'rsu_relay_tx_before')} | "
+                             f"{r['rsu_relay_received_n']:.0f} | {_fmt(r, 'rsu_relay_received', True, show_n=False)} | "   # n: own column
+                             f"{_fmt(r, 'rsu_relay_delay_ms', dec=2, show_n=False)} | {_fmt(r, 'rsu_relay_tx_before', show_n=False)} | "
                              f"{_fmt(r, 'rsu_dup_copies')} |")
-    lines += ["", "## Change relative to the baselines (means)", "",
-              "| Vehicles | Frames vs flooding | vs slotted 1-p | Collision losses vs flooding | vs slotted 1-p | t90 vs slotted 1-p |",
-              "|---|---|---|---|---|---|"]
-    for d in densities:
-        g = {x["protocol"]: x for x in summary if x["density"] == d}
-        if not {"flooding", "slotted1p", "proposed"} <= set(g):
-            continue
-        ch = lambda k, b: 100 * (g["proposed"][k] - g[b][k]) / g[b][k]
-        lines.append(f"| {d:.0f} | {ch('transmissions', 'flooding'):+.0f} % | {ch('transmissions', 'slotted1p'):+.0f} % | "
-                     f"{ch('collision_losses', 'flooding'):+.0f} % | {ch('collision_losses', 'slotted1p'):+.0f} % | "
-                     f"{g['proposed']['t90_ms'] - g['slotted1p']['t90_ms']:+.1f} ms |")
+    if paired:
+        lines += ["", "## Paired differences: proposed minus each baseline", "",
+                  "Per scenario (same vehicles, same incident): mean ± 95 % CI over the runs where both values are "
+                  "defined, n = number of such runs. Negative frames, losses or delay = proposed lower; "
+                  "positive reachability = proposed higher.", "",
+                  "| Vehicles | Baseline | Δ frames | Δ receptions lost | Δ reachability (pp) | Δ t90 (ms) | "
+                  "Δ RSU arrival (ms) | Δ RSU registration (ms) |", "|---|---|---|---|---|---|---|---|"]
+        for r in paired:
+            cell = lambda k, pct=False: f"{_fmt(r, k, pct)} (n={r[k + '_n']:.0f})" if r[k + "_n"] else "n/a"
+            lines.append(f"| {r['density']:.0f} | {config.LABELS[r['baseline']]} | {cell('transmissions')} | "
+                         f"{cell('collision_losses')} | {cell('reachability', True)} | {cell('t90_ms')} | "
+                         f"{cell('rsu_arrival_ms')} | {cell('rsu_delay_ms')} |")
     return "\n".join(lines) + "\n"
 
 

@@ -30,6 +30,7 @@ def test_incident_is_randomised_between_runs():
 
 def test_exactly_one_incident_and_valid_metrics(tmp_path, monkeypatch):
     monkeypatch.setattr(experiment, "RAW", str(tmp_path))
+    monkeypatch.setattr(config, "RESULTS_DIR", str(tmp_path))     # the backhaul sqlite too: never touch tracked results
     rows, forged = experiment.run_one(100, 1)
     raw = experiment.load_raw(rows[0]["run_id"])
     scenario, alert = raw["scenario"], raw["scenario"]["alert"]
@@ -118,3 +119,56 @@ def test_full_pipeline_writes_every_output(tmp_path):
         assert glob.glob(str(tmp_path / pattern)), pattern
     header = open(tmp_path / "processed" / "runs.csv").readline().strip().split(",")
     assert set(METRICS) <= set(header)
+
+
+def test_default_watchdog_stream_is_unchanged_and_on_off_attackers_gain_trust(monkeypatch):
+    """Audit SCE-2: a persistent black hole can never exceed trust 0.5; an on-off attacker can pass the 0.7 gate.
+    The new knob defaults to 0 and then draws nothing, so the recorded demo run's trust is reproduced exactly."""
+    import scenario
+    sc = build(200, 2)
+    recorded = {v["id"]: v["trust"] for v in experiment.load_raw("d200_r02")["scenario"]["vehicles"]}
+    assert [round(float(t), 3) for t in sc["trust"]] == [recorded[v] for v in sc["ids"]]
+    assert sc["trust"][sc["malicious"]].max() <= 0.5
+    monkeypatch.setattr(scenario, "MALICIOUS_COOPERATION", 0.9)
+    onoff = build(200, 2)
+    assert onoff["trust"][onoff["malicious"]].max() >= config.TRUST_CH_THRESHOLD
+    assert np.array_equal(onoff["xy"], sc["xy"])                  # mobility is untouched
+
+
+def test_a_route_head_without_local_quorum_records_why():
+    """d200_r12 (pair P005): route head v95 collects only 2 of the 3 local votes. It never decides, and its record
+    must say why instead of an empty reason (the decision itself stays UNDECIDED, so no metric changes)."""
+    sc = build(200, 12)
+    net = experiment.network(sc)
+    schemes, _ = experiment.arms(sc, net, sc["alert"], sc["source"])
+    make, roles = schemes["ch_route"]
+    rng = np.random.default_rng([sc["seed"], config.PROTOCOLS.index("ch_route")])
+    _, record = experiment.run_arm(make, roles, sc, net, sc["alert"], sc["source"], rng)
+    failed = [row for row in record["cluster_consensus"] if not row["accepted"]]
+    assert [row["cluster_head"] for row in failed] == ["v95"]
+    head = next(v for v in record["vehicles"] if v["id"] == "v95")
+    assert head["decision"] == "UNDECIDED" and "local quorum failed (insufficient distinct votes received)" in head["reason"]
+    assert not [v["id"] for v in record["vehicles"] if v["decision"] == "UNDECIDED" and not v["reason"]]
+
+
+def test_results_md_names_n_where_fewer_runs_had_a_value():
+    """A RESULTS.md cell says how many runs it comes from when not every run defined the value; the tracked RESULTS.md
+    is exactly what the code writes from the tracked processed CSVs (only its 'Generated <date>' line is not compared)."""
+    import figures
+    import report
+    row = {"t90_ms": 36.3, "t90_ms_ci95": 3.4, "t90_ms_n": 23, "runs": 30}
+    assert report._fmt(row, "t90_ms") == "36.3 ± 3.4 (n=23)"
+    assert report._fmt(row, "t90_ms", show_n=False) == "36.3 ± 3.4"           # a table with its own n column
+    assert report._fmt({**row, "t90_ms_n": 30}, "t90_ms") == "36.3 ± 3.4"      # every run: no note
+    proc = os.path.join(config.RESULTS_DIR, "processed")
+    text = report.results_md(figures._read(os.path.join(proc, "summary.csv")), figures._read(os.path.join(proc, "forgery_summary.csv")),
+                             experiment.paired(figures._read(os.path.join(proc, "runs.csv"))))
+    with open(os.path.join(config.RESULTS_DIR, "summaries", "RESULTS.md"), encoding="utf-8") as f:
+        tracked = f.read()
+    body = lambda t: [line for line in t.splitlines() if not line.startswith("Generated ")]
+    assert body(text) == body(tracked), "RESULTS.md differs from what the code writes from the processed CSVs"
+
+
+def test_the_suite_reads_the_tracked_results():
+    # validation/conftest.py drops EXP_RESULTS_DIR: the reference data is results/urban even when the variable is set
+    assert "EXP_RESULTS_DIR" not in os.environ and config.RESULTS_DIR == "results/urban"

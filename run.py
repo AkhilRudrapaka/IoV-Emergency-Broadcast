@@ -12,6 +12,7 @@ Entry point.
 import argparse
 import glob
 import os
+import re
 import subprocess
 import sys
 
@@ -67,7 +68,7 @@ def cmd_experiment(a):
              'Broadcast methods vs CH shortest-path routing', figures.RSU_PANELS),
              'RSU delivery and overhead: the routing scheme includes per-head voting frames')], None),
     ]
-    report._write("RESULTS.md", report.results_md(summary, forgery))
+    report._write("RESULTS.md", report.results_md(summary, forgery, experiment.paired(rows)))
     report._write(f"explain_{showcase}.md", report.explain(raw))
     if raw.get("forgery"):
         report._write(f"explain_{showcase}_forged.md", report.explain(raw, forged="voting_reputation"))
@@ -111,7 +112,11 @@ def cmd_explain(a):
 
 def cmd_sensitivity(a):
     sweeps = {"range": ("COMM_RANGE_M", [150.0, 300.0, 450.0], "radio range (m)"),
-              "malicious": ("MALICIOUS_RATIO", [0.0, 0.1, 0.2, 0.3], "share of misbehaving vehicles")}
+              "malicious": ("MALICIOUS_RATIO", [0.0, 0.1, 0.2, 0.3], "share of misbehaving vehicles"),
+              # on-off attacker: behaves well while watched, so its reputation is no longer an oracle (audit SCE-2/3)
+              "onoff": ("MALICIOUS_COOPERATION", [0.0, 0.5, 0.9], "share of watched relays a misbehaving vehicle performs")}
+    if a.only:
+        sweeps = {a.only: sweeps[a.only]}
     for name, (param, values, label) in sweeps.items():
         rows, forged = [], []
         for v in values:
@@ -129,28 +134,106 @@ def cmd_sensitivity(a):
         else:
             print(figures.sensitivity(rows, name, label, ["slotted1p", "proposed", "no_reputation"],
                                       ["transmissions", "t90_ms", "t_last_ms"]))
-            print(figures.sensitivity(forged, "forgery", label, list(config.FORGERY), ["accepted_share", "rsu_registered"],
+            print(figures.sensitivity(forged, f"forgery_{name}", label, list(config.FORGERY), ["accepted_share", "rsu_registered"],
                                       group="variant", labels=config.FORGERY))
 
 
 def cmd_demo(a):
     if os.name != "nt" and not os.environ.get("DISPLAY") and not os.environ.get("WAYLAND_DISPLAY"):
         sys.exit("SUMO-GUI needs a graphical display (DISPLAY is not set). Use `python run.py explain` instead.")
+    if a.pair or a.approach:
+        return pair_demo(a)
     import demo
-    demo.run(a.density, a.run, a.scheme, a.pace, a.shots, wait=not a.no_wait, forged=not a.no_forged,
-             narration=a.narrate, language=a.language, offline=a.offline)
+    demo.run(a.density, a.run, a.scheme, a.pace, a.shots, wait=not a.no_wait, forged=not a.no_forged)
 
 
-def cmd_assistant(a):
-    import narrator
-    raw = experiment.load_raw(a.run_id)
-    if a.question:
-        print(narrator.answer(raw, a.scheme, a.question, a.language, a.offline))
-    else:
-        notes, source = narrator.prepare(raw, a.scheme, a.language, offline=a.offline)
-        print(f"Simulation explanation ({source})")
-        for stage, text in notes.items():
-            print(f"\n{stage.upper()}\n{text}")
+def pair_demo(a):
+    """ONE separated run of a comparison pair (demo_pairs.py): only this approach's schemes, on the pair's scenario,
+    one run at a time, every write in the pair's folder (re-executed with EXP_RESULTS_DIR when needed)."""
+    import shutil
+    import demo_pairs
+    if not (a.pair and a.approach):
+        sys.exit("--pair and --approach go together. Create a pair first: python run.py pair new")
+    pair = demo_pairs.load(a.pair)
+    folder = demo_pairs.pair_dir(a.pair)
+    if os.path.abspath(config.RESULTS_DIR) != os.path.abspath(folder):
+        env = {**os.environ, "EXP_RESULTS_DIR": folder, "DEMO_PAIRS_DIR": demo_pairs.ROOT}
+        sys.exit(subprocess.run([sys.executable, os.path.abspath(__file__), *sys.argv[1:]], env=env).returncode)
+    import demo
+    sc, run = pair["scenario"], pair["runs"][a.approach]
+    schemes = demo_pairs.schemes_for(a.approach, pair["baseline"])
+    demo_pairs.acquire(a.pair, a.approach)
+    try:
+        demo_pairs.update_run(a.pair, a.approach, status="running", pid=os.getpid(), started=demo_pairs.now(),
+                              finished=None, message=None, fingerprint=None)
+        demo.LIVE.update(pair_id=a.pair, approach=a.approach, algorithm=run["algorithm"], schemes=schemes,
+                         scenario_id=sc["scenario_id"], seed=sc["seed"], incident=sc["incident"])
+        captures = os.path.join(folder, a.approach)
+        shutil.rmtree(captures, ignore_errors=True)                   # a re-run replaces this approach's captures
+        raw = demo.run(sc["density"], sc["run"], schemes, a.pace, wait=False,
+                       forged=a.approach == "proposed" and not a.no_forged, approach=a.approach, archive=False,
+                       check=lambda record: demo_pairs.check_record(pair, record), capture_dir=captures)
+        demo_pairs.update_run(a.pair, a.approach, status="finished", finished=demo_pairs.now(),
+                              fingerprint=demo.record_fingerprint(raw),
+                              record=os.path.join("raw", sc["scenario_id"] + ".json.gz"))
+        print(f"\nPair {a.pair}: {a.approach}-only run finished ({run['algorithm']}; scenario {sc['scenario_id']}, "
+              f"seed {sc['seed']}). Records: {folder}")
+    except BaseException as exc:
+        message = f"{type(exc).__name__}: {exc}" if str(exc) else type(exc).__name__
+        demo.live_feed(done=True, failed=True, workflow_stage="failed", status=f"Run failed: {message}", stage="failed")
+        demo_pairs.update_run(a.pair, a.approach, status="failed", finished=demo_pairs.now(), message=message)
+        raise
+    finally:
+        demo_pairs.release()
+
+
+def cmd_pair(a):
+    import demo_pairs
+    if a.action == "new":
+        run = None
+        if a.scenario is not None:
+            m = re.fullmatch(rf"(?:d{demo_pairs.DENSITY}_r)?(\d+)", a.scenario)
+            if not m:
+                sys.exit(f"--scenario: give d{demo_pairs.DENSITY}_rNN or NN")
+            run = int(m.group(1))
+        pair = demo_pairs.new_pair(a.baseline, run)
+        print(describe_pair(pair))
+        print(f"\nNext, one at a time:\n  python run.py demo --pair {pair['pair_id']} --approach baseline\n"
+              f"  python run.py demo --pair {pair['pair_id']} --approach proposed")
+        return
+    demo_pairs.reconcile()
+    if a.action == "list":
+        for p in demo_pairs.pairs():
+            s = p["scenario"]
+            print(f"{p['pair_id']}  {s['scenario_id']} (seed {s['seed']})  incident {s['incident']['vehicle']} at "
+                  f"({s['incident']['x']:.0f}, {s['incident']['y']:.0f}) m, t = {s['incident']['time_s']:.0f} s  |  "
+                  + "  |  ".join(f"{r['approach']}: {r['status']}" for r in p["runs"].values()))
+        return
+    pair = demo_pairs.load(a.pair_id)
+    print(describe_pair(pair))
+    raw, reason = demo_pairs.comparison(pair)
+    if raw is None:
+        print(f"\nComparison: {reason}")
+        return
+    print(f"\nComparison (one run: scenario {pair['scenario']['scenario_id']}, seed {pair['scenario']['seed']}; "
+          f"not a multi-seed result):")
+    for row in demo_pairs.comparison_rows(pair, raw):
+        values = "  ".join(f"{c['label']}: {c['text']}" for c in row["cells"])
+        print(f"  {row['label']:<44} {values}")
+
+
+def describe_pair(pair):
+    s, inc = pair["scenario"], pair["scenario"]["incident"]
+    sel = s["selection"]
+    lines = [f"Pair {pair['pair_id']} (created {pair['created']})",
+             f"  scenario {s['scenario_id']}  seed {s['seed']}  network {s['network']}  {s['density']} vehicles",
+             f"  incident: {inc['vehicle']} at ({inc['x']:.1f}, {inc['y']:.1f}) m on lane {inc['lane']}, "
+             f"t = {inc['time_s']:.0f} s, event {inc['event_id']}",
+             f"  selection: {sel['method']}" + (f"; REPEATS {sel['repeat_of']}" if sel["repeat_of"] else "")]
+    for r in pair["runs"].values():
+        lines.append(f"  {r['approach']:<8} run: {r['algorithm']} -> {r['status']}"
+                     + (f" ({r['message']})" if r.get("message") else ""))
+    return "\n".join(lines)
 
 
 def cmd_dashboard(a):
@@ -175,14 +258,8 @@ def main():
     sub.add_parser('sync', help='export local backhaul; upload only when IOV_CLOUD_URL is configured')
     sub.add_parser('dispatch', help='send queued validated records only to a configured IOV_EMERGENCY_URL')
     sub.add_parser('dashboard', help='rebuild the dashboard from existing experiment files')
-    w = sub.add_parser('web', help='local multilingual results application (separate terminal)')
+    w = sub.add_parser('web', help='local saved-results viewer (separate terminal)')
     w.add_argument('--port', type=int, default=8765)
-    n = sub.add_parser('assistant', help='explain a saved simulation or ask a question')
-    n.add_argument('run_id')
-    n.add_argument('--scheme', default='proposed', choices=config.PROTOCOLS)
-    n.add_argument('--language', choices=['ta', 'en'], default='ta')
-    n.add_argument('--question')
-    n.add_argument('--offline', action='store_true')
     e = sub.add_parser("experiment")
     e.add_argument("--densities", type=int, nargs="+")
     e.add_argument("--runs", type=int)
@@ -198,22 +275,29 @@ def main():
     x.add_argument("--forged", choices=list(config.FORGERY), help="explain the forged-alert test instead")
     v = sub.add_parser("sensitivity")
     v.add_argument("--density", type=int, default=200)
+    v.add_argument("--only", choices=["range", "malicious", "onoff"], help="run one sweep only")
     g = sub.add_parser("demo")
     g.add_argument("-d", "--density", type=int, default=config.DEMO_DENSITY)
     g.add_argument("-r", "--run", type=int, default=config.DEMO_RUN)
     g.add_argument("--scheme", nargs="+", default=["flooding", "proposed", "ch_route"], choices=config.PROTOCOLS)
     g.add_argument("--pace", type=float, default=0.35, help="seconds per animation frame")
-    g.add_argument("--shots", help="directory for SUMO-GUI screenshots")
+    g.add_argument("--shots", help="directory for stage snapshots of the live SUMO window + snapshots.json/.js "
+                                   "(Windows; e.g. portal/assets/sumo for the portal's SUMO Demonstration section)")
     g.add_argument("--no-wait", action="store_true", help="close SUMO-GUI when the replay ends")
     g.add_argument("--no-forged", action="store_true", help="skip the forged-alert part")
-    g.add_argument('--narrate', action='store_true', help='show cached AI explanations in the terminal')
-    g.add_argument('--language', choices=['ta', 'en'], default='ta')
-    g.add_argument('--offline', action='store_true', help='use basic explanations without API requests')
+    g.add_argument("--pair", help="a comparison pair (python run.py pair new): replay its scenario, one approach only")
+    g.add_argument("--approach", choices=["baseline", "proposed"],
+                   help="with --pair: the baseline only, or the proposed method only (its CH-to-CH route stage included)")
+    q = sub.add_parser("pair", help="comparison pairs: one incident scenario, a baseline-only and a proposed-only run")
+    q.add_argument("action", choices=["new", "list", "show"])
+    q.add_argument("pair_id", nargs="?", help="for show")
+    q.add_argument("--baseline", default="flooding", choices=["flooding", "flooding_rad", "slotted1p", "slotted1p_rad"])
+    q.add_argument("--scenario", help="new: this scenario (d200_rNN or NN) instead of the next reproducible one")
     a = ap.parse_args()
     {"experiment": cmd_experiment, "single": cmd_single, "explain": cmd_explain,
      "sensitivity": cmd_sensitivity, "demo": cmd_demo,
      "sync": lambda _: print(infrastructure.sync_cloud(config.RESULTS_DIR)),
-     "dashboard": cmd_dashboard, "assistant": cmd_assistant,
+     "dashboard": cmd_dashboard, "pair": cmd_pair,
      "web": lambda a: __import__('web_results').serve(a.port),
      "dispatch": lambda _: print(infrastructure.dispatch_pending(config.RESULTS_DIR))}[a.cmd](a)
 

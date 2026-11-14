@@ -20,6 +20,7 @@ import config
 FIG_DIR = os.path.join(config.RESULTS_DIR, "figures")
 INK, INK2, MUTED, GRID, AXIS, SURFACE = "#0b0b0b", "#52514e", "#898781", "#e1e0d9", "#c3c2b7", "#fcfcfb"
 COLOR = {"ch_route": "#7759da", "flooding": "#2a78d6", "slotted1p": "#eb6834", "proposed": "#1baf7a",
+         "flooding_rad": "#8fb8ea", "slotted1p_rad": "#f4ad8d",          # lighter twin = same rule + random delay
          "no_reputation": "#eda100", "no_security": "#4a3aa7",
          # the forged-alert test runs the same three configurations
          "voting_reputation": "#1baf7a", "voting_only": "#eda100", "no_voting": "#4a3aa7"}

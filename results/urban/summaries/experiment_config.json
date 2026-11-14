@@ -1,5 +1,20 @@
 {
-  "generated": "2026-10-07T23:09:15",
+  "generated": "2026-11-03T12:49:22",
+  "git_commit": "a1fa3ec+uncommitted changes",
+  "network": {
+    "file": "network/urban.net.xml",
+    "sha256_16": "c363151bfd920f81",
+    "rsu_positions": {
+      "RSU-1": [
+        160.0,
+        590.0
+      ],
+      "RSU-2": [
+        610.0,
+        170.0
+      ]
+    }
+  },
   "python": "3.11.4",
   "sumo": "Eclipse SUMO sumo 1.27.1",
   "overrides": {},
@@ -16,7 +31,9 @@
     "AIFSN": 2,
     "BASELINES": [
       "flooding",
+      "flooding_rad",
       "slotted1p",
+      "slotted1p_rad",
       "proposed"
     ],
     "BASE_SEED": 10000,
@@ -53,6 +70,8 @@
     "LABELS": {
       "ch_route": "CH shortest-path delivery",
       "flooding": "Blind flooding",
+      "flooding_rad": "Flooding + random delay",
+      "slotted1p_rad": "Slotted 1-p + random delay",
       "slotted1p": "Slotted 1-persistence",
       "proposed": "Proposed (full)",
       "no_rad": "without random delay",
@@ -64,6 +83,7 @@
       "no_security": "without voting + BLS"
     },
     "MAC_OVERHEAD_BYTES": 38,
+    "MALICIOUS_COOPERATION": 0.0,
     "MALICIOUS_RATIO": 0.1,
     "NET_FILE": "network/urban.net.xml",
     "N_SLOTS": 5,
@@ -79,7 +99,9 @@
       "no_cluster_forwarding",
       "no_reputation",
       "no_security",
-      "ch_route"
+      "ch_route",
+      "flooding_rad",
+      "slotted1p_rad"
     ],
     "QUORUM": 3,
     "RAD_MS": 5.0,
@@ -87,12 +109,12 @@
     "ROUTE_EDGES": 30,
     "RSU_POSITIONS": {
       "RSU-1": [
-        152.25,
-        604.92
+        160.0,
+        590.0
       ],
       "RSU-2": [
-        630.2,
-        168.62
+        610.0,
+        170.0
       ]
     },
     "RUNS_PER_DENSITY": 30,
@@ -106,13 +128,15 @@
     "VOTE_BYTES": 132,
     "VOTE_SLOT_MS": 0.5,
     "WATCHDOG_MISS_PROB": 0.1,
-    "_ET": "<module 'xml.etree.ElementTree' from 'C:\\\\Users\\\\Administrator\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python311\\\\Lib\\\\xml\\\\etree\\\\ElementTree.py'>"
+    "_ET": "<module 'xml.etree.ElementTree' from 'C:\\\\Users\\\\Rudra\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python311\\\\Lib\\\\xml\\\\etree\\\\ElementTree.py'>"
   },
   "densities": [
     50,
     100,
     200,
-    250
+    250,
+    300,
+    500
   ],
-  "runs": 2
+  "runs": 30
 }
