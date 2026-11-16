@@ -1,0 +1,267 @@
+\documentclass[11pt, a4paper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx} % Times New Roman font for professional document typography
+\usepackage{graphicx}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+
+% --- Amrita Colors ---
+\definecolor{amritaMaroon}{HTML}{A4123F}
+
+% --- Title & Section Formatting ---
+\titlespacing*{\section}{0pt}{12pt}{4pt}
+\titlespacing*{\subsection}{0pt}{8pt}{3pt}
+\titleformat{\section}{\large\bfseries\color{amritaMaroon}}{\thesection}{0.8em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{amritaMaroon}}{\thesubsection}{0.6em}{}
+
+\pagestyle{plain}
+
+\begin{document}
+
+% ==========================================
+% HEADER & TITLE BLOCK
+% ==========================================
+\noindent
+\begin{minipage}{\textwidth}
+    \centering
+    {\Large \textbf{\textcolor{amritaMaroon}{
+    AMRITA VISHWA VIDYAPEETHAM \\
+    SCHOOL OF COMPUTING \\
+    DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING \\
+    }}}
+    \vspace{0.2cm}
+    {\large \textbf{[PROJECT TITLE HERE]}} \\[0.1cm]
+    \textbf{23CSE498 -- Project Phase II (External Review)} \quad | \quad \textbf{Team Number: [GXXX]} \\
+    \today
+\end{minipage}
+
+\vspace{0.3cm}
+\hrule
+\vspace{0.3cm}
+
+% --- Team & Guide Details ---
+\noindent
+\begin{center}
+    \renewcommand{\arraystretch}{1.45}
+    \setlength{\tabcolsep}{6pt}
+    \begin{tabular}{|l|p{4.8cm}|p{4.6cm}|p{3.2cm}|}
+        \hline
+        \multicolumn{2}{|c|}{\textbf{Team Members}} & \textbf{Project Guide} & \textbf{Project Type} \\
+        \hline
+        \small [CB.SC.U4CSE23XXX] & \small \raggedright [Student Name 1] &
+        \multirow{4}{=}{\raggedright \small \textbf{[Dr/Mr/Ms. Guide Name]} \newline \textit{[Designation], \newline Dept. of CSE}} &
+        \multirow{4}{=}{\raggedright \small \textbf{Type 1} \newline Research-Based Project} \\ \cline{1-2}
+        \small [CB.SC.U4CSE23XXX] & \small [Student Name 2] & & \\ \cline{1-2}
+        \small [CB.SC.U4CSE23XXX] & \small [Student Name 3] & & \\ \cline{1-2}
+        \small [CB.SC.U4CSE23XXX] & \small [Student Name 4] & & \\
+        \hline
+    \end{tabular}
+\end{center}
+\vspace{0.2cm}
+
+\section{Abstract}
+\noindent
+[Provide a concise 150--250 word summary of the entire project: state the research problem, the motivation and gap in existing literature, the proposed methodology/formulation, the complete (100\%) implementation setup, and the key quantitative/qualitative findings from preliminary experimental verification.]
+
+% --- 2. PROBLEM DEFINITION, MOTIVATION & LITERATURE SURVEY ---
+\section{Problem Definition, Research Motivation \& Literature Review}
+
+\subsection{Problem Statement \& Research Motivation}
+\begin{itemize}[noitemsep, topsep=2pt]
+    \item \textbf{Problem Statement:} {[Define the specific research problem formally and state its scope.]}
+    \item \textbf{Research Motivation:} {[Explain the significance of addressing this problem and its impact on the domain.]}
+    \item \textbf{Research Objectives:}
+    \begin{enumerate}[noitemsep, topsep=2pt]
+        \item {[Objective 1: State specific, measurable research objective]}
+        \item {[Objective 2: State specific, measurable research objective]}
+        \item {[Objective 3: State specific, measurable research objective]}
+    \end{enumerate}
+\end{itemize}
+
+\subsection{Literature Review \& Research Gap}
+\noindent
+[Summarize the critical insights from surveyed literature and how existing methods fall short.]
+
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.25}
+    \begin{tabular}{|p{2.8cm}|p{4.2cm}|p{4.2cm}|p{3.2cm}|}
+        \hline
+        \textbf{Author / Year / Citation} & \textbf{Core Methodology Used} & \textbf{Key Findings / Strengths} & \textbf{Identified Limitations} \\
+        \hline
+        {[Author et al., Year]} \cite{ref1} & {[Summary of method]} & {[Strengths / metrics]} & {[Specific limitation]} \\
+        \hline
+        {[Author et al., Year]} \cite{ref2} & {[Summary of method]} & {[Strengths / metrics]} & {[Specific limitation]} \\
+        \hline
+        {[Author et al., Year]} \cite{ref3} & {[Summary of method]} & {[Strengths / metrics]} & {[Specific limitation]} \\
+        \hline
+    \end{tabular}
+    \caption{Summary of Key Literature Surveyed and Identified Limitations}
+\end{table}
+
+\noindent
+\textbf{Summary of Research Gap:} {[Explicitly articulate the research gap that motivates the proposed solution design.]}
+
+% --- 3. PROPOSED METHODOLOGY & SOLUTION DESIGN ---
+\section{Proposed Methodology \& Solution Design}
+
+\subsection{End-to-End Methodological Workflow}
+\noindent
+[Describe the overall workflow of the proposed research methodology from input data acquisition to final output generation.]
+
+\begin{figure}[H]
+    \centering
+    \fbox{\begin{minipage}[c][5.2cm]{0.95\textwidth}
+        \centering
+        \textbf{[Insert High-Resolution Proposed Methodology / Algorithmic Workflow Diagram]} \\[0.2cm]
+        \small {[Placeholder: Illustrate all stages, data flow, and feedback/optimization loops clearly]}
+    \end{minipage}}
+    \caption{Proposed End-to-End Methodological Architecture}
+\end{figure}
+
+\subsection{Mathematical Formulation \& Algorithmic Design}
+\begin{itemize}[noitemsep, topsep=2pt]
+    \item \textbf{Theoretical / Mathematical Formulation:} {[Present the mathematical equations, objective functions, constraints, and notation governing the proposed method.]}
+    \item \textbf{Core Algorithmic Steps:} {[Explain the step-by-step execution logic of each methodological stage.]}
+    \item \textbf{Dataset \& Preprocessing Specifications:} {[Detail the benchmark/custom datasets, dimensions, splitting strategy, and preprocessing pipeline.]}
+    \item \textbf{Evaluation Metrics:} {[Define the mathematical formulation and rationale for each evaluation metric selected.]}
+\end{itemize}
+
+% --- 4. COMPLETE IMPLEMENTATION DETAILS (100%) ---
+\section{Implementation Details}
+
+\subsection{Implementation Environment \& Execution Setup}
+\begin{itemize}[noitemsep, topsep=2pt]
+    \item \textbf{Hardware \& Compute Specifications:} {[Specify CPU/GPU/Memory or hardware setup used for implementation.]}
+    \item \textbf{Software \& Libraries:} {[Specify programming languages, libraries, and version details.]}
+    \item \textbf{Source Code Repository:} {[Provide URL/reference to the organized repository containing source code and documentation.]}
+\end{itemize}
+
+\subsection{Module-Wise Implementation \& Integration Summary}
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.25}
+    \begin{tabular}{|p{3.5cm}|p{7.8cm}|c|}
+        \hline
+        \textbf{Module / Stage} & \textbf{Implemented Technical Details \& Integration Scope} & \textbf{Status} \\
+        \hline
+        {[Module 1: Data Pipeline]} & {[Describe implemented data loading, cleaning, transformation, and splitting scripts]} & 100\% (Integrated) \\
+        \hline
+        {[Module 2: Baseline Models]} & {[Describe implemented baseline/reference methods for comparative benchmarking]} & 100\% (Integrated) \\
+        \hline
+        {[Module 3: Proposed Method]} & {[Describe implemented core algorithm, custom components, and optimization loop]} & 100\% (Integrated) \\
+        \hline
+        {[Module 4: Evaluation \& Demo]} & {[Describe integrated inference/evaluation pipeline and working prototype interface]} & 100\% (Functional) \\
+        \hline
+    \end{tabular}
+    \caption{Module-Wise Implementation Completion Status}
+\end{table}
+
+\subsection{Detailed Module Descriptions}
+\begin{itemize}[noitemsep, topsep=2pt]
+    \item \textbf{[Module 1 Name]:} {[Detail the internal implementation, data structures, and interfaces of Module 1.]}
+    \item \textbf{[Module 2 Name]:} {[Detail the internal implementation, parameters, and interfaces of Module 2.]}
+    \item \textbf{[Module 3 Name]:} {[Detail the internal implementation, optimization mechanics, and integration of Module 3.]}
+    \item \textbf{End-to-End Integration:} {[Explain how all modules are connected into a unified, reproducible pipeline.]}
+\end{itemize}
+
+% --- 5. PRELIMINARY VERIFICATION, RESULTS & DEMONSTRATION ---
+\section{Preliminary Verification, Experimental Results \& Demonstration}
+
+\subsection{Quantitative Evaluation \& Baseline Comparison}
+\noindent
+[Describe the experimental protocol, parameter settings, and comparative evaluation results.]
+
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.25}
+    \begin{tabular}{|p{5.0cm}|c|c|c|}
+        \hline
+        \textbf{Method / Configuration} & \textbf{[Metric 1]} & \textbf{[Metric 2]} & \textbf{[Metric 3]} \\
+        \hline
+        {[Baseline / Existing Method 1]} & {[Value]} & {[Value]} & {[Value]} \\
+        \hline
+        {[Baseline / Existing Method 2]} & {[Value]} & {[Value]} & {[Value]} \\
+        \hline
+        {[Ablation / Variant Configuration]} & {[Value]} & {[Value]} & {[Value]} \\
+        \hline
+        \textbf{[Proposed Methodology]} & \textbf{[Value]} & \textbf{[Value]} & \textbf{[Value]} \\
+        \hline
+    \end{tabular}
+    \caption{Comparative Experimental Evaluation Results}
+\end{table}
+
+\subsection{Visual Results \& Prototype Demonstration}
+\begin{figure}[H]
+    \centering
+    \fbox{\begin{minipage}[c][4.8cm]{0.95\textwidth}
+        \centering
+        \textbf{[Insert Experimental Result Plots / Convergence Graphs / Prototype Execution Snapshots]} \\[0.2cm]
+        \small {[Placeholder: Include labeled plots and screenshots of the working prototype output]}
+    \end{minipage}}
+    \caption{Experimental Verification Plots and Working Prototype Outputs}
+\end{figure}
+
+\noindent
+\textbf{Discussion of Results:} {[Analyze the experimental outcomes, explaining why the proposed methodology achieves the observed performance and verifying that it works as intended.]}
+
+% --- 6. TECHNICAL KNOWLEDGE & DESIGN JUSTIFICATION ---
+\section{Technical Justification, Design Trade-offs \& Insights}
+\begin{itemize}[noitemsep, topsep=2pt]
+    \item \textbf{Algorithmic \& Theoretical Justification:} {[Justify why the mathematical model and algorithmic choices are suited to the underlying problem constraints.]}
+    \item \textbf{Computational Complexity \& Trade-offs:} {[Analyze time/space complexity and trade-offs made during design and parameter tuning.]}
+    \item \textbf{Handling Edge Cases \& Boundary Conditions:} {[Explain how noisy data, boundary conditions, or failure cases are handled.]}
+\end{itemize}
+
+% --- 7. CONCLUSION, LIMITATIONS & FUTURE SCOPE ---
+\section{Conclusion, Limitations \& Future Scope}
+\begin{itemize}[noitemsep, topsep=2pt]
+    \item \textbf{Conclusion:} {[Summarize the key contributions and verified outcomes of the completed project.]}
+    \item \textbf{Current Limitations:} {[State any boundary conditions or limitations observed during testing.]}
+    \item \textbf{Future Scope:} {[Outline concrete directions for extending this research.]}
+\end{itemize}
+
+% --- 8. DELIVERABLES & TECHNICAL ENRICHMENT SUMMARY ---
+\section{Project Deliverables \& Technical Enrichment Summary}
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{|p{4.2cm}|p{7.5cm}|c|}
+        \hline
+        \textbf{Deliverable Category} & \textbf{Details / Title / Repository Link} & \textbf{Status} \\
+        \hline
+        Source Code Repository & {[Repository URL and documentation status]} & {[Completed]} \\
+        \hline
+        Individual Online Certifications & {[List completed 10--20 hr courses for each team member]} & {[Completed]} \\
+        \hline
+        Group TEA Deliverable 1 & {[Title and details of completed Group Activity 1]} & {[Completed]} \\
+        \hline
+        Group TEA Deliverable 2 & {[Title and details of completed Group Activity 2]} & {[Completed]} \\
+        \hline
+        Group TEA Deliverable 3 & {[Title and details of completed Group Activity 3]} & {[Completed]} \\
+        \hline
+    \end{tabular}
+    \caption{Summary of Completed Project and Technical Enrichment Deliverables}
+\end{table}
+
+% --- REFERENCES ---
+\vspace{0.2cm}
+\nocite{*}
+\renewcommand{\refname}{\large\bfseries\color{amritaMaroon}References}
+\bibliographystyle{ieeetr}
+\bibliography{ref}
+
+\end{document}

@@ -1,0 +1,427 @@
+{
+ "shot_walk_01_traffic.png": {
+  "source": "figures/sumo/sumo_01_traffic.png (cropped to the map view)",
+  "run": "d200_r02",
+  "seed": 30002,
+  "stage": "Live traffic",
+  "scheme": null,
+  "caption_in_manifest": "Live SUMO traffic: vehicles drive normally; no alert exists yet",
+  "captured": "2026-11-14 16:48:05",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "shot_walk_02_incident.png": {
+  "source": "figures/sumo/sumo_02_incident.png (cropped to the map view)",
+  "run": "d200_r02",
+  "seed": 30002,
+  "stage": "Incident",
+  "scheme": null,
+  "caption_in_manifest": "Incident: v164 crashes at (684, 588) m at t = 114 s (staged incident)",
+  "captured": "2026-11-14 16:48:05",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "shot_walk_03_alert.png": {
+  "source": "figures/sumo/sumo_03_alert.png (cropped to the map view)",
+  "run": "d200_r02",
+  "seed": 30002,
+  "stage": "Alert",
+  "scheme": null,
+  "caption_in_manifest": "Alert EVT-30002-v164-1 created by v164: type ACCIDENT, hop limit 10",
+  "captured": "2026-11-14 16:48:05",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "shot_walk_04_clusters.png": {
+  "source": "figures/sumo/sumo_04_clusters.png (cropped to the map view)",
+  "run": "d200_r02",
+  "seed": 30002,
+  "stage": "Cluster / CH",
+  "scheme": null,
+  "caption_in_manifest": "Cluster / CH: 20 clusters (DBSCAN 40 m), 20 cluster heads (trust >= 0.7), 37 isolated",
+  "captured": "2026-11-14 16:48:05",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "shot_walk_05_votes.png": {
+  "source": "figures/sumo/sumo_05_votes.png (cropped to the map view)",
+  "run": "d200_r02",
+  "seed": 30002,
+  "stage": "Votes",
+  "scheme": "Proposed (full)",
+  "caption_in_manifest": "Votes: 2 of 5 committee members have voted (quorum 3)",
+  "captured": "2026-11-14 16:48:05",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "shot_walk_06_certificate.png": {
+  "source": "figures/sumo/sumo_06_certificate.png (cropped to the map view)",
+  "run": "d200_r02",
+  "seed": 30002,
+  "stage": "Certificate",
+  "scheme": "Proposed (full)",
+  "caption_in_manifest": "Certificate: 4 BLS signatures in one 96 B aggregate; receivers verify it, then accept",
+  "captured": "2026-11-14 16:48:05",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "shot_walk_07_flooding.png": {
+  "source": "figures/sumo/sumo_07_flooding.png (cropped to the map view)",
+  "run": "d200_r02",
+  "seed": 30002,
+  "stage": "Forwarding / Route",
+  "scheme": "Blind flooding",
+  "caption_in_manifest": "Forwarding: 89 relays  |  145/200 hold the alert  |  0 suppressed  |  3380 receptions lost  |  RSU copies: 1 registered, 1 duplicate",
+  "captured": "2026-11-14 16:48:05",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "shot_walk_08_forwarding.png": {
+  "source": "figures/sumo/sumo_08_forwarding.png (cropped to the map view)",
+  "run": "d200_r02",
+  "seed": 30002,
+  "stage": "Forwarding / Route",
+  "scheme": "Proposed (full)",
+  "caption_in_manifest": "Forwarding: 3 relays  |  101/200 hold the alert  |  3 suppressed  |  0 receptions lost  |  RSU copies: 1 registered, 0 duplicates",
+  "captured": "2026-11-14 16:48:05",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "shot_walk_09_duplicates.png": {
+  "source": "figures/sumo/sumo_09_duplicates.png (cropped to the map view)",
+  "run": "d200_r02",
+  "seed": 30002,
+  "stage": "Forwarding / Route",
+  "scheme": "Proposed (full)",
+  "caption_in_manifest": "Forwarding: 8 relays  |  175/200 hold the alert  |  10 suppressed  |  78 receptions lost  |  RSU copies: 1 registered, 3 duplicates",
+  "captured": "2026-11-14 16:48:05",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "shot_walk_10_rsu.png": {
+  "source": "figures/sumo/sumo_10_rsu.png (cropped to the map view)",
+  "run": "d200_r02",
+  "seed": 30002,
+  "stage": "RSU",
+  "scheme": "Proposed (full)",
+  "caption_in_manifest": "RSU: RSU-2 decoded it at +18.2 ms, verified it and registered it at +22.5 ms; 12 duplicate copies",
+  "captured": "2026-11-14 16:48:05",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "shot_walk_11_route.png": {
+  "source": "figures/sumo/sumo_11_route.png (cropped to the map view)",
+  "run": "d200_r02",
+  "seed": 30002,
+  "stage": "Forwarding / Route",
+  "scheme": "CH shortest-path delivery",
+  "caption_in_manifest": "Route: v164 -> v32 -> RSU-2  |  89/200 hold the alert",
+  "captured": "2026-11-14 16:48:05",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "shot_walk_12_forged.png": {
+  "source": "figures/sumo/sumo_12_forged.png (cropped to the map view)",
+  "run": "d200_r02",
+  "seed": 30002,
+  "stage": "RSU",
+  "scheme": "FORGED ALERT | Voting + BLS + reputation (full)",
+  "caption_in_manifest": "RSU: rejected every copy: not corroborated: only 0 reputable endorser(s), 3 needed",
+  "captured": "2026-11-14 16:48:05",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "shot_walk_13_final.png": {
+  "source": "figures/sumo/sumo_13_final.png (cropped to the map view)",
+  "run": "d200_r02",
+  "seed": 30002,
+  "stage": "RSU",
+  "scheme": "CH shortest-path delivery",
+  "caption_in_manifest": "Outcome of the CH shortest-path delivery: RSU-2 registered it; dispatch queued locally",
+  "captured": "2026-11-14 16:48:05",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "shot_window_traffic.png": {
+  "source": "figures/sumo/sumo_01_traffic.png (full window)",
+  "run": "d200_r02",
+  "seed": 30002,
+  "stage": "Live traffic",
+  "scheme": null,
+  "caption_in_manifest": "Live SUMO traffic: vehicles drive normally; no alert exists yet",
+  "captured": "2026-11-14 16:48:05",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "shot_pair_P002_baseline_014.png": {
+  "source": "results/demo_pairs/P002/baseline/014.png (cropped to the map view)",
+  "pair": "P002",
+  "scenario": "d200_r02",
+  "seed": 30002,
+  "approach": "baseline",
+  "algorithm": "Blind flooding",
+  "stage": "Forwarding / Route",
+  "scheme": "Blind flooding",
+  "status": "Forwarding: 175 relays  |  196/200 hold the alert  |  0 suppressed  |  9971 receptions lost  |  RSU copies: 1 registered, 7 duplicates",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "shot_pair_P002_baseline_016.png": {
+  "source": "results/demo_pairs/P002/baseline/016.png (cropped to the map view)",
+  "pair": "P002",
+  "scenario": "d200_r02",
+  "seed": 30002,
+  "approach": "baseline",
+  "algorithm": "Blind flooding",
+  "stage": "RSU",
+  "scheme": "Blind flooding",
+  "status": "Outcome of the Blind flooding: RSU-1 registered it",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "shot_pair_P002_proposed_006.png": {
+  "source": "results/demo_pairs/P002/proposed/006.png (cropped to the map view)",
+  "pair": "P002",
+  "scenario": "d200_r02",
+  "seed": 30002,
+  "approach": "proposed",
+  "algorithm": "Proposed (full) with its CH-to-CH route stage",
+  "stage": "Cluster / CH",
+  "scheme": "incident",
+  "status": "Cluster / CH: 20 clusters (DBSCAN 40 m), 20 cluster heads (trust >= 0.7), 37 isolated",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "shot_pair_P002_proposed_015.png": {
+  "source": "results/demo_pairs/P002/proposed/015.png (cropped to the map view)",
+  "pair": "P002",
+  "scenario": "d200_r02",
+  "seed": 30002,
+  "approach": "proposed",
+  "algorithm": "Proposed (full) with its CH-to-CH route stage",
+  "stage": "Forwarding / Route",
+  "scheme": "Proposed (full)",
+  "status": "Forwarding: 15 relays  |  196/200 hold the alert  |  15 suppressed  |  138 receptions lost  |  RSU copies: 1 registered, 6 duplicates",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "shot_pair_P002_proposed_030.png": {
+  "source": "results/demo_pairs/P002/proposed/030.png (cropped to the map view)",
+  "pair": "P002",
+  "scenario": "d200_r02",
+  "seed": 30002,
+  "approach": "proposed",
+  "algorithm": "Proposed (full) with its CH-to-CH route stage",
+  "stage": "Forwarding / Route",
+  "scheme": "CH shortest-path delivery",
+  "status": "Route: v164 -> v32 ...  |  51/200 hold the alert",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "shot_pair_P002_proposed_035.png": {
+  "source": "results/demo_pairs/P002/proposed/035.png (cropped to the map view)",
+  "pair": "P002",
+  "scenario": "d200_r02",
+  "seed": 30002,
+  "approach": "proposed",
+  "algorithm": "Proposed (full) with its CH-to-CH route stage",
+  "stage": "RSU",
+  "scheme": "FORGED ALERT | Voting + BLS + reputation (full)",
+  "status": "RSU: rejected every copy: not corroborated: only 0 reputable endorser(s), 3 needed",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "shot_pair_P002_proposed_037.png": {
+  "source": "results/demo_pairs/P002/proposed/037.png (cropped to the map view)",
+  "pair": "P002",
+  "scenario": "d200_r02",
+  "seed": 30002,
+  "approach": "proposed",
+  "algorithm": "Proposed (full) with its CH-to-CH route stage",
+  "stage": "RSU",
+  "scheme": "Proposed (full)",
+  "status": "Outcome of the Proposed (full): RSU-2 registered it",
+  "record_fingerprint": "397f81ab56d10051"
+ },
+ "dashboard/dash_live_d200_r25.png": {
+  "source": "headless Microsoft Edge capture of the running dashboard (python run.py web), cropped to one section card",
+  "pair": "P002",
+  "note": "LIVE during the proposed-only run: stage Forwarding / Route, Proposed (full), +21.5 ms (scratch pairs folder, pair P002 = scenario d200_r25, seed 30025; record 65f3a18c82ae4bc0)",
+  "taken": "2026-11-15 11:33:25",
+  "taken_with": "Microsoft Edge headless, 1000 px wide, scale 2"
+ },
+ "dashboard/dash_d200_r02_overview.png": {
+  "source": "headless Microsoft Edge capture of the running dashboard (python run.py web), cropped to one section card",
+  "pair": "P002",
+  "note": "after both runs; scenario d200_r02, comparison True (evidence pair P002 in results/demo_pairs = scenario d200_r02, seed 30002; record 397f81ab56d10051)",
+  "taken": "2026-11-15 11:39:26",
+  "taken_with": "Microsoft Edge headless, 1000 px wide, scale 2"
+ },
+ "dashboard/dash_d200_r02_scenario.png": {
+  "source": "headless Microsoft Edge capture of the running dashboard (python run.py web), cropped to one section card",
+  "pair": "P002",
+  "note": "after both runs; scenario d200_r02, comparison True (evidence pair P002 in results/demo_pairs = scenario d200_r02, seed 30002; record 397f81ab56d10051)",
+  "taken": "2026-11-15 11:39:26",
+  "taken_with": "Microsoft Edge headless, 1000 px wide, scale 2"
+ },
+ "dashboard/dash_d200_r02_live.png": {
+  "source": "headless Microsoft Edge capture of the running dashboard (python run.py web), cropped to one section card",
+  "pair": "P002",
+  "note": "after both runs; scenario d200_r02, comparison True (evidence pair P002 in results/demo_pairs = scenario d200_r02, seed 30002; record 397f81ab56d10051)",
+  "taken": "2026-11-15 11:39:26",
+  "taken_with": "Microsoft Edge headless, 1000 px wide, scale 2"
+ },
+ "dashboard/dash_d200_r02_outcome.png": {
+  "source": "headless Microsoft Edge capture of the running dashboard (python run.py web), cropped to one section card",
+  "pair": "P002",
+  "note": "after both runs; scenario d200_r02, comparison True (evidence pair P002 in results/demo_pairs = scenario d200_r02, seed 30002; record 397f81ab56d10051)",
+  "taken": "2026-11-15 11:39:26",
+  "taken_with": "Microsoft Edge headless, 1000 px wide, scale 2"
+ },
+ "dashboard/dash_d200_r02_comparison.png": {
+  "source": "headless Microsoft Edge capture of the running dashboard (python run.py web), cropped to one section card",
+  "pair": "P002",
+  "note": "after both runs; scenario d200_r02, comparison True (evidence pair P002 in results/demo_pairs = scenario d200_r02, seed 30002; record 397f81ab56d10051)",
+  "taken": "2026-11-15 11:39:26",
+  "taken_with": "Microsoft Edge headless, 1000 px wide, scale 2"
+ },
+ "dashboard/dash_d200_r02_evidence.png": {
+  "source": "headless Microsoft Edge capture of the running dashboard (python run.py web), cropped to one section card",
+  "pair": "P002",
+  "note": "after both runs; scenario d200_r02, comparison True (evidence pair P002 in results/demo_pairs = scenario d200_r02, seed 30002; record 397f81ab56d10051)",
+  "taken": "2026-11-15 11:39:26",
+  "taken_with": "Microsoft Edge headless, 1000 px wide, scale 2"
+ },
+ "dashboard/dash_d200_r02_comparison_pair.png": {
+  "source": "headless Microsoft Edge capture of the running dashboard (python run.py web), cropped to one section card",
+  "pair": "P002",
+  "note": "after both runs; scenario d200_r02, comparison True (evidence pair P002 in results/demo_pairs = scenario d200_r02, seed 30002; record 397f81ab56d10051)",
+  "taken": "2026-11-15 11:39:26",
+  "taken_with": "Microsoft Edge headless, 1000 px wide, scale 2",
+  "part": "rows 0-1950 of the comparison section"
+ },
+ "dashboard/dash_d200_r02_comparison_baselines.png": {
+  "source": "headless Microsoft Edge capture of the running dashboard (python run.py web), cropped to one section card",
+  "pair": "P002",
+  "note": "after both runs; scenario d200_r02, comparison True (evidence pair P002 in results/demo_pairs = scenario d200_r02, seed 30002; record 397f81ab56d10051)",
+  "taken": "2026-11-15 11:39:26",
+  "taken_with": "Microsoft Edge headless, 1000 px wide, scale 2",
+  "part": "rows 1950-2890 of the comparison section"
+ },
+ "dashboard/dash_d200_r02_comparison_multiseed.png": {
+  "source": "headless Microsoft Edge capture of the running dashboard (python run.py web), cropped to one section card",
+  "pair": "P002",
+  "note": "after both runs; scenario d200_r02, comparison True (evidence pair P002 in results/demo_pairs = scenario d200_r02, seed 30002; record 397f81ab56d10051)",
+  "taken": "2026-11-15 11:39:26",
+  "taken_with": "Microsoft Edge headless, 1000 px wide, scale 2",
+  "part": "rows 2890-3895 of the comparison section"
+ },
+ "dashboard/dash_live_d200_r25_top.png": {
+  "source": "headless Microsoft Edge capture of the running dashboard (python run.py web), cropped to one section card",
+  "pair": "P002",
+  "note": "LIVE during the proposed-only run: stage Forwarding / Route, Proposed (full), +21.5 ms (scratch pairs folder, pair P002 = scenario d200_r25, seed 30025; record 65f3a18c82ae4bc0)",
+  "taken": "2026-11-15 11:33:25",
+  "taken_with": "Microsoft Edge headless, 1000 px wide, scale 2",
+  "part": "rows 0-2312 (thumbnail strip and footnote below the main capture removed)"
+ },
+ "dashboard/dash_live_d200_r25_status.png": {
+  "source": "headless Microsoft Edge capture of the running dashboard (python run.py web), cropped to one section card",
+  "pair": "P002",
+  "note": "LIVE during the proposed-only run: stage Forwarding / Route, Proposed (full), +21.5 ms (scratch pairs folder, pair P002 = scenario d200_r25, seed 30025; record 65f3a18c82ae4bc0)",
+  "taken": "2026-11-15 11:33:25",
+  "taken_with": "Microsoft Edge headless, 1000 px wide, scale 2",
+  "part": "rows 0-1190: live banner, stage indicator and counters"
+ },
+ "dashboard/dash_live_d200_r25_capture.png": {
+  "source": "headless Microsoft Edge capture of the running dashboard (python run.py web), cropped to one section card",
+  "pair": "P002",
+  "note": "LIVE during the proposed-only run: stage Forwarding / Route, Proposed (full), +21.5 ms (scratch pairs folder, pair P002 = scenario d200_r25, seed 30025; record 65f3a18c82ae4bc0)",
+  "taken": "2026-11-15 11:33:25",
+  "taken_with": "Microsoft Edge headless, 1000 px wide, scale 2",
+  "part": "rows 1240-2300: the latest SUMO-GUI capture and its caption"
+ },
+ "dashboard/dash_d200_r02_comparison_table.png": {
+  "source": "headless Microsoft Edge capture of the running dashboard (python run.py web), cropped to one section card",
+  "pair": "P002",
+  "note": "after both runs; scenario d200_r02, comparison True (evidence pair P002 in results/demo_pairs = scenario d200_r02, seed 30002; record 397f81ab56d10051)",
+  "taken": "2026-11-15 11:39:26",
+  "taken_with": "Microsoft Edge headless, 1000 px wide, scale 2",
+  "part": "rows 0-1130 of the pair comparison: the table only"
+ },
+ "view_map_walk_01_traffic.png": {
+  "source": "figures/sumo/sumo_01_traffic.png, map area (335, 340, 900, 862) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "view_map_walk_02_incident.png": {
+  "source": "figures/sumo/sumo_02_incident.png, map area (335, 340, 900, 862) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "view_map_walk_03_alert.png": {
+  "source": "figures/sumo/sumo_03_alert.png, map area (335, 340, 900, 862) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "view_map_walk_04_clusters.png": {
+  "source": "figures/sumo/sumo_04_clusters.png, map area (335, 340, 900, 862) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "view_map_walk_05_votes.png": {
+  "source": "figures/sumo/sumo_05_votes.png, map area (335, 340, 900, 862) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "view_map_walk_06_certificate.png": {
+  "source": "figures/sumo/sumo_06_certificate.png, map area (335, 340, 900, 862) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "view_map_walk_07_flooding.png": {
+  "source": "figures/sumo/sumo_07_flooding.png, map area (335, 340, 900, 862) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "view_map_walk_08_forwarding.png": {
+  "source": "figures/sumo/sumo_08_forwarding.png, map area (335, 340, 900, 862) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "view_map_walk_09_duplicates.png": {
+  "source": "figures/sumo/sumo_09_duplicates.png, map area (335, 340, 900, 862) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "view_map_walk_10_rsu.png": {
+  "source": "figures/sumo/sumo_10_rsu.png, map area (335, 340, 900, 862) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "view_map_walk_11_route.png": {
+  "source": "figures/sumo/sumo_11_route.png, map area (335, 340, 900, 862) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "view_map_walk_12_forged.png": {
+  "source": "figures/sumo/sumo_12_forged.png, map area (335, 340, 900, 862) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "view_map_walk_13_final.png": {
+  "source": "figures/sumo/sumo_13_final.png, map area (335, 340, 900, 862) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "view_status_walk_12_forged.png": {
+  "source": "figures/sumo/sumo_12_forged.png, status lines (280, 252, 1225, 323) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "view_status_walk_13_final.png": {
+  "source": "figures/sumo/sumo_13_final.png, status lines (280, 252, 1225, 323) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "view_status_walk_07_flooding.png": {
+  "source": "figures/sumo/sumo_07_flooding.png, status lines (280, 252, 1225, 323) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "view_status_walk_09_duplicates.png": {
+  "source": "figures/sumo/sumo_09_duplicates.png, status lines (280, 252, 1225, 323) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "view_map_P002_baseline_014.png": {
+  "source": "results/demo_pairs/P002/baseline/014.png, map area (335, 340, 900, 862) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "view_status_P002_baseline_014.png": {
+  "source": "results/demo_pairs/P002/baseline/014.png, status lines (280, 252, 1225, 323) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "view_map_P002_proposed_015.png": {
+  "source": "results/demo_pairs/P002/proposed/015.png, map area (335, 340, 900, 862) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "view_status_P002_proposed_015.png": {
+  "source": "results/demo_pairs/P002/proposed/015.png, status lines (280, 252, 1225, 323) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "dashboard/view_dash_live.png": {
+  "source": "figures/dashboard/dash_live_d200_r25_status.png, crop (0, 0, 1820, 1000) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "dashboard/view_dash_scenario.png": {
+  "source": "figures/dashboard/dash_d200_r02_scenario.png, crop (0, 0, 1820, 1345) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "dashboard/view_dash_comparison.png": {
+  "source": "figures/dashboard/dash_d200_r02_comparison_table.png, crop (0, 0, 1820, 1130) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "dashboard/view_dash_evidence.png": {
+  "source": "figures/dashboard/dash_d200_r02_evidence.png, crop (0, 0, 1820, 860) (crop of a genuine capture, made by make_report_views.py)"
+ },
+ "dashboard/sl_dash_live.png": {
+  "source": "figures/dashboard/dash_live_d200_r25_status.png, crop (55, 255, 1765, 990) (crop of a genuine capture, made by make_slide_assets.py)"
+ },
+ "dashboard/sl_dash_comparison.png": {
+  "source": "figures/dashboard/dash_d200_r02_comparison_table.png, crop (55, 335, 1765, 1120) (crop of a genuine capture, made by make_slide_assets.py)"
+ },
+ "dashboard/sl_sumo_legend.png": {
+  "source": "figures/dashboard/dash_live_d200_r25_capture.png, crop (1090, 236, 1385, 580) (crop of a genuine capture, made by make_slide_assets.py)"
+ },
+ "dashboard/sl_live_sumo.png": {
+  "source": "figures/dashboard/dash_live_d200_r25_capture.png, crop (400, 0, 1400, 800) (crop of a genuine capture, made by make_slide_assets.py)"
+ },
+ "sl_zoom_votes.png": {
+  "source": "figures/sumo/sumo_05_votes.png, crop (670, 380, 900, 610) around the incident (crop of a genuine capture, made by make_slide_assets.py)"
+ },
+ "sl_zoom_certificate.png": {
+  "source": "figures/sumo/sumo_06_certificate.png, crop (670, 380, 900, 610) around the incident (crop of a genuine capture, made by make_slide_assets.py)"
+ },
+ "guide_approval_email.png": {
+  "source": "screenshot of the guide's approval email supplied by the team on 16 Nov 2026; copied byte for byte, not edited"
+ }
+}

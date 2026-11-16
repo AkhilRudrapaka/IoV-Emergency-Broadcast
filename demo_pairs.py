@@ -11,12 +11,17 @@ when both fingerprints agree.
 
 Scenarios are the experiment's own seeds at the demo density (scenario ID d200_r07, seed = BASE_SEED + 100*d + r). Each
 seed already fixes a different incident on the same road network and traffic model: a random honest vehicle at a random
-second (scenario.build). A new pair takes, in a fixed seeded order, the first unused scenario whose incident lies on the
-road network and at least MIN_SEPARATION_M from every incident already used. The choice never looks at any algorithm's
-result. Only when no such scenario is left is a location reused, and the pair records it (selection.repeat_of).
+second (scenario.build). The scenarios are offered in an order shuffled by the pairs folder's selection seed, drawn at
+random when the folder's first pair is made and kept in selection.json: each new folder offers its own sequence of
+incidents, and every pair records its selection seed and rank, so its choice can be reproduced. A new pair takes the
+first unused scenario in that order whose incident lies on the road network and at least MIN_SEPARATION_M from every
+incident already used. The choice never looks at any algorithm's result. Only when no such scenario is left is a
+location reused, and the pair records it (selection.repeat_of).
 
-Everything is written under results/demo_pairs/<pair>/ (or $DEMO_PAIRS_DIR): pair.json, the re-simulated record
-(raw/), the live feed, SUMO's log and each run's live window captures. Tracked results are never written.
+Everything is written under results/demo_pairs/ (or $DEMO_PAIRS_DIR): selection.json, and per pair <pair>/pair.json,
+<pair>/<approach>_console.log and one results folder per approach, <pair>/<approach>/, holding that run's own
+re-simulated record (raw/), live feed, SUMO log, local outbox and live window captures. Tracked results are never
+written. (Pairs run before per-approach folders keep one shared record in <pair>/raw/, which is still read.)
 """
 import gzip
 import json
@@ -24,6 +29,7 @@ import math
 import os
 import random
 import re
+import secrets
 import subprocess
 import sys
 import threading
@@ -37,12 +43,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.environ.get("DEMO_PAIRS_DIR") or os.path.join(HERE, "results", "demo_pairs"))
 DENSITY = config.DEMO_DENSITY                # one traffic model: the demo density's demand
 CANDIDATE_RUNS = range(config.RUNS_PER_DENSITY)
-SELECTION_SEED = config.BASE_SEED            # fixes the order in which scenarios are offered
 MIN_SEPARATION_M = 50.0                      # incidents closer than this count as the same location
 BASELINES = [p for p in config.BASELINES if p != "proposed"]
 PROPOSED = ["proposed", "ch_route"]
 APPROACHES = ("baseline", "proposed")
 ACTIVE = "active_run.json"
+SELECTION = "selection.json"
 PAIR_ID = re.compile(r"P\d{3,}")
 
 
@@ -85,13 +91,33 @@ def valid(inc):
             and (lane.startswith(":") or lane.rsplit("_", 1)[0] in EDGES))
 
 
-def order(selection_seed=SELECTION_SEED):
+def order(selection_seed):
     runs = list(CANDIDATE_RUNS)
     random.Random(selection_seed).shuffle(runs)
     return runs
 
 
-def select(used, selection_seed=SELECTION_SEED, incident_of=None):
+def selection_seed():
+    """This pairs folder's selection seed (selection.json). The first pair of a new folder draws it at random; a folder
+    whose pairs were made before selection.json existed keeps the seed they recorded."""
+    path = os.path.join(ROOT, SELECTION)
+    try:
+        with open(path, encoding="utf-8") as f:
+            return int(json.load(f)["selection_seed"])
+    except (OSError, ValueError, KeyError, TypeError):
+        pass
+    recorded = [p["scenario"]["selection"].get("selection_seed") for p in pairs()]
+    seed = next((s for s in recorded if isinstance(s, int)), None)
+    source = "kept from the folder's earlier pairs" if seed is not None else "drawn at random"
+    seed = secrets.randbelow(2 ** 31) if seed is None else seed
+    os.makedirs(ROOT, exist_ok=True)
+    with open(path + ".tmp", "w", encoding="utf-8") as f:
+        json.dump({"selection_seed": seed, "created": now(), "source": source}, f, indent=1)
+    os.replace(path + ".tmp", path)
+    return seed
+
+
+def select(used, selection_seed, incident_of=None):
     """(run, incident, repeat_of, rank) for the next pair. used: [(scenario ID, x, y)] of earlier pairs, oldest first.
     Prefers an unused scenario whose incident is >= MIN_SEPARATION_M from every used one; then an unused scenario at a
     nearby location; then the least recently used scenario. A reuse is never silent: repeat_of names what it repeats."""
@@ -125,6 +151,13 @@ def pair_dir(pair_id):
     return os.path.join(ROOT, pair_id)
 
 
+def approach_dir(pair_id, approach):
+    """The results folder of one approach's run (its EXP_RESULTS_DIR): nothing in it is shared with the other run."""
+    if approach not in APPROACHES:
+        raise ValueError(f"approach must be one of {', '.join(APPROACHES)}")
+    return os.path.join(pair_dir(pair_id), approach)
+
+
 def load(pair_id):
     with open(os.path.join(pair_dir(pair_id), "pair.json"), encoding="utf-8") as f:
         return json.load(f)
@@ -153,10 +186,11 @@ def new_pair(baseline="flooding", run=None):
     schemes_for("baseline", baseline)                                # validates the baseline
     existing = pairs()
     used = [(p["scenario"]["scenario_id"], p["scenario"]["incident"]["x"], p["scenario"]["incident"]["y"]) for p in existing]
+    seed = selection_seed()
     if run is None:
-        run, inc, repeat_of, rank = select(used)
-        method = (f"seeded order (selection seed {SELECTION_SEED}); first unused scenario whose incident is on the road "
-                  f"network and at least {MIN_SEPARATION_M:.0f} m from every incident used before")
+        run, inc, repeat_of, rank = select(used, seed)
+        method = (f"order shuffled by this folder's selection seed {seed}; first unused scenario whose incident is on the "
+                  f"road network and at least {MIN_SEPARATION_M:.0f} m from every incident used before")
     else:
         if run not in CANDIDATE_RUNS:
             raise ValueError(f"scenario run must be 0..{len(CANDIDATE_RUNS) - 1}")
@@ -176,7 +210,7 @@ def new_pair(baseline="flooding", run=None):
     pair = {"pair_id": f"P{number:03d}", "created": now(), "baseline": baseline,
             "scenario": {"scenario_id": scenario_id(run), "density": DENSITY, "run": run, "seed": seed_for(DENSITY, run),
                          "network": config.NET_FILE, "incident": inc,
-                         "selection": {"method": method, "selection_seed": SELECTION_SEED, "rank": rank,
+                         "selection": {"method": method, "selection_seed": seed, "rank": rank,
                                        "repeat_of": repeat_of}},
             "runs": {a: {"approach": a, "algorithm": algorithm(a, baseline), "schemes": schemes_for(a, baseline),
                          "status": "not started"} for a in APPROACHES}}
@@ -201,10 +235,19 @@ def check_record(pair, raw):
         raise RuntimeError(f"the re-simulated record is not this pair's scenario: {got} != {expected}")
 
 
-def record(pair):
-    """The pair's run record (written by its runs), or None -- also while a run in progress is rewriting it (a
-    half-written gzip ends early: EOFError / zlib.error)."""
-    path = os.path.join(pair_dir(pair["pair_id"]), "raw", pair["scenario"]["scenario_id"] + ".json.gz")
+def record_path(pair, approach):
+    """The record this approach's run wrote: <pair>/<approach>/raw/<scenario>.json.gz, or, for a pair run before
+    per-approach folders, the record both runs shared in <pair>/raw/."""
+    name = pair["scenario"]["scenario_id"] + ".json.gz"
+    own = os.path.join(approach_dir(pair["pair_id"], approach), "raw", name)
+    shared = os.path.join(pair_dir(pair["pair_id"]), "raw", name)
+    return shared if not os.path.exists(own) and os.path.exists(shared) else own
+
+
+def record(pair, approach):
+    """The record of this approach's run, or None -- also while a run in progress is rewriting it (a half-written gzip
+    ends early: EOFError / zlib.error)."""
+    path = record_path(pair, approach)
     try:
         with gzip.open(path, "rt", encoding="utf-8") as f:
             return json.load(f)
@@ -213,8 +256,9 @@ def record(pair):
 
 
 def comparison(pair):
-    """(raw, None) when the comparison may be shown: both runs finished and replayed the same record, which is still
-    the record on disk. Otherwise (None, reason) -- no values are shown from incomplete or inconsistent runs."""
+    """(raw, None) when the comparison may be shown: both runs finished, each on its own record, and the two records
+    have the same fingerprint (same scenario, schemes and results), each still as its run left it. Otherwise
+    (None, reason) -- no values are shown from incomplete or inconsistent runs."""
     from demo import record_fingerprint
     runs = pair["runs"]
     waiting = [a for a in APPROACHES if runs[a]["status"] != "finished"]
@@ -222,10 +266,10 @@ def comparison(pair):
         return None, f"available after both runs have finished (waiting for: {', '.join(waiting)})"
     if runs["baseline"].get("fingerprint") != runs["proposed"].get("fingerprint"):
         return None, "the two runs did not replay the same record, so they are not compared"
-    raw = record(pair)
-    if raw is None or record_fingerprint(raw) != runs["proposed"]["fingerprint"]:
-        return None, "the pair's run record is missing or changed after the runs, so it is not compared"
-    return raw, None
+    raws = {a: record(pair, a) for a in APPROACHES}
+    if any(raw is None or record_fingerprint(raw) != runs[a]["fingerprint"] for a, raw in raws.items()):
+        return None, "a run's record is missing or changed after the runs, so they are not compared"
+    return raws["proposed"], None
 
 
 METRICS = [   # (record key, label, unit, definition) -- metrics.py; values are copied from the record, never recomputed
@@ -366,8 +410,8 @@ def release():
 
 
 def start(pair_id, approach, pace=None):
-    """Start one separated run in its own process (SUMO-GUI opens); every write goes to the pair's folder.
-    Refused while another run is active. Returns the process ID."""
+    """Start one separated run in its own process (SUMO-GUI opens); every write goes to this approach's own folder,
+    its console output to <pair>/<approach>_console.log. Refused while another run is active. Returns the process ID."""
     pair = load(pair_id)
     schemes_for(approach, pair["baseline"])
     active = reconcile()
@@ -383,7 +427,8 @@ def start(pair_id, approach, pace=None):
                message=None, fingerprint=None)
     with open(os.path.join(folder, f"{approach}_console.log"), "w", encoding="utf-8") as log:
         proc = subprocess.Popen(cmd, cwd=HERE, stdout=log, stderr=subprocess.STDOUT,
-                                env={**os.environ, "EXP_RESULTS_DIR": folder, "DEMO_PAIRS_DIR": ROOT})
+                                env={**os.environ, "EXP_RESULTS_DIR": approach_dir(pair_id, approach),
+                                     "DEMO_PAIRS_DIR": ROOT})
     pair = load(pair_id)
     if pair["runs"][approach]["status"] == "starting":                # not yet taken over by the run itself
         pair["runs"][approach]["pid"] = proc.pid

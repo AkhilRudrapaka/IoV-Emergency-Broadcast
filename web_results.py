@@ -140,7 +140,7 @@ def run_outcome(pair, approach, raw):
                   'failed': f"The run failed: {r.get('message')}"}.get(r['status'], r['status'])
         return {'available': False, 'reason': reason}
     if raw is None:
-        return {'available': False, 'reason': "The pair's run record cannot be read right now (it may be being rewritten "
+        return {'available': False, 'reason': "This run's record cannot be read right now (it may be being rewritten "
                                               "by a run in progress)."}
     if record_fingerprint(raw) != r.get('fingerprint'):
         return {'available': False, 'reason': 'The record on disk is not the one this run replayed, so it is not shown.'}
@@ -149,17 +149,20 @@ def run_outcome(pair, approach, raw):
 
 
 def pair_view(pair_id):
-    """Everything the dashboard shows for one pair, read from that pair's folder only. Live state and captures are
-    shown for a run only if they were written after that run started (never an earlier run's leftovers)."""
+    """Everything the dashboard shows for one pair, read from that pair's folder only: each run's outcome, live state
+    and captures from that run's own folder. Live state and captures are shown for a run only if they were written
+    after that run started (never an earlier run's leftovers); the live view is the most recently updated run's."""
     active = demo_pairs.reconcile()
     pair = demo_pairs.load(pair_id)
     folder = demo_pairs.pair_dir(pair_id)
-    raw = demo_pairs.record(pair)
     since = {a: _epoch(r.get('started') or r.get('requested')) for a, r in pair['runs'].items()}
-    live = _json_file(os.path.join(folder, 'live_demo.json'), {})
-    a = live.get('approach')
-    if live.get('pair_id') != pair_id or a not in since or since[a] is None or live.get('updated', 0) < since[a]:
-        live = {}
+    feeds = [(a, _json_file(os.path.join(demo_pairs.approach_dir(pair_id, a), 'live_demo.json'), {}))
+             for a in demo_pairs.APPROACHES]
+    feeds.append((None, _json_file(os.path.join(folder, 'live_demo.json'), {})))   # a pair run before per-approach folders
+    feeds = [f for a, f in feeds if isinstance(f, dict) and f.get('pair_id') == pair_id and f.get('approach') in since
+             and a in (None, f['approach']) and since[f['approach']] is not None
+             and isinstance(f.get('updated'), (int, float)) and f['updated'] >= since[f['approach']]]
+    live = max(feeds, key=lambda f: f['updated'], default={})
     if live:
         live['age_s'] = round(time.time() - live['updated'], 1)
         live['fresh'] = live['age_s'] < LIVE_FRESH_S
@@ -171,11 +174,12 @@ def pair_view(pair_id):
                        and os.path.isfile(os.path.join(folder, a, c['file']))]
     comparable, reason = demo_pairs.comparison(pair)
     return {'pair': pair_summary(pair), 'active': active, 'live': live, 'captures': captures,
-            'outcomes': {a: run_outcome(pair, a, raw) for a in demo_pairs.APPROACHES},
+            'outcomes': {a: run_outcome(pair, a, demo_pairs.record(pair, a)) for a in demo_pairs.APPROACHES},
             'comparison': {'available': comparable is not None, 'reason': reason,
                            'rows': demo_pairs.comparison_rows(pair, comparable) if comparable else [],
                            'fingerprint': pair['runs']['proposed'].get('fingerprint') if comparable else None,
-                           'record': os.path.join('raw', pair['scenario']['scenario_id'] + '.json.gz')},
+                           'records': {a: os.path.relpath(demo_pairs.record_path(pair, a), folder).replace(os.sep, '/')
+                                       for a in demo_pairs.APPROACHES}},
             'metrics': [{'key': k, 'label': l, 'unit': u, 'definition': d} for k, l, u, d in demo_pairs.METRICS],
             'folder': folder}
 

@@ -1,58 +1,64 @@
 {
- "generated": "2026-11-14T10:37:42+05:30",
+ "generated": "2026-11-14T16:58:02+05:30",
  "checks": [
   {
    "check": "Full validation suite",
    "command": "python -m pytest validation -q -p no:cacheprovider (also with EXP_RESULTS_DIR set to a scratch folder)",
-   "result": "98 passed (exit 0); with EXP_RESULTS_DIR set: 98 passed (exit 0)",
+   "result": "105 passed (exit 0); with EXP_RESULTS_DIR set: 105 passed (exit 0)",
    "status": "PASS"
   },
   {
-   "check": "Default demo unchanged (python run.py demo)",
-   "command": "pre-change demo.run vs current demo.run under the same SUMO/TraCI stand-in (pre-change code rebuilt from the session record)",
-   "result": "identical: run_one 1, replays 4, lives 225, panels 217, traci 8543",
+   "check": "Incidents: random per seed, reproducible, and never one location for every pair",
+   "command": "runs.csv of the tracked experiment; validation tests; two fresh scratch pairs folders (dashboard POST /api/pairs, and python run.py pair new)",
+   "result": "Experiment matrix: 180 runs, 30, 30, 30, 30, 30, 30 different incidents at 50, 100, 200, 250, 300, 500 vehicles (30 seeds each); the same seed gives the same incident vehicle, time and place (test_same_seed_same_scenario). Pairs: each new folder drew its own selection seed (131454536 and 808451094) and its first pair is d200_r10 and d200_r26 (every folder used to start with d200_r23, the first scenario of the earlier fixed seed 10000); 6 new pairs, 6 different incidents: d200_r10 v71 at (67.6, -1.6) m, t = 85 s; d200_r25 v66 at (1.6, 560.2) m, t = 98 s; d200_r09 v26 at (161.6, 149.1) m, t = 111 s; d200_r26 v184 at (4.8, 119.7) m, t = 108 s; d200_r24 v166 at (821.6, 356.3) m, t = 101 s; d200_r16 v196 at (105.6, 371.6) m, t = 97 s. The default demo stays on the showcase scenario d200_r02, now labelled as such in SUMO-GUI",
+   "status": "PASS"
+  },
+  {
+   "check": "Default demo (python run.py demo): unchanged apart from the new scenario label",
+   "command": "demo.run of the last commit vs the current demo.run under the same SUMO/TraCI stand-in",
+   "result": "identical: run_one 1, replays 4, lives 225, panels 217, traci 8543; the only difference: 2 inserted TraCI calls that draw the label 'FULL WALKTHROUGH | scenario d200_r02 | seed 30002 | fixed showcase scenario (-r N replays another seed)'",
    "status": "PASS"
   },
   {
    "check": "Default demo, visible SUMO-GUI run",
-   "command": "EXP_RESULTS_DIR=<scratch> python run.py demo --no-wait --shots <scratch>",
-   "result": "exit code: 0, duration: 117 s; completed = True; 13 snapshots; same record fingerprint as the portal's tracked snapshots: True",
+   "command": "EXP_RESULTS_DIR=<scratch> python run.py demo --no-wait --shots <scratch> (the shots folder held a picture and a manifest of another run beforehand)",
+   "result": "exit code: 0, duration 113 s; completed = True; 13 snapshots; same record fingerprint as the portal's tracked snapshots: True; the earlier run's picture removed, other files kept: True; the label is visible in the captures",
    "status": "PASS"
   },
   {
    "check": "What the default demo writes without EXP_RESULTS_DIR (README warning)",
    "command": "python run.py demo --no-wait in a scratch copy of the project, every file of its results/ hashed before and after",
-   "result": "exit code: 0; rewritten: ['results/urban/infrastructure/backhaul.sqlite3', 'results/urban/raw/d200_r02.json.gz', 'results/urban/sumo_gui_errors.log']; added: ['results/urban/live_demo.json', 'results/urban/raw/d200_r02__20261114T092437363658.json.gz']; record fingerprint 397f81ab56d10051 (unchanged)",
+   "result": "Measured 14 Nov 10:37 (the default demo's writes are unchanged by this pass): exit code: 0; rewritten: ['results/urban/infrastructure/backhaul.sqlite3', 'results/urban/raw/d200_r02.json.gz', 'results/urban/sumo_gui_errors.log']; added: ['results/urban/live_demo.json', 'results/urban/raw/d200_r02__20261114T092437363658.json.gz']; record fingerprint 397f81ab56d10051 (unchanged)",
    "status": "PASS"
   },
   {
    "check": "Every SUMO-GUI capture shows the stage its metadata names",
    "command": "stage_check.py: the highlighted indicator box read from the pixels of each capture vs captures.json; the report's SUMO figures also compared byte for byte with their captures",
-   "result": "evidence pairs: 265 captures, 0 mismatches; report figures: 16 checked, 0 differing; new scratch pair: 51 captures, 0 mismatches. Before the capture-timing fix of 13 Nov: 43 of 226 captures showed the NEXT stage",
+   "result": "evidence pairs: 265 captures, 0 mismatches; report figures: 16 checked, 0 differing; new scratch pair: 55 captures, 0 mismatches",
    "status": "PASS"
   },
   {
-   "check": "Comparison pairs: the faculty flow end to end, and the stored evidence pairs",
-   "command": "dashboard API on a scratch pairs folder: POST /api/pairs, POST /api/run baseline then proposed; check_run.py on every run",
-   "result": "New pair P001 (scenario d200_r23, seed 30023, baseline slotted 1-p + random delay): comparison withheld before and between the runs, every overlapping start refused (HTTP 409). Baseline run exit 0. The first proposed run stalled when the SUMO-GUI window stopped responding (a window capture was waiting for it; closing the window marked the run failed with its reason, as designed); captures are now bounded to 10 s, and 'run again' finished with exit 0. Both runs pass check_run (final banner = own record, fingerprint recomputed, 0 captures of the other approach, no repo file written). Evidence pairs: 10 of 10 stored runs re-checked",
+   "check": "Comparison pairs: the faculty flow end to end, one output folder per run",
+   "command": "dashboard API on a scratch pairs folder: POST /api/pairs (3 pairs), POST /api/run baseline then proposed for one of them",
+   "result": "Pair P001 (d200_r10): baseline run exit 0 in 60.0 s, proposed run exit 0 in 117.0 s, every overlapping start refused (HTTP 409); the dashboard showed every stage live (15 stage changes in the proposed run). Each run wrote only into its own folder (baseline/: captures.json, infrastructure/backhaul.sqlite3, live_demo.json, raw/d200_r10.json.gz, sumo_gui_errors.log, plus its captures; proposed/: the same set); nothing shared in the pair folder (no raw/, live feed, SUMO log or outbox); comparison available: True",
    "status": "PASS"
   },
   {
-   "check": "Both runs of every pair replayed the same record",
-   "command": "fingerprints stored by each run (pair.json)",
-   "result": "P001: equal True, P002: equal True, P003: equal True, P004: equal True, P005: equal True; new scratch pair: equal True, record d2ae64723ca78a86, the same record as evidence pair P001 (same scenario, d2ae64723ca78a86). P005 is kept as recorded on 13 Nov (record ff111826\u2026): with the 14 Nov reason fix its scenario re-simulates to a record that differs only in route head v95's reason text",
+   "check": "Both runs of every pair replayed the same scenario and results",
+   "command": "fingerprints stored by each run (pair.json), recomputed from each run's own record by verify_dashboard.py",
+   "result": "P001: equal True, P002: equal True, P003: equal True, P004: equal True, P005: equal True (evidence pairs, one shared record each); new scratch pair P001: two records, one per run, fingerprints equal True (8b49ed0a077e64b1)",
    "status": "PASS"
   },
   {
    "check": "Dashboard values equal their source records",
-   "command": "verify_dashboard.py against GET /api/pairs, /api/pair, /api/experiment",
-   "result": "evidence pairs: 1052 values checked, 0 mismatches; new scratch pair: 264 values, 0 mismatches",
+   "command": "verify_dashboard.py against GET /api/pairs, /api/pair, /api/experiment, and the rendered page of every pair (headless Edge)",
+   "result": "evidence pairs: 1042 values checked, 0 mismatches; new scratch folders: 299 + 105 values, 0 mismatches; the page of each of the 11 pairs shows that pair's own incident (vehicle, place, time), the one its seed gives",
    "status": "PASS"
   },
   {
    "check": "Experiment command reproduces the tracked results",
    "command": "EXP_RESULTS_DIR=<scratch> python run.py experiment (final code)",
-   "result": "exit code: 0, duration: 162 s; 5 of 5 processed CSVs, both explain files, the d200_r02 record, 12 of 12 PNG figures and RESULTS.md identical to the tracked ones; 0 undecided vehicles without a reason in 181 records. Sensitivity sweep (run.py sensitivity, 14 Nov, same code path): 48 of 48 CSVs and 5 of 5 charts identical",
+   "result": "Measured 14 Nov 10:37 (experiment.py, scenario.py and the protocols are unchanged since): exit code: 0, duration: 162 s; 5 of 5 processed CSVs, both explain files, the d200_r02 record, 12 of 12 PNG figures and RESULTS.md identical to the tracked ones; 0 undecided vehicles without a reason in 181 records. Sensitivity sweep (run.py sensitivity, 14 Nov, same code path): 48 of 48 CSVs and 5 of 5 charts identical",
    "status": "PASS"
   },
   {
@@ -62,9 +68,9 @@
    "status": "PASS"
   },
   {
-   "check": "Tracked results and prior evidence unchanged, apart from intended regenerations",
-   "command": "SHA-256 of every file under the evidence folders before the 13 Nov evidence runs vs now",
-   "result": "957 files compared: 950 unchanged; 6 regenerated on purpose on 14 Nov (RESULTS.md and its two portal copies: n added where fewer runs had a value; the portal source bundle and its snapshot stamp); removed in the cleanup: ['results/urban/live_demo.json'] (git-ignored live-feed state of a 4 Nov demo run, rewritten by the next demo)",
+   "check": "Tracked results and prior evidence unchanged by this pass",
+   "command": "SHA-256 of every file of the evidence pairs vs the 14 Nov record; git status of results/",
+   "result": "evidence pairs: 310 files compared with the 14 Nov 00:51 record | changed: [] | added: []; every run of this pass wrote to scratch folders (EXP_RESULTS_DIR, DEMO_PAIRS_DIR). results/ differs from the last commit in ['results/urban/infrastructure/backhaul.sqlite3', 'results/urban/raw/d200_r02.json.gz', 'results/urban/sumo_gui_errors.log']: the d200_r02 record (a new recorded_at, same run), its outbox and SUMO-GUI's log, rewritten by two default python run.py demo runs on this machine at 16:16 and 16:38 that were not part of these checks, as README describes for the default demo",
    "status": "PASS"
   }
  ]

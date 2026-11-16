@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="959.76pt" height="352.8pt" viewBox="0 0 959.76 352.8" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-11-16T12:21:12.103614</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.9, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 352.8 
+L 959.76 352.8 
+L 959.76 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 19.44 298.8 
+L 243.36 298.8 
+Q 252 298.8 252 290.16 
+L 252 66.24 
+Q 252 57.6 243.36 57.6 
+L 19.44 57.6 
+Q 10.8 57.6 10.8 66.24 
+L 10.8 290.16 
+Q 10.8 298.8 19.44 298.8 
+z
+" clip-path="url(#p067a3d440e)" style="fill: #f8efef; stroke: #991b1b; stroke-width: 1.6; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 323.28 298.8 
+L 938.88 298.8 
+Q 948.96 298.8 948.96 288.72 
+L 948.96 67.68 
+Q 948.96 57.6 938.88 57.6 
+L 323.28 57.6 
+Q 313.2 57.6 313.2 67.68 
+L 313.2 288.72 
+Q 313.2 298.8 323.28 298.8 
+z
+" clip-path="url(#p067a3d440e)" style="fill: #f7f4fb; stroke-dasharray: 10.8,7.2; stroke-dashoffset: 0; stroke: #5b21b6; stroke-width: 1.8; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 550.8 47.52 
+L 941.76 47.52 
+Q 948.96 47.52 948.96 40.32 
+L 948.96 14.4 
+Q 948.96 7.2 941.76 7.2 
+L 550.8 7.2 
+Q 543.6 7.2 543.6 14.4 
+L 543.6 40.32 
+Q 543.6 47.52 550.8 47.52 
+z
+" clip-path="url(#p067a3d440e)" style="fill: #fef3c7; stroke: #b45309; stroke-width: 1.6; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 26.64 179.28 
+L 236.16 179.28 
+Q 241.2 179.28 241.2 174.24 
+L 241.2 131.04 
+Q 241.2 126 236.16 126 
+L 26.64 126 
+Q 21.6 126 21.6 131.04 
+L 21.6 174.24 
+Q 21.6 179.28 26.64 179.28 
+z
+" clip-path="url(#p067a3d440e)" style="fill: #ffffff; stroke: #d19898; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 26.64 236.88 
+L 236.16 236.88 
+Q 241.2 236.88 241.2 231.84 
+L 241.2 188.64 
+Q 241.2 183.6 236.16 183.6 
+L 26.64 183.6 
+Q 21.6 183.6 21.6 188.64 
+L 21.6 231.84 
+Q 21.6 236.88 26.64 236.88 
+z
+" clip-path="url(#p067a3d440e)" style="fill: #ffffff; stroke: #d19898; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 26.64 294.48 
+L 236.16 294.48 
+Q 241.2 294.48 241.2 289.44 
+L 241.2 246.24 
+Q 241.2 241.2 236.16 241.2 
+L 26.64 241.2 
+Q 21.6 241.2 21.6 246.24 
+L 21.6 289.44 
+Q 21.6 294.48 26.64 294.48 
+z
+" clip-path="url(#p067a3d440e)" style="fill: #ffffff; stroke: #d19898; stroke-width: 1.1; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 329.76 176.4 
+L 513.36 176.4 
+Q 519.12 176.4 519.12 170.64 
+L 519.12 106.56 
+Q 519.12 100.8 513.36 100.8 
+L 329.76 100.8 
+Q 324 100.8 324 106.56 
+L 324 170.64 
+Q 324 176.4 329.76 176.4 
+z
+" clip-path="url(#p067a3d440e)" style="fill: #ffffff; stroke-dasharray: 5.2,3.9; stroke-dashoffset: 0; stroke: #5b21b6; stroke-width: 1.3; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 539.28 176.4 
+L 722.88 176.4 
+Q 728.64 176.4 728.64 170.64 
+L 728.64 106.56 
+Q 728.64 100.8 722.88 100.8 
+L 539.28 100.8 
+Q 533.52 100.8 533.52 106.56 
+L 533.52 170.64 
+Q 533.52 176.4 539.28 176.4 
+z
+" clip-path="url(#p067a3d440e)" style="fill: #ffffff; stroke-dasharray: 5.2,3.9; stroke-dashoffset: 0; stroke: #5b21b6; stroke-width: 1.3; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 748.8 176.4 
+L 932.4 176.4 
+Q 938.16 176.4 938.16 170.64 
+L 938.16 106.56 
+Q 938.16 100.8 932.4 100.8 
+L 748.8 100.8 
+Q 743.04 100.8 743.04 106.56 
+L 743.04 170.64 
+Q 743.04 176.4 748.8 176.4 
+z
+" clip-path="url(#p067a3d440e)" style="fill: #ffffff; stroke-dasharray: 5.2,3.9; stroke-dashoffset: 0; stroke: #5b21b6; stroke-width: 1.3; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 434.52 264.96 
+L 618.12 264.96 
+Q 623.88 264.96 623.88 259.2 
+L 623.88 195.12 
+Q 623.88 189.36 618.12 189.36 
+L 434.52 189.36 
+Q 428.76 189.36 428.76 195.12 
+L 428.76 259.2 
+Q 428.76 264.96 434.52 264.96 
+z
+" clip-path="url(#p067a3d440e)" style="fill: #ffffff; stroke-dasharray: 5.2,3.9; stroke-dashoffset: 0; stroke: #5b21b6; stroke-width: 1.3; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 644.04 264.96 
+L 827.64 264.96 
+Q 833.4 264.96 833.4 259.2 
+L 833.4 195.12 
+Q 833.4 189.36 827.64 189.36 
+L 644.04 189.36 
+Q 638.28 189.36 638.28 195.12 
+L 638.28 259.2 
+Q 638.28 264.96 644.04 264.96 
+z
+" clip-path="url(#p067a3d440e)" style="fill: #ffffff; stroke-dasharray: 5.2,3.9; stroke-dashoffset: 0; stroke: #5b21b6; stroke-width: 1.3; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 21px; font-family: 'Arial', 'DejaVu Sans'; text-anchor: start; fill: #1f2328" x="10.8" y="32.79375" transform="rotate(-0 10.8 32.79375)">Future Enhancement: Cloud Integration</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 13.5px; font-family: 'Arial', 'DejaVu Sans'; text-anchor: middle; fill: #92400e" x="746.28" y="30.859453" transform="rotate(-0 746.28 30.859453)">Proposed Future Enhancements — Not Yet Implemented</text>
+   </g>
+   <g id="text_3">
+    <text style="font-weight: 700; font-size: 11px; font-family: 'Arial', 'DejaVu Sans'; text-anchor: middle; fill: #991b1b" x="131.4" y="80.611406" transform="rotate(-0 131.4 80.611406)">IMPLEMENTED TODAY</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'Arial', 'DejaVu Sans'; text-anchor: middle; fill: #1f2328" x="131.4" y="106.12125" transform="rotate(-0 131.4 106.12125)">Stage 5: RSU side</text>
+   </g>
+   <g id="text_5">
+    <text style="font-weight: 700; font-size: 13.5px; font-family: 'Arial', 'DejaVu Sans'; text-anchor: middle; fill: #991b1b" x="131.4" y="143.810859" transform="rotate(-0 131.4 143.810859)">Event registry</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 11.5px; font-family: 'Arial', 'DejaVu Sans'; fill: #1f2328" transform="translate(78.342773 159.508588)">local event store and</text>
+    <text style="font-size: 11.5px; font-family: 'Arial', 'DejaVu Sans'; fill: #1f2328" transform="translate(91.124844 170.437271)">dispatch outbox</text>
+   </g>
+   <g id="text_7">
+    <text style="font-weight: 700; font-size: 13.5px; font-family: 'Arial', 'DejaVu Sans'; text-anchor: middle; fill: #991b1b" x="131.4" y="201.499453" transform="rotate(-0 131.4 201.499453)">Two RSUs</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 11.5px; font-family: 'Arial', 'DejaVu Sans'; fill: #1f2328" transform="translate(71.958477 216.90024)">share one local registry</text>
+    <text style="font-size: 11.5px; font-family: 'Arial', 'DejaVu Sans'; fill: #1f2328" transform="translate(85.375742 228.110854)">(each event once)</text>
+   </g>
+   <g id="text_9">
+    <text style="font-weight: 700; font-size: 13.5px; font-family: 'Arial', 'DejaVu Sans'; text-anchor: middle; fill: #991b1b" x="131.4" y="259.099453" transform="rotate(-0 131.4 259.099453)">Live dashboard</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 11.5px; font-family: 'Arial', 'DejaVu Sans'; text-anchor: middle; fill: #1f2328" x="131.4" y="280.17293" transform="rotate(-0 131.4 280.17293)">local web view</text>
+   </g>
+   <g id="text_11">
+    <text style="font-weight: 700; font-size: 15px; font-family: 'Arial', 'DejaVu Sans'; text-anchor: middle; fill: #5b21b6" x="631.08" y="83.08125" transform="rotate(-0 631.08 83.08125)">Cloud platform (proposed)</text>
+   </g>
+   <g id="text_12">
+    <text style="font-style: italic; font-size: 11.5px; font-family: 'Arial', 'DejaVu Sans'; fill: #5b21b6" transform="translate(258.625195 154.314375)">proposed</text>
+    <text style="font-style: italic; font-size: 11.5px; font-family: 'Arial', 'DejaVu Sans'; fill: #5b21b6" transform="translate(265.334727 164.831484)">upload</text>
+   </g>
+   <g id="text_13">
+    <text style="font-weight: 700; font-size: 13.5px; font-family: 'Arial', 'DejaVu Sans'; text-anchor: middle; fill: #5b21b6" x="421.56" y="123.733125" transform="rotate(-0 421.56 123.733125)">Cloud trust management</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 11.5px; font-family: 'Arial', 'DejaVu Sans'; fill: #1f2328" transform="translate(375.866367 147.638332)">share trust scores</text>
+    <text style="font-size: 11.5px; font-family: 'Arial', 'DejaVu Sans'; fill: #1f2328" transform="translate(356.367578 159.132762)">across RSUs and regions</text>
+   </g>
+   <g id="text_15">
+    <text style="font-weight: 700; font-size: 13.5px; font-family: 'Arial', 'DejaVu Sans'; text-anchor: middle; fill: #5b21b6" x="631.08" y="123.733125" transform="rotate(-0 631.08 123.733125)">Central analytics</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 11.5px; font-family: 'Arial', 'DejaVu Sans'; fill: #1f2328" transform="translate(581.971406 147.718113)">city-wide traffic and</text>
+    <text style="font-size: 11.5px; font-family: 'Arial', 'DejaVu Sans'; fill: #1f2328" transform="translate(578.995781 159.193137)">emergency statistics</text>
+   </g>
+   <g id="text_17">
+    <text style="font-weight: 700; font-size: 13.5px; font-family: 'Arial', 'DejaVu Sans'; text-anchor: middle; fill: #5b21b6" x="840.6" y="123.650859" transform="rotate(-0 840.6 123.650859)">Historical event storage</text>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 11.5px; font-family: 'Arial', 'DejaVu Sans'; fill: #1f2328" transform="translate(792.02957 147.785496)">long-term record of</text>
+    <text style="font-size: 11.5px; font-family: 'Arial', 'DejaVu Sans'; fill: #1f2328" transform="translate(801.927656 159.26052)">validated alerts</text>
+   </g>
+   <g id="text_19">
+    <text style="font-weight: 700; font-size: 13.5px; font-family: 'Arial', 'DejaVu Sans'; text-anchor: middle; fill: #5b21b6" x="526.32" y="212.299453" transform="rotate(-0 526.32 212.299453)">Multi-RSU coordination</text>
+   </g>
+   <g id="text_20">
+    <text style="font-size: 11.5px; font-family: 'Arial', 'DejaVu Sans'; fill: #1f2328" transform="translate(451.843125 236.198332)">hand-over and de-duplication</text>
+    <text style="font-size: 11.5px; font-family: 'Arial', 'DejaVu Sans'; fill: #1f2328" transform="translate(477.115273 247.692762)">across many RSUs</text>
+   </g>
+   <g id="text_21">
+    <text style="font-weight: 700; font-size: 13.5px; font-family: 'Arial', 'DejaVu Sans'; text-anchor: middle; fill: #5b21b6" x="735.84" y="212.293125" transform="rotate(-0 735.84 212.293125)">Traffic intelligence</text>
+   </g>
+   <g id="text_22">
+    <text style="font-size: 11.5px; font-family: 'Arial', 'DejaVu Sans'; fill: #1f2328" transform="translate(671.283672 236.278113)">large-scale planning from</text>
+    <text style="font-size: 11.5px; font-family: 'Arial', 'DejaVu Sans'; fill: #1f2328" transform="translate(665.84543 247.753137)">many incidents and regions</text>
+   </g>
+   <g id="text_23">
+    <text style="font-size: 11.5px; font-family: 'Arial', 'DejaVu Sans'; text-anchor: start; fill: #4b5563" x="10.8" y="329.855625" transform="rotate(-0 10.8 329.855625)">Solid = built and tested in this project.   Dashed = proposed, not implemented.   Today no cloud service is connected; events stay on the local machine.</text>
+   </g>
+   <g id="patch_13">
+    <path d="M 255.6 178.2 
+Q 282.6 178.2 307.140325 178.2 
+" clip-path="url(#p067a3d440e)" style="fill: none; stroke-dasharray: 11,6.6; stroke-dashoffset: 0; stroke: #5b21b6; stroke-width: 2.2; stroke-linecap: round"/>
+    <path d="M 299.940325 174.6 
+L 307.140325 178.2 
+L 299.940325 181.8 
+z
+" clip-path="url(#p067a3d440e)" style="fill: #5b21b6; stroke-dasharray: 11,6.6; stroke-dashoffset: 0; stroke: #5b21b6; stroke-width: 2.2; stroke-linecap: round"/>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p067a3d440e">
+   <rect x="0" y="0" width="959.76" height="352.8"/>
+  </clipPath>
+ </defs>
+</svg>

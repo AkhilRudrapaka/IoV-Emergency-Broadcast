@@ -1,0 +1,13 @@
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{lrrrrr}
+\toprule
+Scheme (200 vehicles) & Frames & Rx lost & Reach \% & $t_{90}$ ms & Suppr. \% \\
+\midrule
+Blind flooding & 185.8 & 9632 & 99.9 & 31.8 & 0.0 \\
+Flooding + random delay & 186.0 & 9187 & 100.0 & 31.4 & 0.0 \\
+Slotted 1-persistence & 54.7 & 2070 & 99.6 & 32.5 & 73.3 \\
+Slotted 1-p + random delay & 24.1 & 188 & 99.2 & 34.0 & 90.4 \\
+\textbf{Proposed (full)} & \textbf{26.4} & \textbf{151} & \textbf{100.0} & \textbf{35.3} & \textbf{89.1} \\
+\bottomrule
+\end{tabular}

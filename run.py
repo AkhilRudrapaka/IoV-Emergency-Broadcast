@@ -149,13 +149,14 @@ def cmd_demo(a):
 
 def pair_demo(a):
     """ONE separated run of a comparison pair (demo_pairs.py): only this approach's schemes, on the pair's scenario,
-    one run at a time, every write in the pair's folder (re-executed with EXP_RESULTS_DIR when needed)."""
+    one run at a time, every write in this approach's own folder <pair>/<approach>/ (re-executed with EXP_RESULTS_DIR
+    when needed), so the two runs of a pair never share or overwrite a file."""
     import shutil
     import demo_pairs
     if not (a.pair and a.approach):
         sys.exit("--pair and --approach go together. Create a pair first: python run.py pair new")
     pair = demo_pairs.load(a.pair)
-    folder = demo_pairs.pair_dir(a.pair)
+    folder = demo_pairs.approach_dir(a.pair, a.approach)
     if os.path.abspath(config.RESULTS_DIR) != os.path.abspath(folder):
         env = {**os.environ, "EXP_RESULTS_DIR": folder, "DEMO_PAIRS_DIR": demo_pairs.ROOT}
         sys.exit(subprocess.run([sys.executable, os.path.abspath(__file__), *sys.argv[1:]], env=env).returncode)
@@ -168,14 +169,13 @@ def pair_demo(a):
                               finished=None, message=None, fingerprint=None)
         demo.LIVE.update(pair_id=a.pair, approach=a.approach, algorithm=run["algorithm"], schemes=schemes,
                          scenario_id=sc["scenario_id"], seed=sc["seed"], incident=sc["incident"])
-        captures = os.path.join(folder, a.approach)
-        shutil.rmtree(captures, ignore_errors=True)                   # a re-run replaces this approach's captures
+        shutil.rmtree(folder, ignore_errors=True)                     # a re-run replaces this approach's outputs only
         raw = demo.run(sc["density"], sc["run"], schemes, a.pace, wait=False,
                        forged=a.approach == "proposed" and not a.no_forged, approach=a.approach, archive=False,
-                       check=lambda record: demo_pairs.check_record(pair, record), capture_dir=captures)
+                       check=lambda record: demo_pairs.check_record(pair, record), capture_dir=folder)
         demo_pairs.update_run(a.pair, a.approach, status="finished", finished=demo_pairs.now(),
                               fingerprint=demo.record_fingerprint(raw),
-                              record=os.path.join("raw", sc["scenario_id"] + ".json.gz"))
+                              record=os.path.join(a.approach, "raw", sc["scenario_id"] + ".json.gz"))
         print(f"\nPair {a.pair}: {a.approach}-only run finished ({run['algorithm']}; scenario {sc['scenario_id']}, "
               f"seed {sc['seed']}). Records: {folder}")
     except BaseException as exc:

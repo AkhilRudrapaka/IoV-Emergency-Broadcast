@@ -1,0 +1,29 @@
+Eraser.io source of system_architecture_eraser.png (= ../figures/system_architecture.png)
+Eraser file: https://app.eraser.io/workspace/UgtgGQuPBRWBEZPSA28C  (private: link access off; diagram id zcYPfoKKcYTvt0vTh0nV)
+Type: freeform diagram. Definition: system_architecture_freeform.json, written by make_architecture_freeform.py
+(explicit positions and arrow paths, so arrows run only in the gaps between layers and never cross).
+Exported 15 Nov 2026 as PNG, 3940 x 1850 px, light theme.
+
+Legend: tinted box = used only by the proposed method; white box = shared by all five approaches.
+
+Every box is a component of the implemented code:
+  Layer 1  Incident generation ............ scenario.py (incident time U{60..120} s, random honest vehicle; config.INCIDENT_WINDOW_S)
+           SUMO urban traffic ............. scenario.write_routes, scenario.run_sumo (5x5 grid; config.DENSITIES)
+           Vehicles by trust .............. config.TRUST_CH_THRESHOLD = 0.7, config.MALICIOUS_RATIO = 0.10
+  Layer 2  Watchdog observations .......... scenario.py (once per 1 s beacon period, every vehicle with a neighbour)
+           Beta reputation ................ clustering.beta_trust: (s+1)/(s+f+2)
+           DBSCAN, trusted CH election,
+           bridge vehicles, tiers ......... clustering.elect_roles (eps 40 m, MinPts 3; greedy coverage; tier 0 = trusted CH or bridge)
+  Layer 3  Alert creation, committee,
+           quorum, BLS aggregation,
+           certificate verification ....... corroboration.py (committee of 5, quorum 3, BLS12-381 via py_ecc, accept)
+  Layer 4  IEEE 802.11p (simulated) ....... channel.py (Channel, simulate; 300 m)
+           Duplicate filtering ............ protocols.Protocol.on_alert (first copy verified, 4.3 ms; later copies not re-checked)
+           Tier/distance wait, coverage
+           suppression .................... protocols.Proposed (the four baselines replace only this block)
+           CH-to-CH route stage ........... infrastructure.shortest_route, infrastructure.cluster_votes, protocols.CHRoute
+  Layer 5  V2I delivery ................... RSUs are receivers in the channel and never relay
+           RSU validation, duplicate
+           event handling ................. rsu.validate (fields, type, map, time order, age <= 600 s, hop limit 10, certificate), rsu.register
+           SQLite event registration ...... infrastructure.persist, infrastructure.trust_after_event (written for the ch_route event)
+           Metrics and dashboard .......... metrics.py, experiment.py, demo.py, demo_pairs.py, web_results.py

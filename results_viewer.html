@@ -32,7 +32,7 @@ footer{padding:16px 5vw 28px;color:#65758a;font-size:13px}
 
 <section id="scenario" class="card" aria-labelledby="h-scenario"><h2 id="h-scenario"><span>2</span>Scenario &amp; approach</h2>
 <div class="row"><label>Comparison pair<select id="pair"></select></label><label>Baseline for a new pair<select id="new-baseline"></select></label><button id="new-pair" type="button">New pair (next reproducible scenario)</button></div>
-<p id="pair-empty" class="note" hidden>No comparison pair yet. Create one: the next scenario of a fixed, seeded order whose incident lies on the road network and at least 50 m from every incident already used.</p>
+<p id="pair-empty" class="note" hidden>No comparison pair yet. Create one: the next scenario in this pairs folder's order (shuffled by the folder's own random selection seed, kept in selection.json) whose incident lies on the road network and at least 50 m from every incident already used.</p>
 <div id="scenario-facts" class="facts"></div>
 <p id="repeat-warning" class="warn" hidden></p>
 <div class="two" id="run-cards">
@@ -131,7 +131,7 @@ function renderScenario(){
   for(const a of ['baseline','proposed']){$('start-'+a).disabled=true;$('algo-'+a).textContent='';$('replays-'+a).textContent='';$('status-'+a).textContent='—';$('status-'+a).className='chip';$('times-'+a).textContent='';$('msg-'+a).replaceChildren();}
   if(!current)return;
   const p=current.pair,s=p.scenario,i=s.incident;
-  $('scenario-facts').append(fact('Scenario ID',s.scenario_id),fact('Seed',s.seed),fact('Incident',`${i.vehicle} at (${i.x.toFixed(1)}, ${i.y.toFixed(1)}) m, lane ${i.lane}`),fact('Incident time (SUMO)',`t = ${i.time_s.toFixed(0)} s`),fact('Event ID',i.event_id),fact('Network',`${s.network} (5 × 5 urban grid)`),fact('Traffic',`${s.density} vehicles, same demand model in every scenario`),fact('Selection',s.selection.rank==null?'chosen explicitly':`rank ${s.selection.rank} of the seeded order (selection seed ${s.selection.selection_seed})`));
+  $('scenario-facts').append(fact('Scenario ID',s.scenario_id),fact('Seed',s.seed),fact('Incident',`${i.vehicle} at (${i.x.toFixed(1)}, ${i.y.toFixed(1)}) m, lane ${i.lane}`),fact('Incident time (SUMO)',`t = ${i.time_s.toFixed(0)} s`),fact('Event ID',i.event_id),fact('Network',`${s.network} (5 × 5 urban grid)`),fact('Traffic',`${s.density} vehicles, same demand model in every scenario`),fact('Selection',s.selection.rank==null?'chosen explicitly':`rank ${s.selection.rank} of the order shuffled by selection seed ${s.selection.selection_seed}`));
   if(s.selection.repeat_of){$('repeat-warning').hidden=false;$('repeat-warning').textContent=`Repeated location: this scenario's incident repeats ${s.selection.repeat_of} (every other location was already used).`;}
   const someoneActive=active.length>0;
   for(const a of ['baseline','proposed']){
@@ -187,7 +187,7 @@ function renderOutcome(){
   if(!current){$('outcome-head').textContent='No pair selected.';return;}
   const o=current.outcomes[view],r=runOf(view),s=current.pair.scenario;
   if(!o.available){$('outcome-head').replaceChildren(el('span',`${view==='baseline'?'Baseline':'Proposed'}-only run (${r.algorithm}): ${o.reason}`,r.status==='failed'?'err':'note'));return;}
-  $('outcome-head').textContent=`${view==='baseline'?'Baseline':'Proposed'}-only run · ${r.algorithm} · scenario ${s.scenario_id}, seed ${s.seed} · record ${current.comparison.record} (fingerprint ${o.fingerprint.slice(0,16)}…). Values are copied from that record.`;
+  $('outcome-head').textContent=`${view==='baseline'?'Baseline':'Proposed'}-only run · ${r.algorithm} · scenario ${s.scenario_id}, seed ${s.seed} · its record ${current.comparison.records[view]} (fingerprint ${o.fingerprint.slice(0,16)}…). Values are copied from that record.`;
   metricRows($('outcome-table'),o.rows.map(x=>({...x,label:SCHEME_NAMES[x.scheme]||x.label})),current.metrics,true);
 }
 function chart(metric,rows){
@@ -208,7 +208,7 @@ function renderComparison(){
   if(!current){$('comparison-head').textContent='No pair selected.';return;}
   const c=current.comparison,p=current.pair,s=p.scenario;
   if(!c.available){$('comparison-head').replaceChildren(el('span','No comparison is shown: '+c.reason+'.','note'));return;}
-  $('comparison-head').textContent=`Single pair, one run: scenario ${s.scenario_id}, seed ${s.seed}, incident ${s.incident.vehicle} at t = ${s.incident.time_s.toFixed(0)} s. Both runs replayed the same record ${c.record} (fingerprint ${c.fingerprint.slice(0,16)}…), so every scheme below ran on the identical snapshot, network, demand, radio and parameters. One run supports no statistical claim; see the multi-seed results below.`;
+  $('comparison-head').textContent=`Single pair, one run: scenario ${s.scenario_id}, seed ${s.seed}, incident ${s.incident.vehicle} at t = ${s.incident.time_s.toFixed(0)} s. ${c.records.baseline===c.records.proposed?`Both runs replayed the same record ${c.records.proposed}`:`Each run re-simulated this scenario into its own record (${c.records.baseline} and ${c.records.proposed})`}, with the same fingerprint (${c.fingerprint.slice(0,16)}…), so every scheme below ran on the identical snapshot, network, demand, radio and parameters. One run supports no statistical claim; see the multi-seed results below.`;
   const by=Object.fromEntries(c.rows.map(r=>[r.scheme,r]));
   const base={...by[p.baseline],label:by[p.baseline].label,cls:'baseline'},prop={...by.proposed,label:'Proposed (full)',cls:'proposed'},route={...by.ch_route,label:'Proposed: CH-to-CH route stage'};
   const t=$('comparison-table');t.replaceChildren();
@@ -236,7 +236,9 @@ function renderEvidence(){
   li('Pair ',el('code',p.pair_id),` created ${fmtDate(p.created)}; every file of this pair is in `,el('code',f));
   li('Scenario record: ',el('code',`${f}/pair.json`),` (scenario ${s.scenario_id}, seed ${s.seed}, selection: ${s.selection.method})`);
   for(const a of ['baseline','proposed']){const r=p.runs[a];li(`${a}-only run (${r.algorithm}): ${r.status}`,r.started?`, ${fmtDate(r.started)} – ${r.finished?fmtTime(r.finished):'…'}`:'',r.fingerprint?', record fingerprint ':'',r.fingerprint?el('code',r.fingerprint.slice(0,16)+'…'):'',`, ${(current.captures[a]||[]).length} window captures in `,el('code',`${f}/${a}/`),'; command ',el('code',`python run.py demo --pair ${p.pair_id} --approach ${a}`));}
-  li('Run record: ',el('code',`${f}/${current.comparison.record}`),current.comparison.available?' — both runs replayed it (equal fingerprints).':' — '+current.comparison.reason+'.');
+  const rec=current.comparison.records;
+  if(rec.baseline===rec.proposed)li('Run record (shared by both runs, made before per-run folders): ',el('code',`${f}/${rec.proposed}`),current.comparison.available?' — both runs replayed it (equal fingerprints).':' — '+current.comparison.reason+'.');
+  else li('Run records: ',el('code',`${f}/${rec.baseline}`),' and ',el('code',`${f}/${rec.proposed}`),current.comparison.available?' — equal fingerprints: both runs replayed the same scenario and results.':' — '+current.comparison.reason+'.');
   li('Reproduce this scenario in a new pair: ',el('code',`python run.py pair new --scenario ${s.scenario_id} --baseline ${p.baseline}`));
   li('Metric definitions: metrics.py; scheme definitions: protocols.py and docs/SYSTEM_DESIGN.md §3; multi-seed results: ',el('code','python run.py experiment'),' → results/urban/processed/summary.csv.');
 }

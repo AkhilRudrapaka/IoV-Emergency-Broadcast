@@ -1,0 +1,366 @@
+\documentclass[aspectratio=169, 11pt]{beamer}
+
+% --- Packages & Setup ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault} % Times New Roman font for text and math
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+\graphicspath{{../}{./}}
+
+% --- Branding Colors ---
+\definecolor{amritaMaroon}{HTML}{A4123F}
+
+% --- Theme Setup ---
+\usetheme{Madrid}
+\usecolortheme[named=amritaMaroon]{structure}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+
+\begin{document}
+
+% =========================================================================
+% TITLE SLIDE (Research-Based Project)
+% =========================================================================
+\begin{frame}
+    % Corner Box Indicator
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[fill=amritaMaroon, text=white, font=\bfseries\footnotesize, anchor=north east, rounded corners=2pt, inner sep=5pt]
+        at ($(current page.north east) + (-0.2cm,-0.2cm)$)
+        {Type 1: Research Project};
+    \end{tikzpicture}
+
+    \centering
+    \includegraphics[width=2.8cm]{logo.png}
+    \vspace{0.1cm}
+
+    {\large \textbf{\textcolor{amritaMaroon}{[RESEARCH PROJECT TITLE]}}} \\
+    \vspace{0.05cm}
+    {\footnotesize \textbf{23CSE498 -- Project Phase II (External Review)} \quad | \quad \textbf{Team Number: [GXXX]}} \\
+    \vspace{0.15cm}
+
+    % Student Table
+    \begin{table}
+        \centering
+        \footnotesize
+        \renewcommand{\arraystretch}{1.05}
+        \begin{tabular}{|c|c|l|}
+            \hline
+            \textbf{S.No} & \textbf{Register Number} & \textbf{Student Name} \\
+            \hline
+            1 & [CB.SC.U4CSE23XXX] & [Student Name 1] \\
+            \hline
+            2 & [CB.SC.U4CSE23XXX] & [Student Name 2] \\
+            \hline
+            3 & [CB.SC.U4CSE23XXX] & [Student Name 3] \\
+            \hline
+            4 & [CB.SC.U4CSE23XXX] & [Student Name 4] \\
+            \hline
+        \end{tabular}
+    \end{table}
+    \vspace{0.1cm}
+
+    {\footnotesize Guide: \textbf{[Guide Name]}, [Designation], Department of CSE} \\
+    \vspace{0.1cm}
+    {\scriptsize \today}
+\end{frame}
+
+% =========================================================================
+% SECTION 1: PROBLEM DEFINITION, RESEARCH MOTIVATION & SOLUTION DESIGN
+% =========================================================================
+% =========================================================================
+% SLIDE 2: GUIDE APPROVAL EMAIL CONFIRMATION (Mandatory)
+% =========================================================================
+\begin{frame}{Guide Review \& Submission Approval}
+    \framesubtitle{Confirmation of Project Review and Approval from Guide}
+    \centering
+    \fbox{\begin{minipage}[c][5.4cm]{0.94\textwidth}
+        \centering
+        \textbf{[Insert Screenshot of Guide Approval Email Here]} \\[0.3cm]
+        {\footnotesize [Mandatory: Attach a clear, readable screenshot of the email received from your project guide approving this presentation and final review submission]}
+    \end{minipage}}
+\end{frame}
+
+\section{Problem \& Solution Design}
+
+% --- SLIDE 1: PROBLEM DEFINITION & RESEARCH MOTIVATION ---
+\begin{frame}{1. Problem Definition \& Research Motivation}
+    \framesubtitle{Problem Statement, Identified Literature Gap \& Objectives}
+    \begin{block}{Problem Statement}
+        \begin{itemize}
+            \item \textbf{Core Research Problem:} {[State the specific research problem and scope clearly]}
+            \item \textbf{Domain Context:} {[Briefly state why this problem is important to solve]}
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{Existing Limitations \& Research Gap}
+        \begin{itemize}
+            \item \textbf{Summary of Existing Approaches:} {[Summarize how prior literature approaches this problem]}
+            \item \textbf{Identified Research Gap:} {[Clearly state the specific limitation or gap addressed by this work]}
+        \end{itemize}
+    \end{block}
+
+    \begin{block}{Research Objectives}
+        \begin{itemize}
+            \item \textbf{Objective 1:} {[State measurable research objective 1]}
+            \item \textbf{Objective 2:} {[State measurable research objective 2]}
+            \item \textbf{Objective 3:} {[State measurable research objective 3]}
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+% --- SLIDE 2: PROPOSED METHODOLOGY & OVERALL WORKFLOW (FULL-SLIDE DIAGRAM) ---
+% Note to students: Duplicate this frame if multiple workflow/architecture diagrams are required.
+\begin{frame}{2. Proposed Methodology \& Overall Workflow}
+    \framesubtitle{End-to-End Research Methodology / System Workflow Architecture}
+    \centering
+    \fbox{\begin{minipage}[c][5.2cm]{0.94\textwidth}
+        \centering
+        \textbf{[Insert Full-Width Proposed Methodology / Research Workflow Diagram]} \\[0.3cm]
+        {\footnotesize [Placeholder: Include end-to-end stages from Input Data $\rightarrow$ Processing / Core Methodology $\rightarrow$ Output \& Evaluation]}
+    \end{minipage}}
+    \vspace{0.2cm}
+
+    \begin{block}{Workflow Summary}
+        \footnotesize {[Provide a concise 1--2 line walkthrough of the end-to-end methodology depicted above.]}
+    \end{block}
+\end{frame}
+
+% --- SLIDE 3: METHODOLOGICAL COMPONENTS & FORMULATION ---
+% Note to students: Duplicate this frame if additional slides are needed to explain sub-modules or formulations.
+\begin{frame}{3. Methodological Components \& Formulation}
+    \framesubtitle{Sub-Module Breakdown, Governing Mathematical Model \& Datasets}
+    \begin{columns}[T]
+        \column{0.50\textwidth}
+        \begin{block}{Methodological Breakdown}
+            \footnotesize
+            \begin{itemize}
+                \item \textbf{[Stage / Component 1]:} {[Role and technical function]}
+                \item \textbf{[Stage / Component 2]:} {[Role and technical function]}
+                \item \textbf{[Stage / Component 3]:} {[Role and technical function]}
+            \end{itemize}
+        \end{block}
+
+        \begin{block}{Mathematical / Algorithmic Formulation}
+            \footnotesize
+            \begin{itemize}
+                \item \textbf{Governing Formulation:} {[Insert key equation, objective function, or formal definition]}
+                \item \textbf{Key Variables:} {[Define parameters and constraints]}
+            \end{itemize}
+        \end{block}
+
+        \column{0.46\textwidth}
+        \begin{block}{Dataset \& Input Specifications}
+            \footnotesize
+            \begin{itemize}
+                \item \textbf{Source \& Size:} {[Dataset identifier, sample count, dimensions]}
+                \item \textbf{Data Partitioning:} {[Splits / validation protocol used]}
+                \item \textbf{Preprocessing:} {[Steps applied to raw inputs]}
+            \end{itemize}
+        \end{block}
+
+        \begin{block}{Evaluation Metrics}
+            \footnotesize
+            \begin{itemize}
+                \item \textbf{[Metric 1]:} {[Purpose / definition]}
+                \item \textbf{[Metric 2]:} {[Purpose / definition]}
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+% =========================================================================
+% SECTION 2: IMPLEMENTATION COMPLETION (100%)
+% =========================================================================
+\section{Implementation Details}
+
+% --- SLIDE 4: IMPLEMENTATION COMPLETION (100%) - OVERVIEW ---
+\begin{frame}{4. Implementation Details -- Overview}
+    \framesubtitle{Module-Wise Implementation \& Pipeline Integration Status}
+    \begin{table}
+        \centering
+        \footnotesize
+        \renewcommand{\arraystretch}{1.25}
+        \begin{tabular}{p{3.6cm} p{6.2cm} c}
+            \toprule
+            \textbf{Module / Stage} & \textbf{Implemented Functionality} & \textbf{Status} \\
+            \midrule
+            {[Module 1: Data / Input Pipeline]} & {[Summary of completed data ingestion and preprocessing]} & 100\% (Integrated) \\
+            {[Module 2: Baseline / Reference]} & {[Summary of implemented baseline or comparison setup]} & 100\% (Integrated) \\
+            {[Module 3: Core Proposed Method]} & {[Summary of implemented core algorithm / model]} & 100\% (Integrated) \\
+            {[Module 4: Evaluation \& Prototype]} & {[Summary of end-to-end execution and evaluation pipeline]} & 100\% (Functional) \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \begin{block}{Implementation Environment \& Repository}
+        \footnotesize
+        \begin{itemize}
+            \item \textbf{Software / Compute Environment:} {[List programming environment, libraries, and compute resources used]}
+            \item \textbf{Source Repository \& Execution Readiness:} {[Insert repository URL / commit reference and execution status]}
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+% --- SLIDE 5: CORE MODULE IMPLEMENTATION DETAILS ---
+% Note to students: Duplicate this frame if needed to explain additional implemented modules.
+\begin{frame}{5. Core Module Implementation Details}
+    \framesubtitle{Internal Module Mechanics, Parameter Configurations \& Interfaces}
+    \begin{columns}[T]
+        \column{0.50\textwidth}
+        \begin{block}{[Core Module A Name]}
+            \footnotesize
+            \begin{itemize}
+                \item \textbf{Inputs \& Outputs:} {[Specify module input and output formats]}
+                \item \textbf{Implementation Details:} {[Explain how the module logic is realized in code]}
+                \item \textbf{Key Parameters:} {[Specify configured parameters]}
+            \end{itemize}
+        \end{block}
+
+        \begin{block}{[Core Module B Name]}
+            \footnotesize
+            \begin{itemize}
+                \item \textbf{Inputs \& Outputs:} {[Specify module input and output formats]}
+                \item \textbf{Integration Interface:} {[Explain how this module connects to the pipeline]}
+            \end{itemize}
+        \end{block}
+
+        \column{0.46\textwidth}
+        \centering
+        \vspace{0.2cm}
+        \fbox{\begin{minipage}[c][5.0cm]{0.94\textwidth}
+            \centering
+            \textbf{[Insert Module Interaction Diagram / Pipeline Execution Snapshot]} \\[0.2cm]
+            {\scriptsize [Placeholder: Show how implemented modules exchange data or execute end-to-end]}
+        \end{minipage}}
+    \end{columns}
+\end{frame}
+
+% =========================================================================
+% SECTION 3: PRELIMINARY VERIFICATION & DEMONSTRATION
+% =========================================================================
+\section{Verification \& Demonstration}
+
+% --- SLIDE 6: PRELIMINARY VERIFICATION & QUANTITATIVE RESULTS ---
+\begin{frame}{6. Preliminary Verification \& Quantitative Results}
+    \framesubtitle{Experimental Benchmarking \& Comparative Evaluation}
+    \begin{table}
+        \centering
+        \footnotesize
+        \renewcommand{\arraystretch}{1.25}
+        \begin{tabular}{p{4.5cm} c c c}
+            \toprule
+            \textbf{Method / Configuration} & \textbf{[Metric 1]} & \textbf{[Metric 2]} & \textbf{[Metric 3]} \\
+            \midrule
+            {[Baseline / Reference Method 1]} & {[Value]} & {[Value]} & {[Value]} \\
+            {[Baseline / Reference Method 2]} & {[Value]} & {[Value]} & {[Value]} \\
+            {[Ablation / Variant Configuration]} & {[Value]} & {[Value]} & {[Value]} \\
+            \textbf{[Proposed Methodology]} & \textbf{[Value]} & \textbf{[Value]} & \textbf{[Value]} \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \begin{block}{Experimental Verification Summary}
+        \footnotesize
+        \begin{itemize}
+            \item \textbf{Quantitative Findings:} {[Summarize key improvements or trends observed in the table above]}
+            \item \textbf{Verification of Expected Behavior:} {[Explain how the results confirm the research hypothesis]}
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+% --- SLIDE 7: EXPERIMENTAL VISUALIZATIONS & PROTOTYPE DEMONSTRATION ---
+% Note to students: Use a single full-width box or two side-by-side boxes as appropriate for your plots/screenshots.
+\begin{frame}{7. Experimental Visualizations \& Prototype Demonstration}
+    \framesubtitle{Result Visualizations, Convergence / Performance Curves \& Live Demo}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \centering
+        \fbox{\begin{minipage}[c][4.8cm]{0.94\textwidth}
+            \centering
+            \textbf{[Insert Experimental Result Plot / Performance Graph]} \\[0.2cm]
+            {\scriptsize [Placeholder: Quantitative chart, convergence curve, or comparative plot]}
+        \end{minipage}}
+
+        \column{0.48\textwidth}
+        \centering
+        \fbox{\begin{minipage}[c][4.8cm]{0.94\textwidth}
+            \centering
+            \textbf{[Insert Working Prototype / Qualitative Output Snapshot]} \\[0.2cm]
+            {\scriptsize [Placeholder: Execution output, visualization, or demonstration screenshot]}
+        \end{minipage}}
+    \end{columns}
+    \vspace{0.2cm}
+
+    \begin{block}{Demonstration Overview}
+        \footnotesize {[Briefly describe the live execution scenario or prototype walkthrough demonstrated to the panel.]}
+    \end{block}
+\end{frame}
+
+% =========================================================================
+% SECTION 4: TECHNICAL KNOWLEDGE & VIVA VOCE
+% =========================================================================
+\section{Technical Knowledge}
+
+% --- SLIDE 8: TECHNICAL JUSTIFICATION, DESIGN TRADE-OFFS & INSIGHTS ---
+\begin{frame}{8. Technical Justification, Design Trade-offs \& Insights}
+    \framesubtitle{Methodological Rationale, Trade-offs \& Boundary Conditions}
+    \begin{columns}[T]
+        \column{0.48\textwidth}
+        \begin{block}{1. Methodological Justification}
+            \footnotesize
+            \begin{itemize}
+                \item {[Explain why the chosen theoretical/algorithmic approach is suited to the problem structure]}
+                \item {[Justify key assumptions made in the formulation]}
+            \end{itemize}
+        \end{block}
+
+        \begin{block}{2. Design \& Parameter Trade-offs}
+            \footnotesize
+            \begin{itemize}
+                \item {[Discuss trade-offs between accuracy, computational cost, or convergence]}
+                \item {[Justify selection of critical parameters]}
+            \end{itemize}
+        \end{block}
+
+        \column{0.48\textwidth}
+        \begin{block}{3. Boundary Conditions \& Edge Cases}
+            \footnotesize
+            \begin{itemize}
+                \item {[Explain how noisy inputs, edge cases, or constraints are handled]}
+                \item {[Summarize sensitivity or robustness observations]}
+            \end{itemize}
+        \end{block}
+
+        \begin{block}{4. Limitations \& Future Scope}
+            \footnotesize
+            \begin{itemize}
+                \item {[State current methodological or experimental limitations]}
+                \item {[Outline concrete future extensions]}
+            \end{itemize}
+        \end{block}
+    \end{columns}
+\end{frame}
+
+% =========================================================================
+% REFERENCES & THANK YOU
+% =========================================================================
+\section{References}
+\nocite{*}
+\begin{frame}[allowframebreaks]{References}
+    \bibliographystyle{ieeetr}
+    \bibliography{ref}
+\end{frame}
+
+\begin{frame}
+    \centering
+    {\Huge \textbf{\textcolor{amritaMaroon}{Thank You}}} \\[0.4cm]
+    {\large \textbf{[Questions \& Viva Voce]}}
+\end{frame}
+
+\end{document}

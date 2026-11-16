@@ -1,0 +1,390 @@
+\documentclass[11pt, a4paper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx} % Times New Roman font for professional document typography
+\usepackage{graphicx}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+
+% --- Amrita Colors ---
+\definecolor{amritaMaroon}{HTML}{A4123F}
+
+% --- Title & Section Formatting ---
+\titlespacing*{\section}{0pt}{12pt}{4pt}
+\titlespacing*{\subsection}{0pt}{8pt}{3pt}
+\titleformat{\section}{\large\bfseries\color{amritaMaroon}}{\thesection}{0.8em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{amritaMaroon}}{\thesubsection}{0.6em}{}
+
+\pagestyle{plain}
+
+% Screenshot placeholder box: \shot{width}{height}{text}
+\newcommand{\shot}[3]{\fbox{\begin{minipage}[c][#2]{#1}\centering\small\textbf{#3}\end{minipage}}}
+
+\begin{document}
+
+% ==========================================
+% HEADER & TITLE BLOCK
+% ==========================================
+\noindent
+\begin{minipage}{\textwidth}
+    \centering
+    {\Large \textbf{\textcolor{amritaMaroon}{
+    AMRITA VISHWA VIDYAPEETHAM \\
+    SCHOOL OF COMPUTING \\
+    DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING \\
+    }}}
+    \vspace{0.2cm}
+    {\large \textbf{Trust-Aware Clustering and Controlled Broadcast for Secure IoV Communication}} \\[0.1cm]
+    \textbf{23CSE498 -- Project Phase II (External Review)} \quad | \quad \textbf{Team Number: [Team Number]} \\
+    \today
+\end{minipage}
+
+\vspace{0.3cm}
+\hrule
+\vspace{0.3cm}
+
+% --- Team & Guide Details ---
+\noindent
+\begin{center}
+    \renewcommand{\arraystretch}{1.45}
+    \setlength{\tabcolsep}{6pt}
+    \begin{tabular}{|l|p{4.8cm}|p{4.6cm}|p{3.2cm}|}
+        \hline
+        \multicolumn{2}{|c|}{\textbf{Team Members}} & \textbf{Project Guide} & \textbf{Project Type} \\
+        \hline
+        \small [Register Number 1] & \small \raggedright [Student Name 1] &
+        \multirow{4}{=}{\raggedright \small \textbf{[Guide]} \newline \textit{[Designation], \newline Dept. of CSE}} &
+        \multirow{4}{=}{\raggedright \small \textbf{Type 1} \newline Research-Based Project} \\ \cline{1-2}
+        \small [Register Number 2] & \small [Student Name 2] & & \\ \cline{1-2}
+        \small [Register Number 3] & \small [Student Name 3] & & \\ \cline{1-2}
+        \small [Register Number 4] & \small [Student Name 4] & & \\
+        \hline
+    \end{tabular}
+\end{center}
+\vspace{0.2cm}
+
+\section{Abstract}
+\noindent
+When a vehicle crashes, the vehicles around it need to hear about it within a few tens of milliseconds. The simple way is flooding: every vehicle repeats the alert once. In dense traffic this turns into a broadcast storm. Hundreds of copies collide on the radio channel. Flooding also has no check on the sender, so one dishonest vehicle can start a fake alert and everybody repeats it. Our project builds and tests one pipeline that handles both problems. Vehicles are grouped into clusters with DBSCAN. Each vehicle gets a trust score from its past forwarding behaviour, and only trusted vehicles can become cluster heads. An alert spreads only after three trusted neighbours sign it. Each receiver drops repeated copies and rebroadcasts only when some neighbour is still not covered. A roadside unit (RSU) then queues the alert, checks the signatures and records the event once for the traffic centre and the cloud store. We implemented the full pipeline in Python on the SUMO traffic simulator with an IEEE 802.11p radio model and ran 180 scenarios (50 to 500 vehicles, 30 seeds each). At 200 vehicles our scheme sent about 26 frames per alert against 186 for flooding and 55 for slotted 1-persistence, and it suppressed 89\% of rebroadcasts. The price is about 3.5 ms of extra delay compared with flooding. Fake alerts from vehicles that always misbehave were rejected. Attackers that behave well most of the time still got through in 25 of 30 runs, and we report this as an open limitation.
+
+% --- 2. PROBLEM DEFINITION, MOTIVATION & LITERATURE SURVEY ---
+\section{Problem Definition, Research Motivation \& Literature Review}
+
+\subsection{Problem Statement \& Research Motivation}
+\begin{itemize}[noitemsep, topsep=2pt]
+    \item \textbf{Problem Statement:} In an Internet of Vehicles (IoV) network, a crash alert must reach nearby vehicles and the nearest RSU quickly. With plain flooding every vehicle repeats the alert, so in dense traffic most transmissions are duplicates and many of them collide. Flooding also trusts every sender. A dishonest vehicle can silently drop alerts or start a fake one. We need a way to spread a genuine alert with few transmissions and to keep a fake alert from being repeated. Our scope is one accident alert per scenario on an urban road grid with a simulated radio. Detecting a real crash from sensors is outside the scope.
+    \item \textbf{Research Motivation:} A lost alert or a fake alert on the road is a safety problem, not only a network problem. Most earlier work fixes one side: either the storm or the security. We wanted one pipeline where both are handled, and where both are measured on the same traffic so the cost of security is visible.
+    \item \textbf{Research Objectives:}
+    \begin{enumerate}[noitemsep, topsep=2pt]
+        \item Build the full path from vehicle to RSU to cloud as drawn in our architecture diagram, with every block running in code.
+        \item Send fewer frames per alert than blind flooding and slotted 1-persistence for 50 to 500 vehicles, without losing reach, and measure the extra delay.
+        \item Stop a forged alert when its supporters have low trust, and measure where this protection stops working.
+    \end{enumerate}
+\end{itemize}
+
+\subsection{Literature Review \& Research Gap}
+\noindent
+We read papers from three groups: broadcast suppression, cluster-based dissemination, and trust or authentication. Table~\ref{tab:lit} lists the four that shaped our design. We also took the DBSCAN clustering idea and its parameters from Chen and Wu \cite{chen2024}, the watchdog idea for observing neighbours from Marti et al. \cite{marti2000}, and BLS signatures from Boneh et al. \cite{boneh2004}.
+
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.25}
+    \begin{tabular}{|p{2.8cm}|p{4.2cm}|p{4.2cm}|p{3.2cm}|}
+        \hline
+        \textbf{Author / Year / Citation} & \textbf{Core Methodology Used} & \textbf{Key Findings / Strengths} & \textbf{Identified Limitations} \\
+        \hline
+        Wisitpongphan et al., 2007 \cite{wisitpongphan2007} & Slotted 1-persistence: a vehicle waits in a time slot chosen by its distance from the sender and cancels if it hears a duplicate & Cuts most redundant rebroadcasts using only distance. Simple to run on every vehicle & No trust and no signature check. Any vehicle can start or relay an alert \\
+        \hline
+        Kaur et al., 2024 \cite{kaur2024} & Route-based emergency dissemination. Only vehicles with a role (cluster head, boundary node) forward & Avoids blind flooding by giving forwarding to a few chosen nodes & Tested on single-lane highway scenarios. Not combined with alert signing \\
+        \hline
+        Azizi and Shokrollahi, 2024 \cite{azizi2024} & RTRV: vehicles compute trust from observed forwarding. RSUs collect and share trust & Shows that trust from forwarding behaviour can keep bad nodes off a route & Built for routing a packet to a destination, not for limiting duplicates of a broadcast \\
+        \hline
+        Naskar et al., 2025 \cite{naskar2025} & Authentication with batch verification of many signed messages & Verifying in batches is faster than one message at a time & A valid signature shows who sent a message. It does not show that the event is real \\
+        \hline
+    \end{tabular}
+    \caption{Summary of Key Literature Surveyed and Identified Limitations}
+    \label{tab:lit}
+\end{table}
+
+\noindent
+\textbf{Summary of Research Gap:} Suppression schemes reduce duplicates but accept an alert from anyone. Trust and authentication schemes check the sender but do not control how many times an alert is repeated. We did not find these pieces joined into one path from the crashed vehicle to the RSU and tested against the same baselines. Our project fills this gap at prototype level: trust decides who leads a cluster and whose signature counts, and a coverage check decides who rebroadcasts.
+
+% --- 3. PROPOSED METHODOLOGY & SOLUTION DESIGN ---
+\section{Proposed Methodology \& Solution Design}
+
+\subsection{End-to-End Methodological Workflow}
+\noindent
+The system has four parts: the vehicle layer, the cluster head path, the RSU, and the back end (dissemination and cloud). An alert moves through them in the order shown in Figure~\ref{fig:arch}. We describe every block of the diagram below in the same order.
+
+% NOTE FOR THE TEAM: redraw this figure on eraser.io and export it as architecture.png,
+% then replace the \fbox below with \includegraphics[width=0.95\textwidth]{architecture.png}.
+\begin{figure}[H]
+    \centering
+    \fbox{\begin{minipage}[c][5.2cm]{0.95\textwidth}
+        \centering
+        \textbf{[Insert architecture diagram redrawn on eraser.io]} \\[0.2cm]
+        \small Vehicle Layer (Trusted / Unknown / Malicious) $\rightarrow$ Cluster Formation $\rightarrow$ Trust Evaluation $\rightarrow$ CH Selection $\rightarrow$ Cluster Head $\rightarrow$ Duplicate Filter $\rightarrow$ Controlled Broadcast $\rightarrow$ V2I $\rightarrow$ RSU (Ingress Queue $\rightarrow$ Batch Auth $\rightarrow$ Decision Engine) $\rightarrow$ Dissemination (Vehicles + Traffic Centre) and Cloud (Trust Update + Analytics)
+    \end{minipage}}
+    \caption{Proposed End-to-End Methodological Architecture}
+    \label{fig:arch}
+\end{figure}
+
+\begin{enumerate}[leftmargin=*, itemsep=3pt, topsep=2pt]
+    \item \textbf{Vehicle Layer.} Vehicles drive on a $5\times5$ road grid in SUMO. Each vehicle knows its neighbours within 300 m. There are three kinds of nodes. A \emph{trusted} node has a trust score of 0.7 or more. An \emph{unknown} node has just joined, so it has few observations and its score sits near 0.5. It is treated as not trusted yet. A \emph{malicious} node (10\% of vehicles in the default setup) receives alerts but never forwards them, and it may try to start a fake alert.
+    \item \textbf{Cluster Formation.} We run DBSCAN on vehicle positions with a radius of 40 m and a minimum of 3 vehicles. Vehicles close together form a cluster. A vehicle that falls into no cluster becomes a bridge node, because it is often the only link between two groups.
+    \item \textbf{Trust Evaluation.} Once every second, each vehicle that has a neighbour is observed (the watchdog idea). A good observation adds to its success count and a bad one adds to its failure count. The trust score is computed from these two counts. Trust is used in three places: to choose cluster heads, to decide whose signature counts on an alert, and to accept or reject an alert. When a crash happens, the source asks its five nearest trusted neighbours. Each one that also saw the crash signs the alert. With three signatures the source merges them into a single short BLS signature and sends the certified alert.
+    \item \textbf{CH Selection.} Inside each cluster we pick, among trusted members only, the vehicle that covers the most members not yet covered. If two vehicles tie, the one with the lower speed difference to its neighbours wins. We repeat until every member is covered. A cluster with no trusted member gets no cluster head.
+    \item \textbf{Cluster Head.} Cluster heads and trusted bridge nodes form tier 0. All other vehicles are tier 1. Tier 0 always gets the first chance to forward. This is how the cluster structure controls the broadcast.
+    \item \textbf{Duplicate Filter.} Every vehicle keeps a small record per event ID. The first valid copy is accepted. Any later copy of the same event is only counted and its sender is noted. It is never processed again and it never restarts a timer.
+    \item \textbf{Controlled Broadcast.} After accepting an alert, a vehicle waits for a short time that depends on its tier and its distance from the sender. Far vehicles wait less. When the timer ends, the vehicle checks whether any of its neighbours is still outside the range of all the senders it has heard. If yes, it forwards. If no, it stays silent.
+    \item \textbf{V2I.} RSUs are counted as neighbours in the same coverage check. So a vehicle that has an uncovered RSU nearby forwards the alert, and the alert reaches the infrastructure without a separate routing protocol. We also built a second path: a shortest route over trusted cluster heads to the nearest RSU, where each head needs two votes from its own cluster before passing the alert on.
+    \item \textbf{RSU.} The RSU only receives. It has three stages. The \emph{Ingress Queue} puts arriving copies in time order and handles them one by one. \emph{Batch Auth} checks the certificate of every queued alert: the signature must be valid, the first signer must be the source, signers must be distinct, and at least three of them must be trusted. It also drops repeats of the same event ID. The \emph{Decision Engine} runs the sanity checks (all fields present, known type, position inside the map, not received before it was created, not older than 600 s on the RSU's own clock, hop count within the limit). It then marks the copy as REGISTERED, DUPLICATE, REJECTED with a reason, or MERGED when a second vehicle reports the same crash within 10 m and 2 s.
+    \item \textbf{Dissemination.} Vehicles get the alert through the controlled broadcast itself. For the Traffic Centre, each registered event is written once to a dispatch outbox. It can be posted to an HTTPS endpoint when one is configured.
+    \item \textbf{Cloud.} \emph{Trust Update}: after an event is registered, every vehicle that was seen forwarding it gets a small rise in trust. \emph{Analytics}: the store counts registered events and pending dispatches and exports them as JSON. In our runs this part works on a local SQLite database. Upload to a real cloud happens only when an endpoint is set.
+\end{enumerate}
+
+\subsection{Mathematical Formulation \& Algorithmic Design}
+\begin{itemize}[noitemsep, topsep=2pt]
+    \item \textbf{Theoretical / Mathematical Formulation:}
+    \begin{itemize}[noitemsep, topsep=1pt]
+        \item \emph{Trust.} With $s$ good and $f$ bad observations of a vehicle,
+        \[ \mathrm{trust} = \frac{s+1}{s+f+2}. \]
+        A new vehicle starts at 0.5. The threshold for a trusted role is 0.7.
+        \item \emph{Waiting time.} A vehicle $v$ that accepts the alert at time $t_{acc}$ from a sender at distance $d$ sets its timer to
+        \[ T = t_{acc} + \bigl(\mathrm{tier}\cdot N_s + S(d)\bigr)\,\tau + U[0,\mathrm{RAD}), \qquad
+           S(d) = \min\!\Bigl(N_s-1,\ \max\bigl(0,\ N_s - \bigl\lceil N_s \cdot \min(d,R)/R \bigr\rceil \bigr)\Bigr). \]
+        Here $N_s = 5$ slots, $\tau = 5$ ms, $R = 300$ m, and $U[0,\mathrm{RAD})$ is a random delay below 5 ms. Tier is 0 for trusted cluster heads and bridges and 1 for the rest.
+        \item \emph{Forwarding rule.} Let $N(v)$ be the neighbours of $v$ and $H(v)$ the senders $v$ has heard. Vehicle $v$ forwards only if
+        \[ N(v) \setminus \bigcup_{h \in H(v)} \bigl(N(h) \cup \{h\}\bigr) \neq \emptyset . \]
+        \item \emph{Trust update in the cloud.} A vehicle seen forwarding a registered event moves from $T$ to $T' = (20\,T + 1)/21$.
+    \end{itemize}
+    \item \textbf{Core Algorithmic Steps:} (1) Build neighbour tables from positions. (2) Run DBSCAN and compute trust. (3) Elect cluster heads and assign tiers. (4) The source collects three signatures and sends the certified alert. (5) Each receiver verifies the certificate, filters duplicates, starts its timer and applies the forwarding rule. (6) The RSU queues, authenticates and decides. (7) The back end stores the event, queues the dispatch and updates trust.
+    \item \textbf{Dataset \& Preprocessing Specifications:} We did not use an external dataset. Traffic is generated by SUMO \cite{lopez2018} on a $5\times5$ grid with two RSUs. We ran six densities (50, 100, 200, 250, 300 and 500 vehicles) with 30 random seeds each, which gives 180 scenarios. One honest vehicle crashes at a random second between 60 and 120 s. Every scheme runs on the same saved snapshot of positions, so the comparison is paired. The seed rule is $10000 + 100 \times \mathrm{density} + \mathrm{run}$, so any run can be repeated.
+    \item \textbf{Evaluation Metrics:}
+    \begin{itemize}[noitemsep, topsep=1pt]
+        \item \emph{Frames on air}: every frame sent for one alert, including the vote frames. Lower is better.
+        \item \emph{Receptions lost}: receptions destroyed by collisions. This shows how bad the storm is.
+        \item \emph{Suppression} $= \mathrm{SUPPRESS} / (\mathrm{SUPPRESS} + \mathrm{FORWARD})$ over honest vehicles.
+        \item \emph{Time to 90\%} ($t_{90}$): time until 90\% of the reachable vehicles have the alert.
+        \item \emph{Forged alert accepted}: number of runs in which honest vehicles accepted a fake alert.
+    \end{itemize}
+    We report the mean and the 95\% confidence interval over the 30 runs.
+\end{itemize}
+
+% --- 4. IMPLEMENTATION DETAILS ---
+\section{Implementation Details}
+
+\subsection{Implementation Environment \& Execution Setup}
+\begin{itemize}[noitemsep, topsep=2pt]
+    \item \textbf{Hardware \& Compute Specifications:} [Laptop model, CPU, RAM used for the runs]. No GPU is needed. All experiments run on the CPU.
+    \item \textbf{Software \& Libraries:} Python 3.11; SUMO 1.27.1 with TraCI and sumolib for traffic; NumPy 2.2.6 and SciPy; scikit-learn 1.7.2 for DBSCAN \cite{ester1996}; py\_ecc 8.0.0 for BLS12-381 signatures; Matplotlib 3.10.9 for graphs; SQLite for storage; pytest 9.1.1 for the test suite.
+    \item \textbf{Source Code Repository:} \texttt{github.com/AkhilRudrapaka/IoV-Emergency-Broadcast}. The README has setup steps for Windows and Linux. One command, \texttt{python run.py experiment}, repeats all the results.
+\end{itemize}
+
+\subsection{Module-Wise Implementation \& Integration Summary}
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.25}
+    \begin{tabular}{|p{3.5cm}|p{9.2cm}|c|}
+        \hline
+        \textbf{Module / Stage} & \textbf{Implemented Technical Details \& Integration Scope} & \textbf{Status} \\
+        \hline
+        Vehicle layer and mobility & SUMO runs the traffic. \texttt{scenario.py} reads positions and speeds every second, picks the crash vehicle and marks 10\% of vehicles as malicious & Integrated \\
+        \hline
+        Cluster formation, trust and CH selection & \texttt{clustering.py}: DBSCAN clusters, trust score from watchdog counts, greedy cluster head election, tier assignment & Integrated \\
+        \hline
+        Alert signing & \texttt{corroboration.py}: five-member committee, real BLS12-381 sign, aggregate and verify, three-signature quorum & Integrated \\
+        \hline
+        Duplicate filter and controlled broadcast & \texttt{protocols.py}: per-event state, tier and distance timer, coverage check. The same file has the baselines (flooding, slotted 1-persistence) & Integrated \\
+        \hline
+        Radio channel & \texttt{channel.py}: slot-level IEEE 802.11p CSMA/CA with collisions and hidden terminals \cite{ieee80211p} & Integrated \\
+        \hline
+        V2I and RSU & \texttt{rsu.py}, \texttt{infrastructure.py}: time-ordered intake, certificate check per event, sanity checks, register once, CH-to-CH route & Integrated \\
+        \hline
+        Dissemination and cloud & \texttt{infrastructure.py}: SQLite event store, dispatch outbox, trust update, analytics, JSON export. Cloud upload is optional & Integrated (local) \\
+        \hline
+        Evaluation and demo & \texttt{experiment.py}, \texttt{metrics.py}, \texttt{figures.py}; SUMO-GUI replay in \texttt{demo.py}; web dashboard in \texttt{web\_results.py}; 99 tests in \texttt{validation/} & Functional \\
+        \hline
+    \end{tabular}
+    \caption{Module-Wise Implementation Completion Status}
+\end{table}
+
+\subsection{Detailed Module Descriptions}
+\begin{itemize}[noitemsep, topsep=2pt]
+    \item \textbf{Clustering and trust (\texttt{clustering.py}):} The input is an array of positions, speeds and the neighbour matrix. DBSCAN returns a cluster label per vehicle. The trust function takes the success and failure counts kept by \texttt{scenario.py}. The election loop returns a role for every vehicle (CH, BRIDGE or MEMBER) and a tier (0 or 1). These two values are all that the forwarding code needs from this module.
+    \item \textbf{Alert signing (\texttt{corroboration.py}):} The signed content is a digest of the event ID, type, source, position, incident time, creation time and hop limit. Changing any field breaks the signature. Each vote is one 132-byte frame. The merged signature is 96 bytes for any number of signers. We charge 1.4 ms for signing and 4.3 ms for verifying in simulated time, so the security cost shows up in the delay figures.
+    \item \textbf{Duplicate filter and controlled broadcast (\texttt{protocols.py}):} Each vehicle object stores the time of first reception, the set of senders heard and its final decision (FORWARD, SUPPRESS, DROP or EXPIRED). The hop limit is 10. Malicious vehicles drop. RSUs never relay. Every decision is saved with its reason, so a run can be explained vehicle by vehicle.
+    \item \textbf{RSU and back end (\texttt{rsu.py}, \texttt{infrastructure.py}):} The RSU takes its copies in arrival order and returns a status for each copy. Registration time is the arrival time plus the verification time. The back end has four SQLite tables: events, dispatch, trust and datasets. Writes use the run ID and event ID as the key, so repeating a run does not create a second record.
+    \item \textbf{End-to-End Integration:} \texttt{run.py} is the single entry point. For each seed it builds the scenario, runs every scheme on the same snapshot through the channel model, passes the copies that reach an RSU to the RSU code, stores the result, and writes one record per run. The graphs, the dashboard and the SUMO-GUI replay all read these records. Nothing in the results is typed by hand.
+\end{itemize}
+
+% --- 5. PRELIMINARY VERIFICATION, RESULTS & DEMONSTRATION ---
+\section{Preliminary Verification, Experimental Results \& Demonstration}
+
+\subsection{Quantitative Evaluation \& Baseline Comparison}
+\noindent
+We compared our scheme with three existing approaches: blind flooding, slotted 1-persistence \cite{wisitpongphan2007}, and slotted 1-persistence with a random delay added. To be fair, all of them use the same signing step and the same radio model. Only the forwarding rule is different. Table~\ref{tab:main} shows the results at 200 vehicles as the mean of 30 runs.
+
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.25}
+    \begin{tabular}{|p{5.0cm}|c|c|c|c|}
+        \hline
+        \textbf{Method / Configuration} & \textbf{Frames on air} & \textbf{Receptions lost} & \textbf{Suppression (\%)} & \textbf{$t_{90}$ (ms)} \\
+        \hline
+        Blind flooding & $185.8 \pm 0.3$ & $9632 \pm 208$ & 0.0 & $31.8 \pm 1.1$ \\
+        \hline
+        Slotted 1-persistence \cite{wisitpongphan2007} & $54.7 \pm 4.8$ & $2070 \pm 336$ & $73.3 \pm 2.7$ & $32.5 \pm 1.7$ \\
+        \hline
+        Slotted 1-persistence + random delay & $24.1 \pm 1.0$ & $188 \pm 55$ & $90.4 \pm 0.5$ & $34.0 \pm 2.2$ \\
+        \hline
+        Ours without clustering (ablation) & $46.1 \pm 4.9$ & $1198 \pm 305$ & $78.2 \pm 2.7$ & $30.5 \pm 1.2$ \\
+        \hline
+        \textbf{Proposed (full)} & $\mathbf{26.4 \pm 1.4}$ & $\mathbf{151 \pm 35}$ & $\mathbf{89.1 \pm 0.8}$ & $\mathbf{35.3 \pm 1.8}$ \\
+        \hline
+    \end{tabular}
+    \caption{Comparative Experimental Evaluation Results (200 vehicles, 30 runs, mean $\pm$ 95\% CI)}
+    \label{tab:main}
+\end{table}
+
+\noindent
+Table~\ref{tab:density} shows how the schemes behave when traffic gets denser.
+
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{Vehicles} & \textbf{Flooding (frames)} & \textbf{Slotted 1-p (frames)} & \textbf{Proposed (frames)} & \textbf{Proposed suppression (\%)} \\
+        \hline
+        50  & 50.7  & 22.6  & 18.4 & 74.1 \\ \hline
+        100 & 95.8  & 35.3  & 22.6 & 82.5 \\ \hline
+        200 & 185.8 & 54.7  & 26.4 & 89.1 \\ \hline
+        300 & 274.8 & 80.8  & 27.7 & 92.3 \\ \hline
+        500 & 451.6 & 152.2 & 31.3 & 94.6 \\ \hline
+    \end{tabular}
+    \caption{Frames per Alert at Different Traffic Densities (mean of 30 runs)}
+    \label{tab:density}
+\end{table}
+
+\noindent
+For security we ran a forged-alert test on the same traffic. A malicious vehicle claims a crash that did not happen, and its malicious neighbours sign it. Table~\ref{tab:forge} gives the number of runs, out of 30, in which honest vehicles accepted the fake alert.
+
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{|p{5.6cm}|p{5.2cm}|c|}
+        \hline
+        \textbf{Protection} & \textbf{Attacker behaviour} & \textbf{Fake alert accepted} \\
+        \hline
+        No signing & Always drops packets & 30 of 30 runs \\ \hline
+        Signing only, no trust check & Always drops packets & 26 of 30 runs \\ \hline
+        Signing + trust check (full) & Always drops packets & 0 of 30 runs \\ \hline
+        Signing + trust check (full) & Behaves well 50\% of the time & 0 of 30 runs \\ \hline
+        Signing + trust check (full) & Behaves well 90\% of the time & 25 of 30 runs \\ \hline
+    \end{tabular}
+    \caption{Forged-Alert Test at 200 Vehicles}
+    \label{tab:forge}
+\end{table}
+
+\subsection{Visual Results \& Prototype Demonstration}
+\begin{figure}[H]
+    \centering
+    \shot{0.46\textwidth}{4.0cm}{[Insert screenshot: cluster formation in SUMO-GUI, cluster heads highlighted]}
+    \hfill
+    \shot{0.46\textwidth}{4.0cm}{[Insert screenshot: trust score update, per-vehicle trust before and after an event]}
+    \caption{Cluster Formation and Trust Score Update in the Running System}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \shot{0.46\textwidth}{4.0cm}{[Insert screenshot: RSU decision, REGISTERED / DUPLICATE / REJECTED status with reason]}
+    \hfill
+    \shot{0.46\textwidth}{4.0cm}{[Insert screenshot: cloud analytics, event count and pending dispatch]}
+    \caption{RSU Decision Output and Cloud Analytics}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \shot{0.95\textwidth}{4.6cm}{[Insert screenshot: comparison graphs, frames on air and receptions lost versus number of vehicles for all schemes]}
+    \caption{Comparison Graphs Against the Baseline Schemes}
+\end{figure}
+
+\noindent
+\textbf{Discussion of Results:} Compared with flooding, our scheme sends about 86\% fewer frames at 200 vehicles (26.4 against 185.8). Compared with slotted 1-persistence it sends about half. Collisions fall even more sharply, from 9632 lost receptions to 151, because fewer vehicles transmit and they do not transmit at the same instant. Table~\ref{tab:density} shows that flooding grows with the number of vehicles while our scheme stays between 18 and 31 frames.
+
+The result against slotted 1-persistence with random delay needs care. In frame count the two are about equal. At 200 vehicles ours sends 2.3 frames more on average. Our scheme does better on two other points. It loses fewer receptions in dense traffic (559 against 1405 at 500 vehicles). And in these runs it did not miss any vehicle that had a radio path to the source, while the baseline averaged 95.7\% reach at 50 vehicles and 99.2\% at 200. We do not expect this to hold on a real road, since our radio model has no fading.
+
+Our scheme is not the fastest. It takes 35.3 ms to reach 90\% of the vehicles against 31.8 ms for flooding. The paired difference is $3.5 \pm 1.7$ ms at 200 vehicles and about 7 ms at 500. Most of the total delay comes from security, not from forwarding. Collecting three signatures takes about 12 ms and adds about 27 ms to $t_{90}$ and about 7 frames, compared with sending the alert unsigned. The alert reached an RSU in about 21 ms on average.
+
+The ablation row shows why clustering is there. Without it the frame count goes from 26.4 to 46.1 at 200 vehicles, and from 31.3 to 215.5 at 500. Table~\ref{tab:forge} shows that signing alone is not enough: three colluding vehicles can produce a valid signature. The trust check stops them only when their trust is low. An attacker who behaves well 90\% of the time earns a trust score of about 0.9, passes the 0.7 threshold, and the fake alert is accepted in 25 of 30 runs.
+
+% --- 6. TECHNICAL KNOWLEDGE & DESIGN JUSTIFICATION ---
+\section{Technical Justification, Design Trade-offs \& Insights}
+\begin{itemize}[noitemsep, topsep=2pt]
+    \item \textbf{Algorithmic \& Theoretical Justification:} We chose DBSCAN because the number of clusters on a road is not known in advance and DBSCAN does not need it. The trust formula is the mean of a Beta distribution. It starts at 0.5 for a new vehicle and moves slowly, so one bad observation does not ruin an honest vehicle. We chose BLS signatures because many signatures merge into one 96-byte signature, so the alert does not grow with the number of signers. The coverage rule works on neighbour lists that vehicles already have from beacons, so it needs no extra messages.
+    \item \textbf{Computational Complexity \& Trade-offs:} Neighbour tables and DBSCAN need pairwise distances, which is $O(n^2)$ for $n$ vehicles. This is fine for 500 vehicles on a laptop. The coverage check on one vehicle is a set difference over the neighbour lists of the senders it heard, so it grows with the local density and not with the network size. Each receiver verifies the certificate once per event (4.3 ms) and never for duplicates. The main trade-off is delay for safety: signing adds about 27 ms. The second trade-off is the tier rule. It lets cluster heads go first, but if a cluster head is silent, the members wait up to 25 ms more before they forward.
+    \item \textbf{Handling Edge Cases \& Boundary Conditions:} A silent or malicious cluster head is never counted as coverage, so its neighbours still forward when their own timers end. An alert past the hop limit is accepted but not relayed. An old or replayed alert is rejected by the RSU, which uses its own clock and not the time written in the alert. The same event arriving at two RSUs is registered once. If the source cannot find three trusted neighbours who saw the crash, the alert is not released at all. We chose this on purpose so that an unsigned alert can never spread, but it means a crash on an empty road is not reported by our system.
+\end{itemize}
+
+% --- 7. CONCLUSION, LIMITATIONS & FUTURE SCOPE ---
+\section{Conclusion, Limitations \& Future Scope}
+\begin{itemize}[noitemsep, topsep=2pt]
+    \item \textbf{Conclusion:} We built every block of the architecture and ran it end to end on 180 simulated scenarios. Trust-aware clustering with a coverage check cuts the frames per alert by about 86\% against flooding and by about half against slotted 1-persistence at 200 vehicles, for 3 to 7 ms of extra delay. Signed alerts with a trust check stop fake alerts from vehicles with a poor record. The best existing baseline (slotted 1-persistence with random delay) is close to ours in frame count, so our gain over it is in collisions and reach, not in the number of frames.
+    \item \textbf{Current Limitations:}
+    \begin{itemize}[noitemsep, topsep=1pt]
+        \item Everything runs in simulation. The radio model has a fixed 300 m range with no fading and no background beacon traffic. Real numbers will be worse.
+        \item The road network is a small $5\times5$ grid with two RSUs. We have not tested a highway or a real city map.
+        \item In the default setup a malicious vehicle always drops packets, so its trust is low by design and detection is easy. Against attackers who behave well most of the time, the trust check fails (25 of 30 fake alerts accepted).
+        \item Keys are derived from vehicle IDs. There is no certificate authority and no key revocation.
+        \item The RSU does not rebroadcast to vehicles. The traffic centre is a local outbox, and the cloud is a local database unless an endpoint is configured.
+        \item Batch Auth checks certificates one event at a time. We do not claim a cryptographic batch speed-up across events.
+    \end{itemize}
+    \item \textbf{Future Scope:} Add a fading radio model and beacon load. Test on a real city map from OpenStreetMap. Make trust harder to game, for example by weighting recent behaviour more and by using RSU-side cross-checks. Add a timeout so that a source with fewer than three trusted neighbours can still send a one-hop unconfirmed warning. Connect the outbox and the cloud store to real services.
+\end{itemize}
+
+% --- 8. DELIVERABLES & TECHNICAL ENRICHMENT SUMMARY ---
+\section{Project Deliverables \& Technical Enrichment Summary}
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{|p{4.2cm}|p{7.5cm}|c|}
+        \hline
+        \textbf{Deliverable Category} & \textbf{Details / Title / Repository Link} & \textbf{Status} \\
+        \hline
+        Source Code Repository & \texttt{github.com/AkhilRudrapaka/\allowbreak IoV-Emergency-Broadcast} (README, design document, test suite, saved results) & Completed \\
+        \hline
+        Individual Online Certifications & {[List completed 10--20 hr courses for each team member]} & {[Completed]} \\
+        \hline
+        Group TEA Deliverable 1 & {[Title and details of completed Group Activity 1]} & {[Completed]} \\
+        \hline
+        Group TEA Deliverable 2 & {[Title and details of completed Group Activity 2]} & {[Completed]} \\
+        \hline
+        Group TEA Deliverable 3 & {[Title and details of completed Group Activity 3]} & {[Completed]} \\
+        \hline
+    \end{tabular}
+    \caption{Summary of Completed Project and Technical Enrichment Deliverables}
+\end{table}
+
+% --- REFERENCES ---
+\vspace{0.2cm}
+\nocite{*}
+\renewcommand{\refname}{\large\bfseries\color{amritaMaroon}References}
+\bibliographystyle{ieeetr}
+\bibliography{ref}
+
+\end{document}

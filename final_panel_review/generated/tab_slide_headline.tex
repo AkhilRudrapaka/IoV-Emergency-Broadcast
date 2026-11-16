@@ -1,0 +1,12 @@
+\renewcommand{\arraystretch}{1.32}
+\begin{tabular}{lrrrrrr}
+\toprule
+\textbf{Scheme} & \textbf{Frames} & \textbf{Rx lost} & \textbf{Reach (\%)} & \textbf{$t_{90}$ (ms)} & \textbf{Suppr. (\%)} & \textbf{RSU reg. (ms)} \\
+\midrule
+Blind flooding & 185.8{\scriptsize\,$\pm$0.3} & 9632{\scriptsize\,$\pm$208} & 99.9{\scriptsize\,$\pm$0.1} & 31.8{\scriptsize\,$\pm$1.1} & 0.0{\scriptsize\,$\pm$0.0} & 22.0{\scriptsize\,$\pm$1.9} \\
+Flooding + random delay & 186.0{\scriptsize\,$\pm$0.1} & 9187{\scriptsize\,$\pm$223} & \textbf{100.0}{\scriptsize\,$\pm$0.0} & \textbf{31.4}{\scriptsize\,$\pm$1.2} & 0.0{\scriptsize\,$\pm$0.0} & 20.6{\scriptsize\,$\pm$1.5} \\
+Slotted 1-p & 54.7{\scriptsize\,$\pm$4.8} & 2070{\scriptsize\,$\pm$336} & 99.6{\scriptsize\,$\pm$0.5} & 32.5{\scriptsize\,$\pm$1.7} & 73.3{\scriptsize\,$\pm$2.7} & 20.7{\scriptsize\,$\pm$1.6} \\
+\rowcolor{rowBase}\textbf{Slotted 1-p + random delay} & \textbf{24.1}{\scriptsize\,$\pm$1.0} & 188{\scriptsize\,$\pm$55} & 99.2{\scriptsize\,$\pm$0.8} & 34.0{\scriptsize\,$\pm$2.2} & \textbf{90.4}{\scriptsize\,$\pm$0.5} & \textbf{20.5}{\scriptsize\,$\pm$1.5} \\
+\rowcolor{rowProp}\textbf{Proposed} & 26.4{\scriptsize\,$\pm$1.4} & \textbf{151}{\scriptsize\,$\pm$35} & \textbf{100.0}{\scriptsize\,$\pm$0.0} & 35.3{\scriptsize\,$\pm$1.8} & 89.1{\scriptsize\,$\pm$0.8} & 21.4{\scriptsize\,$\pm$1.9} \\
+\bottomrule
+\end{tabular}

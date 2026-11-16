@@ -500,11 +500,11 @@ def diagram_proposed():
 def diagram_pairs():
     b = [_box(20, 20, 280, 92, "Dashboard (browser)", "New pair · Run baseline only ·\nRun proposed only", *PURPLE),
          _box(360, 20, 300, 92, "web_results.py → demo_pairs.start", "one run at a time (lock);\nPOST /api/run → own process"),
-         _box(700, 20, 280, 92, "run.py demo --pair P --approach A", "EXP_RESULTS_DIR = the pair folder", *AMBER),
+         _box(700, 20, 280, 92, "run.py demo --pair P --approach A", "EXP_RESULTS_DIR = <pair>/<approach>", *AMBER),
          _box(700, 150, 280, 92, "experiment.run_one", "re-simulates the pair's seed; the\nrecord is checked against the pair"),
          _box(360, 150, 300, 92, "SUMO-GUI replay (demo.py)", "only this approach's schemes;\nends on its own outcome", *GREEN),
-         _box(20, 150, 280, 92, "Pair folder", "pair.json · run record · live feed ·\nwindow captures"),
-         _box(20, 280, 960, 70, "Comparison: shown only when BOTH runs finished and replayed the same record (equal fingerprints)",
+         _box(20, 150, 280, 92, "Pair folder", "pair.json; per run <approach>/: its own\nrecord, live feed, SUMO log, captures"),
+         _box(20, 280, 960, 70, "Comparison: shown only when BOTH runs finished and their own records have equal fingerprints",
               "otherwise withheld with the reason; multi-seed experiment results are shown separately", "#dff3ea", "#11694b"),
          _arrow(300, 66, 360, 66), _arrow(660, 66, 700, 66), _arrow(840, 112, 840, 150), _arrow(700, 196, 660, 196),
          _arrow(360, 196, 300, 196), _arrow(160, 242, 160, 280), _arrow(160, 150, 160, 112)]
@@ -780,9 +780,12 @@ the same seed always gives the same scenario (validation/test_pipeline.py).</p>"
 <p><b>Incident selection.</b> For each seed the incident second is drawn from U{{{config.INCIDENT_WINDOW_S[0]}..{config.INCIDENT_WINDOW_S[1]}}} s
 (after the last departure, so traffic is mixed), and the incident vehicle is drawn at random among the honest vehicles on
 the road at that second. The location is therefore wherever that vehicle is: always on a lane of the network. For the
-demonstration pairs, <code>demo_pairs.select</code> takes the scenarios in a fixed seeded order and skips any whose incident
-lies within {demo_pairs.MIN_SEPARATION_M:.0f} m of an incident already used, so consecutive pairs show different places; the
-choice never looks at any algorithm's result.</p>
+demonstration pairs, <code>demo_pairs.select</code> takes the scenarios in an order shuffled by the pairs folder's selection
+seed (drawn at random when a folder's first pair is made, kept in <code>selection.json</code> and recorded by every pair; this
+report's pairs were made on 13 Nov, before per-folder seeds, with the earlier fixed seed
+{cp['scenario']['selection']['selection_seed']}) and skips
+any whose incident lies within {demo_pairs.MIN_SEPARATION_M:.0f} m of an incident already used, so consecutive pairs show
+different places; the choice never looks at any algorithm's result.</p>
 <p><b>Incident information.</b> The incident vehicle creates one alert, identified like an ETSI DENM actionID (station +
 sequence number). Table {doc.n_tab + 1} shows the alert of scenario {csc['scenario_id']} as recorded.</p>"""
             + doc.table(["Field", "Value"], alert_rows, f"The alert of scenario {csc['scenario_id']} (vehicle {inc['vehicle']}).",
@@ -921,19 +924,22 @@ Their signatures are valid, but they are not reputable, so the certificate fails
     section("s11", "11&nbsp;&nbsp;Dashboard and Demonstration", f"""
 <p>The faculty demonstration is organised around <b>comparison pairs</b>. A pair is one incident scenario replayed twice in
 SUMO-GUI: once with a single baseline, once with the proposed method (its CH-to-CH route stage and the forged-alert test
-included). The two runs never share a map and never run at the same time. Both runs re-simulate the pair's seed, so they replay
-the same record; the dashboard shows the comparison only when both fingerprints are equal.</p>""" + doc.diagram(diagram_pairs(),
+included). The two runs never share a map and never run at the same time. Both runs re-simulate the pair's seed, each into its
+own folder (<code>&lt;pair&gt;/baseline/</code>, <code>&lt;pair&gt;/proposed/</code>), so each keeps its own record of the same run;
+the dashboard shows the comparison only when the two records' fingerprints are equal. (This report's pairs ran before per-run
+folders existed, when both runs of a pair wrote one shared record in <code>&lt;pair&gt;/raw/</code>; both runs' fingerprints
+are equal as well.)</p>""" + doc.diagram(diagram_pairs(),
             "How a pair is run from the dashboard.") + f"""
 <h3>Controls</h3>
-<ul><li><b>New pair</b> takes the next scenario of the fixed seeded order (incident on the network, ≥ 50 m from every incident used
-before) with the baseline chosen in the list beside it.</li>
+<ul><li><b>New pair</b> takes the next scenario of the pairs folder's own order, shuffled by its selection seed (incident on the
+network, ≥ 50 m from every incident used before) with the baseline chosen in the list beside it.</li>
 <li><b>Run baseline only</b> / <b>Run proposed only</b> start one run in its own process; SUMO-GUI opens and plays the run from start
 to finish (in this report's pairs a baseline-only run took {min(took['baseline']):.0f}–{max(took['baseline']):.0f} s and a
 proposed-only run {min(took['proposed']):.0f}–{max(took['proposed']):.0f} s). While a run is active every start button is disabled and the server refuses another start (HTTP 409).
 Pause/resume is not offered.</li>
 <li>A run whose process ends without finishing is marked failed; its live state and captures are never shown as current.
 If a SUMO-GUI window stops responding (seen once in about 15 runs), closing it ends the run this way, and the run can be started
-again on the same record; a window capture never waits more than 10 s for SUMO-GUI.</li></ul>
+again on the same scenario; a window capture never waits more than 10 s for SUMO-GUI.</li></ul>
 <h3>Sections of the dashboard</h3>""" + dshot("overview", "Section 1, Overview: the goal, the proposed method in plain words and the "
             "baselines.") + dshot("scenario", "Section 2, Scenario & approach: the pair's scenario (ID, seed, incident, network, "
             "traffic, selection) and the two run cards with their controls.") + dshot("live_baseline", "Section 3, Live simulation "
@@ -941,7 +947,7 @@ again on the same record; a window capture never waits more than 10 s for SUMO-G
             "time, and the newest window capture of that run.") + dshot("live_proposed", "Section 3 during the proposed-only run of the "
             "same pair.") + dshot("outcome_baseline", "Section 4 right after a baseline-only run: the baseline's own outcome, copied from the run "
             "record.") + dshot("comparison_withheld", "Section 5 at the same moment: the comparison is withheld until the "
-            "proposed-only run has finished on the same record.") + dshot("outcome", "Section 4 after both runs, proposed run "
+            "proposed-only run has finished with the same record fingerprint.") + dshot("outcome", "Section 4 after both runs, proposed run "
             "selected: the proposed method and its CH-to-CH route stage, with units and definitions.") + dshot("comparison", "Section 5, Algorithm comparison: baseline vs proposed (with its CH-to-CH "
             "route stage), charts, every implemented baseline on the same record, and the separate multi-seed results.")
             + dshot("evidence", "Section 6, Evidence & limitations: the pair's folder, records, fingerprints, captures and commands.")
@@ -1173,7 +1179,8 @@ full protection, at the price of a few milliseconds of extra delay to reach 90 %
     frows = [[f"Figure {n}", esc(kind), esc(src), esc(source if isinstance(source, str) else "")] for n, kind, src, cap_, source in doc.figures]
     section("sA", "Appendix A&nbsp;&nbsp;Evidence and Verification",
             (doc.table(["Check", "Command", "Result", "Status"], vrows, "Verification performed for this report.",
-                       f"docs/final_report/verification.json ({(verification or {}).get('generated', 'missing')})", cls="small")
+                       f"docs/final_report/verification.json ({(verification or {}).get('generated', 'missing')})", cls="small",
+                       keep=False)
              if vrows else '<p class="warn">verification.json is missing: no verification results are reported.</p>')
             + "<p>Every figure, with its kind and source (screenshots name the pair, run and capture file; each pair's record fingerprint is in "
             f"Table {t_pairs}):</p>" + doc.table(["Figure", "Kind", "File", "Source"], frows, "Figure provenance.", cls="small",

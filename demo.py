@@ -20,6 +20,7 @@ What you see, in the order of the workflow indicator at the top:
 The radio is a SIMULATED 802.11p model (channel.py); the dissemination is computed by the experiment engine on
 this exact SUMO state and animated here in slow motion. live_feed() mirrors the indicator to the web viewer.
 """
+import glob
 import json
 import math
 import os
@@ -660,16 +661,28 @@ def run(density=config.DEMO_DENSITY, run_index=config.DEMO_RUN, schemes=("floodi
     """approach=None: the full walkthrough (every scheme in `schemes` in turn, then the forged alert, ending on the
     CH-route delivery). approach="baseline" / "proposed": a SEPARATED run (demo_pairs.py) that replays only that
     approach's schemes and ends on its own outcome; a baseline run shows no clusters and no forged alert, which belong
-    to the proposed method. check(raw) runs before SUMO starts; capture_dir keeps live window captures."""
+    to the proposed method. check(raw) runs before SUMO starts; capture_dir keeps live window captures.
+    The defaults replay the fixed showcase scenario (config.DEMO_DENSITY, DEMO_RUN), labelled as such; every other
+    seed has its own incident (scenario.build), which comparison pairs and the experiment matrix use."""
     print("Preparing the scenario: simulating every scheme on this seed (a few seconds)...", flush=True)
     experiment.run_one(density, run_index, archive=archive)       # (re)simulate; identical for the same seed
     raw = experiment.load_raw(f"d{density}_r{run_index:02d}")
     sc = raw["scenario"]
     if check:
         check(raw)
+    showcase = approach is None and (density, run_index) == (config.DEMO_DENSITY, config.DEMO_RUN)
+    x, y = sc["incident_xy"]
+    print(f"Scenario {sc['run_id']} (seed {sc['seed']}): incident {sc['source_id']} at ({x:.0f}, {y:.0f}) m, "
+          f"t = {sc['incident_time_s']:.0f} s." + (" This is the fixed showcase scenario (config.DEMO_DENSITY/DEMO_RUN); "
+          "-d/-r replay another seed with its own incident." if showcase else ""), flush=True)
     forged = forged and approach != "baseline"
     if shots:
         os.makedirs(shots, exist_ok=True)
+        stale = glob.glob(os.path.join(shots, "sumo_[0-9][0-9]_*.png")) + [os.path.join(shots, n) for n in
+                                                                        ("snapshots.json", "snapshots.js")]
+        for path in stale:                                        # never mix in an earlier run's pictures
+            if os.path.isfile(path):
+                os.remove(path)
     os.makedirs(config.RESULTS_DIR, exist_ok=True)
     error_log = os.path.abspath(os.path.join(config.RESULTS_DIR, 'sumo_gui_errors.log'))
     entries = []
@@ -723,6 +736,9 @@ def run(density=config.DEMO_DENSITY, run_index=config.DEMO_RUN, schemes=("floodi
             if approach:                                          # what this separated run shows, visible throughout
                 label("approach", f"{approach.upper()}-ONLY RUN: {LIVE.get('algorithm') or config.LABELS[schemes[0]]}  |  "
                                   f"scenario {sc['run_id']}  |  seed {sc['seed']}", 625, 1068)
+            else:                                                 # the full walkthrough: which scenario it shows
+                label("scenario", f"FULL WALKTHROUGH  |  scenario {sc['run_id']}  |  seed {sc['seed']}" +
+                      ("  |  fixed showcase scenario (-r N replays another seed)" if showcase else ""), 625, 1068)
             indicator_init()
             set_stage(None)
             for u in sc["rsus"]:

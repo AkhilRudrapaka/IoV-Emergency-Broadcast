@@ -48,21 +48,36 @@ def nan_free(v):
     return None if isinstance(v, float) and math.isnan(v) else v
 
 
-def make_pair(root, raw=RAW, statuses=('finished', 'finished'), fingerprints=None, pair_id='P001', baseline='flooding'):
-    """A pair whose scenario and record are `raw`, as its runs leave them."""
+SEED = 4242                                              # a selection seed for the tests
+
+
+def write_record(path, raw):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with gzip.open(path, 'wt', encoding='utf-8') as f:
+        json.dump(raw, f)
+
+
+def make_pair(root, raw=RAW, statuses=('finished', 'finished'), fingerprints=None, pair_id='P001', baseline='flooding',
+              shared=False):
+    """A pair whose scenario and records are `raw`, as its runs leave them: each finished run's own record in
+    <pair>/<approach>/raw/, or (shared=True, pairs run before per-approach folders) one record in <pair>/raw/."""
     sc = raw['scenario']
     fp = demo.record_fingerprint(raw)
     folder = root / pair_id
-    (folder / 'raw').mkdir(parents=True)
-    with gzip.open(folder / 'raw' / f"{sc['run_id']}.json.gz", 'wt', encoding='utf-8') as f:
-        json.dump(raw, f)
+    folder.mkdir(parents=True)
+    name = f"{sc['run_id']}.json.gz"
+    if shared:
+        write_record(folder / 'raw' / name, raw)
+    for a, status in zip(demo_pairs.APPROACHES, statuses):
+        if status == 'finished' and not shared:
+            write_record(folder / a / 'raw' / name, raw)
     x, y = sc['incident_xy']
     pair = {'pair_id': pair_id, 'created': demo_pairs.now(), 'baseline': baseline,
             'scenario': {'scenario_id': sc['run_id'], 'density': sc['density'], 'run': sc['run'], 'seed': sc['seed'],
                          'network': config.NET_FILE,
                          'incident': {'vehicle': sc['source_id'], 'x': x, 'y': y, 'lane': 'D3E3_1',
                                       'time_s': float(sc['incident_time_s']), 'event_id': sc['alert']['event_id']},
-                         'selection': {'method': 'chosen explicitly', 'selection_seed': demo_pairs.SELECTION_SEED,
+                         'selection': {'method': 'chosen explicitly', 'selection_seed': SEED,
                                        'rank': None, 'repeat_of': None}},
             'runs': {}}
     for a, status, f in zip(demo_pairs.APPROACHES, statuses, fingerprints or (fp, fp)):
@@ -72,6 +87,8 @@ def make_pair(root, raw=RAW, statuses=('finished', 'finished'), fingerprints=Non
                            'finished': demo_pairs.now() if status in ('finished', 'failed') else None,
                            'fingerprint': f if status == 'finished' else None,
                            'message': 'RuntimeError: boom' if status == 'failed' else None}
+        if status == 'finished':
+            pair['runs'][a]['record'] = os.path.join('raw', name) if shared else os.path.join(a, 'raw', name)
     demo_pairs.save(pair)
     return pair
 
@@ -94,18 +111,20 @@ def test_each_approach_replays_only_its_own_implemented_schemes():
 def test_incident_selection_is_reproducible_and_varies():
     used, picks = [], []
     for _ in range(5):
-        pick = demo_pairs.select(used, incident_of=fake_incident)
-        assert demo_pairs.select(used, incident_of=fake_incident) == pick          # same history -> same scenario
+        pick = demo_pairs.select(used, SEED, incident_of=fake_incident)
+        assert demo_pairs.select(used, SEED, incident_of=fake_incident) == pick    # same seed and history -> same scenario
         run, inc, repeat_of, rank = pick
         assert repeat_of is None and inc == fake_incident(run)                     # the builder's incident, unchanged
         picks.append(run)
         used.append((demo_pairs.scenario_id(run), inc['x'], inc['y']))
-    assert picks == demo_pairs.order()[:5] and len(set(picks)) == 5                  # the seeded order, no repeats
-    assert demo_pairs.order() == demo_pairs.order() and demo_pairs.order(1) != demo_pairs.order()
+    assert picks == demo_pairs.order(SEED)[:5] and len(set(picks)) == 5             # the seeded order, no repeats
+    assert demo_pairs.order(SEED) == demo_pairs.order(SEED) and demo_pairs.order(SEED + 1) != demo_pairs.order(SEED)
+    firsts = {demo_pairs.select([], s, incident_of=fake_incident)[0] for s in range(20)}
+    assert len(firsts) > 5                                                           # other seeds: other first scenarios
 
 
 def test_selection_skips_nearby_and_off_network_incidents_and_flags_any_repeat():
-    order = demo_pairs.order()
+    order = demo_pairs.order(SEED)
     a, b, c = order[:3]
 
     def incident_of(run):
@@ -117,13 +136,13 @@ def test_selection_skips_nearby_and_off_network_incidents_and_flags_any_repeat()
         return inc
 
     at = lambda run: (demo_pairs.scenario_id(run), incident_of(run)['x'], incident_of(run)['y'])
-    run, _, repeat_of, _ = demo_pairs.select([at(a)], incident_of=incident_of)
+    run, _, repeat_of, _ = demo_pairs.select([at(a)], SEED, incident_of=incident_of)
     assert run == order[3] and repeat_of is None
     # only b is left: it is offered, but recorded as a repeat of a's location
-    run, _, repeat_of, _ = demo_pairs.select([at(r) for r in order if r != b], incident_of=incident_of)
+    run, _, repeat_of, _ = demo_pairs.select([at(r) for r in order if r != b], SEED, incident_of=incident_of)
     assert run == b and repeat_of == demo_pairs.scenario_id(a)
     # every scenario used: the least recently used one, again flagged
-    run, _, repeat_of, _ = demo_pairs.select([at(r) for r in order], incident_of=incident_of)
+    run, _, repeat_of, _ = demo_pairs.select([at(r) for r in order], SEED, incident_of=incident_of)
     assert run == a and repeat_of == demo_pairs.scenario_id(a)
     assert not demo_pairs.valid({**fake_incident(0), 'x': -500.0}) and not demo_pairs.valid({**fake_incident(0), 'lane': ''})
 
@@ -139,7 +158,9 @@ def test_new_pairs_record_reproducible_distinct_scenarios(root, monkeypatch):
     monkeypatch.setattr(demo_pairs, 'incident', fake_incident)
     p1, p2 = demo_pairs.new_pair('flooding'), demo_pairs.new_pair('slotted1p')
     assert (p1['pair_id'], p2['pair_id']) == ('P001', 'P002')
-    assert [p1['scenario']['run'], p2['scenario']['run']] == demo_pairs.order()[:2]
+    seed = json.loads((root / demo_pairs.SELECTION).read_text())['selection_seed']   # drawn once for this folder
+    assert p1['scenario']['selection']['selection_seed'] == p2['scenario']['selection']['selection_seed'] == seed
+    assert [p1['scenario']['run'], p2['scenario']['run']] == demo_pairs.order(seed)[:2]
     for p in (p1, p2):
         s = p['scenario']
         assert s['seed'] == config.BASE_SEED + 100 * s['density'] + s['run'] and s['scenario_id'] == f"d{s['density']}_r{s['run']:02d}"
@@ -152,6 +173,43 @@ def test_new_pairs_record_reproducible_distinct_scenarios(root, monkeypatch):
     for bad in ({'baseline': 'proposed'}, {'baseline': 'flooding', 'run': 99}):
         with pytest.raises(ValueError):
             demo_pairs.new_pair(**bad)
+
+
+def test_each_new_pairs_folder_draws_its_own_selection_seed_and_keeps_it(tmp_path, monkeypatch):
+    # 14 Nov: every fresh pairs folder offered the same sequence (one fixed seed), so a new folder's first pair always
+    # replayed d200_r23. Each folder now draws its seed at random once, records it, and keeps it for its later pairs.
+    monkeypatch.setattr(demo_pairs, 'incident', fake_incident)
+    other = next(s for s in range(SEED + 1, SEED + 100) if demo_pairs.order(s)[0] != demo_pairs.order(SEED)[0])
+    draws = iter([SEED, other])
+    monkeypatch.setattr(demo_pairs.secrets, 'randbelow', lambda n: next(draws))
+    firsts = []
+    for name, seed in (('a', SEED), ('b', other)):
+        monkeypatch.setattr(demo_pairs, 'ROOT', str(tmp_path / name))
+        made = [demo_pairs.new_pair('flooding') for _ in range(3)]
+        assert {p['scenario']['selection']['selection_seed'] for p in made} == {seed}   # drawn once, then kept
+        assert json.loads((tmp_path / name / demo_pairs.SELECTION).read_text())['selection_seed'] == seed
+        assert [p['scenario']['run'] for p in made] == demo_pairs.order(seed)[:3]      # reproducible from the seed
+        xy = [(p['scenario']['incident']['x'], p['scenario']['incident']['y']) for p in made]
+        assert all(math.dist(p, q) >= demo_pairs.MIN_SEPARATION_M for i, p in enumerate(xy) for q in xy[i + 1:])
+        firsts.append(made[0]['scenario']['scenario_id'])
+    assert firsts[0] != firsts[1]                                                      # two folders, two first incidents
+    monkeypatch.setattr(demo_pairs.secrets, 'randbelow', lambda n: pytest.fail('a folder with pairs keeps its seed'))
+    monkeypatch.setattr(demo_pairs, 'ROOT', str(tmp_path / 'legacy'))                  # made before selection.json
+    make_pair(tmp_path / 'legacy', shared=True)
+    assert demo_pairs.selection_seed() == SEED and demo_pairs.new_pair('flooding')['scenario']['selection']['selection_seed'] == SEED
+
+
+def test_three_new_pairs_get_three_different_real_incidents(root, monkeypatch):
+    """With the scenario builder itself (SUMO, headless): consecutive pairs of a folder never share an incident."""
+    monkeypatch.setattr(demo_pairs.secrets, 'randbelow', lambda n: 7)                 # this folder's draw, fixed here
+    made = [demo_pairs.new_pair('flooding') for _ in range(3)]
+    incs = [p['scenario']['incident'] for p in made]
+    assert len({p['scenario']['scenario_id'] for p in made}) == 3
+    assert all(p['scenario']['selection']['repeat_of'] is None for p in made)
+    assert all(math.dist((a['x'], a['y']), (b['x'], b['y'])) >= demo_pairs.MIN_SEPARATION_M
+               for i, a in enumerate(incs) for b in incs[i + 1:])
+    for p in made:
+        assert p['scenario']['incident'] == demo_pairs.incident(p['scenario']['run'])  # the seed's own incident
 
 
 # ---------------------------------------------------------------- what a separated run shows
@@ -297,8 +355,10 @@ def test_a_separated_run_shows_each_live_state_when_it_writes_it(tmp_path, monke
             assert (text, now) == (state['status'], [demo.STAGES.index(state['workflow_stage'])]), state
 
 
-def test_default_demo_run_is_the_unchanged_full_walkthrough(tmp_path, monkeypatch):
+def test_default_demo_run_is_the_full_walkthrough_of_the_labelled_showcase_scenario(tmp_path, monkeypatch):
     out = drive(monkeypatch, tmp_path)
+    assert out['texts']['label-scenario'] == ('FULL WALKTHROUGH  |  scenario d200_r02  |  seed 30002  |  fixed showcase '
+                                              'scenario (-r N replays another seed)')
     assert [(p, f, t) for p, f, t, _ in out['replays']] == [
         ('flooding', None, 'Blind flooding (1 of 3)'), ('proposed', None, 'Proposed (full) (2 of 3)'),
         ('ch_route', None, 'CH shortest-path delivery (3 of 3)'),
@@ -309,6 +369,32 @@ def test_default_demo_run_is_the_unchanged_full_walkthrough(tmp_path, monkeypatc
     assert out['run_one'] == [(200, 2, True)]                                            # re-simulated, archived, as before
     legend = sorted(t.strip() for k, t in out['texts'].items() if k.startswith('label-legend-row-'))
     assert legend == sorted(caption for _, _, caption in demo.LEGEND)                   # the full legend, as before
+    demo._labels.clear()
+    monkeypatch.setattr(config, 'DEMO_RUN', 5)                                         # -r 2 when the showcase is r05
+    assert drive(monkeypatch, tmp_path)['texts']['label-scenario'] == 'FULL WALKTHROUGH  |  scenario d200_r02  |  seed 30002'
+    separated = drive(monkeypatch, tmp_path, schemes=['flooding'], approach='baseline', archive=False)
+    assert 'label-scenario' not in separated['texts']                                  # a pair run names its own run
+
+
+def test_snapshots_of_an_earlier_run_never_mix_with_a_new_one(tmp_path, monkeypatch):
+    shots = tmp_path / 'shots'
+    shots.mkdir()
+    for name in ('sumo_14_old.png', 'sumo_02_incident.png', 'snapshots.json', 'snapshots.js', 'notes.txt'):
+        (shots / name).write_text('earlier run')
+    taken = []
+
+    def capture(pid, path):
+        taken.append(os.path.basename(path))
+        with open(path, 'w') as f:
+            f.write('this run')
+        return True
+    monkeypatch.setattr(demo, 'capture_window', capture)
+    drive(monkeypatch, tmp_path, shots=str(shots))
+    left = sorted(p.name for p in shots.iterdir())
+    assert left == sorted(set(taken) | {'snapshots.json', 'snapshots.js', 'notes.txt'})   # only this run's pictures
+    assert all((shots / n).read_text() == 'this run' for n in taken)
+    manifest = json.loads((shots / 'snapshots.json').read_text())
+    assert manifest['run_id'] == 'd200_r02' and manifest['completed'] and {s['file'] for s in manifest['snapshots']} == set(taken)
 
 
 def test_default_demo_command_is_unchanged(monkeypatch):
@@ -386,13 +472,53 @@ def test_comparison_needs_both_runs_finished_on_one_record(root):
         p = make_pair(root, statuses=statuses, fingerprints=fps, pair_id=pid)
         raw, reason = demo_pairs.comparison(p)
         assert raw is None and why in reason
-    changed = copy.deepcopy(RAW)                                                        # the record changed after the runs
+    for a in demo_pairs.APPROACHES:                                                     # each run has its own record
+        assert demo_pairs.record_path(pair, a) == str(root / 'P001' / a / 'raw' / 'd200_r02.json.gz')
+    changed = copy.deepcopy(RAW)                                                        # one record changed after the runs
     changed['protocols']['flooding']['metrics']['transmissions'] += 1
-    with gzip.open(root / 'P001' / 'raw' / 'd200_r02.json.gz', 'wt', encoding='utf-8') as f:
-        json.dump(changed, f)
-    assert demo_pairs.comparison(pair)[0] is None
-    os.remove(root / 'P001' / 'raw' / 'd200_r02.json.gz')                              # ... or is missing
-    assert demo_pairs.comparison(pair)[0] is None and demo_pairs.record(pair) is None
+    write_record(root / 'P001' / 'baseline' / 'raw' / 'd200_r02.json.gz', changed)
+    assert demo_pairs.comparison(pair)[0] is None and demo_pairs.record(pair, 'proposed') is not None
+    os.remove(root / 'P001' / 'baseline' / 'raw' / 'd200_r02.json.gz')                 # ... or is missing
+    raw, reason = demo_pairs.comparison(pair)
+    assert raw is None and 'missing or changed' in reason and demo_pairs.record(pair, 'baseline') is None
+
+
+def test_a_pair_run_before_per_approach_folders_is_still_read(root):
+    pair = make_pair(root, shared=True)                                                  # one shared <pair>/raw/ record
+    for a in demo_pairs.APPROACHES:
+        assert demo_pairs.record_path(pair, a) == str(root / 'P001' / 'raw' / 'd200_r02.json.gz')
+    raw, reason = demo_pairs.comparison(pair)
+    assert reason is None and demo.record_fingerprint(raw) == demo.record_fingerprint(RAW)
+
+
+def test_a_pair_run_writes_only_into_its_own_approach_folder(root, monkeypatch):
+    """run.py demo --pair P --approach A (SUMO stood in for): its record, live feed, SUMO log and captures land in
+    <pair>/<A>/, a re-run clears only that folder, and the other run's files are never touched."""
+    import run as entry
+    monkeypatch.setattr(demo, 'LIVE', {})
+    make_pair(root, statuses=('not started', 'finished'))
+    folder = root / 'P001'
+    (folder / 'baseline').mkdir()
+    (folder / 'baseline' / '009.png').write_text('an earlier baseline run')
+    proposed = {p: p.read_bytes() for p in (folder / 'proposed').rglob('*') if p.is_file()}
+    monkeypatch.setattr(config, 'RESULTS_DIR', str(folder / 'baseline'))               # as after the re-exec
+    calls = []
+
+    def fake_run(density, run_index, schemes, pace, **kw):
+        calls.append((density, run_index, list(schemes), kw['approach'], kw['capture_dir']))
+        write_record(folder / 'baseline' / 'raw' / 'd200_r02.json.gz', RAW)
+        kw['check'](RAW)
+        (folder / 'baseline' / 'live_demo.json').write_text('{}')
+        return RAW
+    monkeypatch.setattr(demo, 'run', fake_run)
+    entry.pair_demo(SimpleNamespace(pair='P001', approach='baseline', pace=0.0, no_forged=False))
+    assert calls == [(200, 2, ['flooding'], 'baseline', str(folder / 'baseline'))]
+    assert not (folder / 'baseline' / '009.png').exists() and not (folder / 'raw').exists()   # its own leftovers only
+    assert {p: p.read_bytes() for p in (folder / 'proposed').rglob('*') if p.is_file()} == proposed
+    r = demo_pairs.load('P001')['runs']['baseline']
+    assert (r['status'], r['record']) == ('finished', os.path.join('baseline', 'raw', 'd200_r02.json.gz'))
+    assert r['fingerprint'] == demo_pairs.load('P001')['runs']['proposed']['fingerprint'] == demo.record_fingerprint(RAW)
+    assert demo_pairs.comparison(demo_pairs.load('P001'))[1] is None and not (root / demo_pairs.ACTIVE).exists()
 
 
 def test_missing_values_are_labelled_never_invented(root):
@@ -472,7 +598,8 @@ def test_start_launches_one_separated_run_and_records_its_exit(root, monkeypatch
     demo_pairs.start('P001', 'baseline')
     cmd, kw = launched[0]
     assert cmd[-6:] == ['demo', '--pair', 'P001', '--approach', 'baseline', '--no-wait']
-    assert kw['env']['EXP_RESULTS_DIR'] == str(root / 'P001') and kw['env']['DEMO_PAIRS_DIR'] == str(root)
+    assert kw['env']['EXP_RESULTS_DIR'] == str(root / 'P001' / 'baseline') and kw['env']['DEMO_PAIRS_DIR'] == str(root)
+    assert kw['stdout'].name == str(root / 'P001' / 'baseline_console.log')            # outside the folder a re-run clears
     r = demo_pairs.load('P001')['runs']['baseline']
     assert (r['status'], r['pid']) == ('starting', 4242)
     with pytest.raises(RuntimeError, match='another demo run is active'):                # overlap refused
@@ -525,7 +652,6 @@ def test_dashboard_shows_only_the_selected_pairs_own_data(root, server):
     make_pair(root)
     folder = root / 'P001'
     started = web._epoch(demo_pairs.load('P001')['runs']['baseline']['started'])
-    (folder / 'baseline').mkdir()
     (folder / 'baseline' / '001.png').write_bytes(b'\x89PNG\r\n\x1a\nfake')
     (folder / 'baseline' / '003.png').write_bytes(b'\x89PNG\r\n\x1a\nold')
     entry = {'approach': 'baseline', 'scheme': 'Blind flooding', 'workflow_stage': 'RSU', 'status': 'done', 'done': True}
@@ -535,8 +661,10 @@ def test_dashboard_shows_only_the_selected_pairs_own_data(root, server):
         {**entry, 'file': '003.png', 'captured': started - 3600},                           # older than this run
         {**entry, 'file': '../pair.json', 'captured': started + 1},
         {**entry, 'file': '004.png', 'captured': started + 1, 'approach': 'proposed'}]))     # another approach's
-    (folder / 'live_demo.json').write_text(json.dumps({'pair_id': 'P001', 'approach': 'proposed', 'scheme': 'Proposed (full)',
-                                                       'workflow_stage': 'RSU', 'updated': started + 1, 'done': True}))
+    (folder / 'baseline' / 'live_demo.json').write_text(json.dumps({'pair_id': 'P001', 'approach': 'baseline', 'scheme': 'Blind flooding',
+                                                                   'workflow_stage': 'RSU', 'updated': started + 1, 'done': True}))
+    (folder / 'proposed' / 'live_demo.json').write_text(json.dumps({'pair_id': 'P001', 'approach': 'proposed', 'scheme': 'Proposed (full)',
+                                                                   'workflow_stage': 'RSU', 'updated': started + 2, 'done': True}))
     v = get(server, '/api/pair?id=P001')
     s = v['pair']['scenario']
     assert (s['scenario_id'], s['seed'], s['incident']['vehicle'], s['incident']['event_id']) == \
@@ -551,6 +679,7 @@ def test_dashboard_shows_only_the_selected_pairs_own_data(root, server):
                                                          for k, _, _, _ in demo_pairs.METRICS]
     c = v['comparison']
     assert c['available'] and c['fingerprint'] == demo.record_fingerprint(RAW) and len(c['rows']) == 6
+    assert c['records'] == {a: f'{a}/raw/d200_r02.json.gz' for a in demo_pairs.APPROACHES}  # one record per run
     assert [m['key'] for m in v['metrics']] == [k for k, _, _, _ in demo_pairs.METRICS] and all(m['unit'] and m['definition'] for m in v['metrics'])
     with urllib.request.urlopen(server + '/pairs/P001/baseline/001.png', timeout=10) as r:
         assert r.read().startswith(b'\x89PNG')
@@ -576,15 +705,27 @@ def test_dashboard_withholds_failed_stale_and_changed_data(root, server):
     assert v['outcomes']['baseline']['available']                                        # the finished run keeps its own
     assert not v['comparison']['available'] and v['comparison']['rows'] == []           # no partner: no comparison
     started = web._epoch(demo_pairs.load('P001')['runs']['baseline']['started'])
-    (root / 'P001' / 'live_demo.json').write_text(json.dumps({'pair_id': 'P001', 'approach': 'baseline', 'scheme': 'x',
-                                                              'updated': started - 10, 'done': True}))
+    feed = {'pair_id': 'P001', 'approach': 'baseline', 'scheme': 'x', 'updated': started - 10, 'done': True}
+    (root / 'P001' / 'baseline' / 'live_demo.json').write_text(json.dumps(feed))
     assert get(server, '/api/pair?id=P001')['live'] == {}                               # an earlier run's leftover
+    (root / 'P001' / 'proposed').mkdir()
+    (root / 'P001' / 'proposed' / 'live_demo.json').write_text(json.dumps({**feed, 'updated': started + 10}))
+    assert get(server, '/api/pair?id=P001')['live'] == {}                               # a feed in another run's folder
     changed = copy.deepcopy(RAW)
     changed['protocols']['flooding']['metrics']['transmissions'] += 1
-    with gzip.open(root / 'P001' / 'raw' / 'd200_r02.json.gz', 'wt', encoding='utf-8') as f:
-        json.dump(changed, f)
+    write_record(root / 'P001' / 'baseline' / 'raw' / 'd200_r02.json.gz', changed)
     o = get(server, '/api/pair?id=P001')['outcomes']['baseline']
     assert not o['available'] and 'not the one this run replayed' in o['reason'] and 'rows' not in o
+
+
+def test_dashboard_shows_a_pair_run_before_per_approach_folders(root, server):
+    make_pair(root, shared=True)
+    started = web._epoch(demo_pairs.load('P001')['runs']['proposed']['started'])
+    (root / 'P001' / 'live_demo.json').write_text(json.dumps({'pair_id': 'P001', 'approach': 'proposed', 'scheme': 'Proposed (full)',
+                                                              'updated': started + 1, 'done': True}))
+    v = get(server, '/api/pair?id=P001')
+    assert v['live']['approach'] == 'proposed' and all(v['outcomes'][a]['available'] for a in demo_pairs.APPROACHES)
+    assert v['comparison']['available'] and v['comparison']['records'] == {a: 'raw/d200_r02.json.gz' for a in demo_pairs.APPROACHES}
 
 
 def test_dashboard_controls_create_pairs_and_start_one_run_at_a_time(root, server, monkeypatch):
@@ -615,10 +756,11 @@ def test_a_record_being_rewritten_is_unreadable_not_an_error(root, server):
     """Regression (P002 driven through the dashboard): while a run rewrote the pair's record, reading the half-written
     gzip raised EOFError and the server dropped the connection without an answer."""
     make_pair(root)
-    path = root / 'P001' / 'raw' / 'd200_r02.json.gz'
+    path = root / 'P001' / 'baseline' / 'raw' / 'd200_r02.json.gz'
     data = path.read_bytes()
     path.write_bytes(data[:len(data) // 2])                                             # half written
-    assert demo_pairs.record(demo_pairs.load('P001')) is None
+    assert demo_pairs.record(demo_pairs.load('P001'), 'baseline') is None
     v = get(server, '/api/pair?id=P001')
     assert not v['outcomes']['baseline']['available'] and 'cannot be read right now' in v['outcomes']['baseline']['reason']
+    assert v['outcomes']['proposed']['available']                                        # the other run's own record
     assert not v['comparison']['available'] and v['comparison']['rows'] == []

@@ -1,0 +1,13 @@
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{>{\raggedright\arraybackslash}p{4.9cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedleft\arraybackslash}p{1.9cm}>{\raggedleft\arraybackslash}p{1.9cm}>{\raggedleft\arraybackslash}p{1.9cm}}
+\toprule
+Protection & Attackers & Certificate formed & Honest vehicles accepting (\%) & Registered by an RSU \\
+\midrule
+No voting (alert accepted as sent) & persistent (default) & 0 of 30 & 100.0 & 30 of 30 \\
+Voting + BLS, no reputation gate & persistent (default) & 26 of 30 & 86.7 & 26 of 30 \\
+Voting + BLS + reputation (full) & persistent (default) & 26 of 30 & 0.0 & 0 of 30 \\
+Voting + BLS + reputation (full) & on-off, well-behaved 50\,\% & 26 of 30 & 0.0 & 0 of 30 \\
+Voting + BLS + reputation (full) & on-off, well-behaved 90\,\% & 26 of 30 & 83.3 & 25 of 30 \\
+\bottomrule
+\end{tabular}

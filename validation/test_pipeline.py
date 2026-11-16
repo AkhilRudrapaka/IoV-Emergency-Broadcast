@@ -1,4 +1,5 @@
 """End-to-end: one alert per simulation, reproducible seeds, sane metrics, all outputs written."""
+import csv
 import glob
 import json
 import os
@@ -13,19 +14,35 @@ import config
 import corroboration
 import experiment
 from metrics import METRICS
-from scenario import build, NET_FILE, SUMO_BIN
+from scenario import build, seed_for, NET_FILE, SUMO_BIN
 
 
 def test_same_seed_same_scenario():
     a, b = build(50, 3), build(50, 3)
     assert a["ids"] == b["ids"] and a["source_id"] == b["source_id"]
-    assert a["incident_time_s"] == b["incident_time_s"]
+    assert a["incident_time_s"] == b["incident_time_s"] and a["incident_xy"] == b["incident_xy"]   # the same incident
     assert np.array_equal(a["xy"], b["xy"]) and np.array_equal(a["trust"], b["trust"])
 
 
 def test_incident_is_randomised_between_runs():
-    incidents = {(s["incident_time_s"], s["source_id"]) for s in (build(50, r) for r in range(4))}
-    assert len(incidents) == 4
+    incidents = {(s["incident_time_s"], s["source_id"], tuple(s["incident_xy"])) for s in (build(50, r) for r in range(4))}
+    assert len(incidents) == 4 and len({xy for _, _, xy in incidents}) == 4      # 4 seeds: 4 vehicles, times and places
+
+
+def test_every_matrix_run_has_its_own_seeded_incident():
+    """The tracked experiment matrix (processed/runs.csv): every (density, run) has its own seed, and its incident (a
+    random honest vehicle at a random second of INCIDENT_WINDOW_S, drawn from that seed) is never another run's."""
+    with open(os.path.join(config.RESULTS_DIR, "processed", "runs.csv"), newline="", encoding="utf-8") as f:
+        runs = {r["run_id"]: r for r in csv.DictReader(f)}
+    assert len(runs) == len(config.DENSITIES) * config.RUNS_PER_DENSITY
+    lo, hi = config.INCIDENT_WINDOW_S
+    for d in config.DENSITIES:
+        mine = [r for r in runs.values() if int(r["density"]) == d]
+        assert sorted(int(r["seed"]) for r in mine) == [seed_for(d, r) for r in range(config.RUNS_PER_DENSITY)]
+        incidents = {(r["incident_vehicle"], float(r["incident_time_s"]), float(r["incident_x"]), float(r["incident_y"]))
+                     for r in mine}
+        assert len(incidents) == config.RUNS_PER_DENSITY, d                     # 30 runs: 30 different incidents
+        assert all(lo <= t <= hi for _, t, _, _ in incidents)
 
 
 def test_exactly_one_incident_and_valid_metrics(tmp_path, monkeypatch):

@@ -1,0 +1,13 @@
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{lrrrrrr}
+\toprule
+Scheme & Frames on air & Receptions lost & Reach (\%) & $t_{90}$ (ms) & Suppression (\%) & RSU registration (ms) \\
+\midrule
+Blind flooding & 185.8 $\pm$ 0.3 & 9632 $\pm$ 208 & 99.9 $\pm$ 0.1 & 31.8 $\pm$ 1.1 & 0.0 $\pm$ 0.0 & 22.0 $\pm$ 1.9 \\
+Flooding + random delay & 186.0 $\pm$ 0.1 & 9187 $\pm$ 223 & \textbf{100.0 $\pm$ 0.0} & \textbf{31.4 $\pm$ 1.2} & 0.0 $\pm$ 0.0 & 20.6 $\pm$ 1.5 \\
+Slotted 1-persistence & 54.7 $\pm$ 4.8 & 2070 $\pm$ 336 & 99.6 $\pm$ 0.5 & 32.5 $\pm$ 1.7 & 73.3 $\pm$ 2.7 & 20.7 $\pm$ 1.6 \\
+Slotted 1-p + random delay & \textbf{24.1 $\pm$ 1.0} & 188 $\pm$ 55 & 99.2 $\pm$ 0.8 & 34.0 $\pm$ 2.2 & \textbf{90.4 $\pm$ 0.5} & \textbf{20.5 $\pm$ 1.5} \\
+Proposed (full) & 26.4 $\pm$ 1.4 & \textbf{151 $\pm$ 35} & \textbf{100.0 $\pm$ 0.0} & 35.3 $\pm$ 1.8 & 89.1 $\pm$ 0.8 & 21.4 $\pm$ 1.9 \\
+\bottomrule
+\end{tabular}

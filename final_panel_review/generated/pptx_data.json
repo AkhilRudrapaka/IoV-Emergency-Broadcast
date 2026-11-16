@@ -1,0 +1,623 @@
+{
+ "densities": [
+  50,
+  100,
+  200,
+  250,
+  300,
+  500
+ ],
+ "at200": {
+  "flooding": {
+   "transmissions": [
+    185.76666666666668,
+    0.28896196799953966
+   ],
+   "collision_losses": [
+    9631.766666666666,
+    208.01856646985414
+   ],
+   "reachability": [
+    99.88333333333334,
+    0.14448098399976997
+   ],
+   "t90_ms": [
+    31.81576666666667,
+    1.091689070528609
+   ]
+  },
+  "flooding_rad": {
+   "transmissions": [
+    185.96666666666667,
+    0.06817432140442345
+   ],
+   "collision_losses": [
+    9186.533333333333,
+    223.4249851304981
+   ],
+   "reachability": [
+    99.98333333333333,
+    0.034087160702211766
+   ],
+   "t90_ms": [
+    31.386333333333333,
+    1.2479893572148808
+   ]
+  },
+  "slotted1p": {
+   "transmissions": [
+    54.666666666666664,
+    4.762116817789516
+   ],
+   "collision_losses": [
+    2069.733333333333,
+    335.96205410166334
+   ],
+   "reachability": [
+    99.63333333333334,
+    0.4675510212605885
+   ],
+   "t90_ms": [
+    32.53553333333333,
+    1.6914783988493498
+   ]
+  },
+  "slotted1p_rad": {
+   "transmissions": [
+    24.1,
+    0.9724888532634008
+   ],
+   "collision_losses": [
+    187.66666666666666,
+    55.035374578980026
+   ],
+   "reachability": [
+    99.20000000000002,
+    0.8065501019915063
+   ],
+   "t90_ms": [
+    34.00756666666667,
+    2.2204948499793393
+   ]
+  },
+  "proposed": {
+   "transmissions": [
+    26.433333333333334,
+    1.4063616040518412
+   ],
+   "collision_losses": [
+    151.36666666666667,
+    35.40167290961142
+   ],
+   "reachability": [
+    100.0,
+    0.0
+   ],
+   "t90_ms": [
+    35.291533333333334,
+    1.8352856796313628
+   ]
+  }
+ },
+ "frames_by_density": {
+  "flooding": [
+   50.733333333333334,
+   95.76666666666667,
+   185.76666666666668,
+   229.93333333333334,
+   274.76666666666665,
+   451.6
+  ],
+  "flooding_rad": [
+   50.9,
+   96.0,
+   185.96666666666667,
+   230.9,
+   275.9,
+   453.3333333333333
+  ],
+  "slotted1p": [
+   22.6,
+   35.3,
+   54.666666666666664,
+   69.3,
+   80.76666666666667,
+   152.16666666666666
+  ],
+  "slotted1p_rad": [
+   18.0,
+   20.533333333333335,
+   24.1,
+   24.6,
+   26.733333333333334,
+   31.933333333333334
+  ],
+  "proposed": [
+   18.366666666666667,
+   22.6,
+   26.433333333333334,
+   25.1,
+   27.733333333333334,
+   31.333333333333332
+  ]
+ },
+ "paired_vs_strongest": {
+  "50": {
+   "transmissions": [
+    0.36666666666666664,
+    1.2878670094394267
+   ],
+   "collision_losses": [
+    1.6666666666666667,
+    5.107978082033996
+   ],
+   "reachability": [
+    4.333333333333334,
+    4.142241775498965
+   ],
+   "t90_ms": [
+    -6.700777777777779,
+    3.9257781056542096
+   ]
+  },
+  "100": {
+   "transmissions": [
+    2.066666666666667,
+    1.6170694526117027
+   ],
+   "collision_losses": [
+    33.43333333333333,
+    24.61507132231727
+   ],
+   "reachability": [
+    1.5333333333333337,
+    1.2813170633171247
+   ],
+   "t90_ms": [
+    -0.2349285714285713,
+    1.821107033888533
+   ]
+  },
+  "200": {
+   "transmissions": [
+    2.3333333333333335,
+    1.5730606697185308
+   ],
+   "collision_losses": [
+    -36.3,
+    55.395509826104714
+   ],
+   "reachability": [
+    0.8,
+    0.8065501019915066
+   ],
+   "t90_ms": [
+    1.2839666666666671,
+    1.8917997555785586
+   ]
+  },
+  "250": {
+   "transmissions": [
+    0.5,
+    1.890701368651151
+   ],
+   "collision_losses": [
+    -145.2,
+    60.355599554572905
+   ],
+   "reachability": [
+    1.5866666666666664,
+    2.157876495971673
+   ],
+   "t90_ms": [
+    1.739310344827586,
+    2.4033540003579064
+   ]
+  },
+  "300": {
+   "transmissions": [
+    1.0,
+    1.7813711723749042
+   ],
+   "collision_losses": [
+    -212.13333333333333,
+    119.77658476529164
+   ],
+   "reachability": [
+    0.388888888888889,
+    0.4325124352275517
+   ],
+   "t90_ms": [
+    3.4025333333333347,
+    1.499538712206031
+   ]
+  },
+  "500": {
+   "transmissions": [
+    -0.6,
+    3.9864041308524474
+   ],
+   "collision_losses": [
+    -845.8333333333334,
+    553.8764839650077
+   ],
+   "reachability": [
+    0.3670414993306559,
+    0.2604626321216017
+   ],
+   "t90_ms": [
+    9.398566666666666,
+    2.2010806544236887
+   ]
+  }
+ },
+ "forgery_persistent": [
+  [
+   30,
+   30
+  ],
+  [
+   30,
+   26
+  ],
+  [
+   30,
+   0
+  ]
+ ],
+ "forgery_onoff": [
+  [
+   30,
+   0
+  ],
+  [
+   30,
+   0
+  ],
+  [
+   30,
+   25
+  ]
+ ],
+ "macros": {
+  "NFrFlood": "185.8",
+  "NFrFloodRad": "186.0",
+  "NFrSlot": "54.7",
+  "NFrSlotRad": "24.1",
+  "NFrProp": "26.4",
+  "NFrRoute": "10.8",
+  "NFrPropFiveH": "31.3",
+  "NFrFloodFiveH": "451.6",
+  "NFrSlotRadFiveH": "31.9",
+  "NFrSlotFiveH": "152.2",
+  "NFrPropFifty": "18.4",
+  "NFrFloodFifty": "50.7",
+  "NCutVsFlood": "86",
+  "NCutVsSlot": "52",
+  "NLossFlood": "9632",
+  "NLossSlot": "2070",
+  "NLossSlotRad": "188",
+  "NLossProp": "151",
+  "NLossPropFiveH": "559",
+  "NLossSlotRadFiveH": "1405",
+  "NTnFlood": "31.8",
+  "NTnSlotRad": "34.0",
+  "NTnProp": "35.3",
+  "NTnSlot": "32.5",
+  "NDTnFlood": "+3.5",
+  "NDTnFloodCI": "1.7",
+  "NDTnSlotRadFiveH": "+9.4",
+  "NDTnSlotRadFiveHCI": "2.2",
+  "NDTnSlotRadFifty": "\u22126.7",
+  "NDTnSlotRadFiftyCI": "3.9",
+  "NDFrSlotRad": "+2.3",
+  "NDFrSlotRadCI": "1.6",
+  "NSupProp": "89.1",
+  "NSupSlotRad": "90.4",
+  "NSupSlot": "73.3",
+  "NReachSlotRadFifty": "95.7",
+  "NReachSlotFifty": "91.5",
+  "NReachFloodTwoH": "99.9",
+  "NRsuProp": "21.4",
+  "NRsuFlood": "22.0",
+  "NRsuRoute": "30.5",
+  "NRsuRouteRuns": "28",
+  "NQuorumMs": "12.1",
+  "NFrNoSec": "19.6",
+  "NTnNoSec": "8.0",
+  "NSecFrames": "6.9",
+  "NSecTn": "27.3",
+  "NFrNoClu": "46.1",
+  "NFrNoCluFiveH": "215.5",
+  "NFrNoCov": "186.0",
+  "NFrNoRad": "40.6",
+  "NForgNoVote": "30",
+  "NForgVoteOnly": "26",
+  "NForgFull": "0",
+  "NForgOnOffHalf": "0",
+  "NForgOnOffNine": "25",
+  "NForgCertFull": "26",
+  "NRuns": "30",
+  "NScenarios": "180",
+  "NDensities": "6",
+  "NFrNoSlots": "34.1",
+  "NFrNoCluFwd": "49.9",
+  "NFrNoRep": "24.7",
+  "NFrPropPlusRoute": "37.2",
+  "NDTnFloodRad": "+3.9",
+  "NDTnFloodRadCI": "1.3",
+  "NDTnSlot": "+2.8",
+  "NDTnSlotCI": "1.7",
+  "NDTnSlotRad": "+1.3",
+  "NDTnSlotRadCI": "1.9",
+  "NDTnSlotRadThreeH": "+3.4",
+  "NDTnSlotRadThreeHCI": "1.5",
+  "NDFrSlot": "\u221228.2",
+  "NDFrSlotCI": "4.8",
+  "NDFrSlotRadHundred": "+2.1",
+  "NDFrSlotRadHundredCI": "1.6",
+  "NDLossSlotRad": "\u221236",
+  "NDLossSlotRadCI": "55",
+  "NDLossSlotRadFiveH": "\u2212846",
+  "NDLossSlotRadFiveHCI": "554",
+  "NDLossSlotRadHundred": "+33",
+  "NDLossSlotRadHundredCI": "25",
+  "NDReachSlotRadFifty": "+4.3",
+  "NDReachSlotRadFiftyCI": "4.1",
+  "NDRsuSlotRad": "+0.9",
+  "NDRsuSlotRadCI": "0.5",
+  "NNTnSlotRadFifty": "27",
+  "NTnSlotRadFifty": "44.3",
+  "NTnPropFifty": "37.8",
+  "NTnPropFiveH": "40.7",
+  "NTnSlotRadFiveH": "31.3",
+  "NRsuSlotRad": "20.5",
+  "NReachProp": "100.0"
+ },
+ "images": {
+  "logo.png": [
+   1948,
+   568
+  ],
+  "chart_ablation.png": [
+   1937,
+   880
+  ],
+  "chart_forgery.png": [
+   2027,
+   816
+  ],
+  "chart_frames.png": [
+   1515,
+   1009
+  ],
+  "chart_losses.png": [
+   1573,
+   1009
+  ],
+  "chart_t90.png": [
+   1526,
+   1009
+  ],
+  "guide_approval_email.png": [
+   981,
+   426
+  ],
+  "rep_ablation.png": [
+   2010,
+   735
+  ],
+  "rep_forgery.png": [
+   2010,
+   735
+  ],
+  "rep_frames_losses.png": [
+   2010,
+   825
+  ],
+  "rep_reach_t90.png": [
+   2010,
+   825
+  ],
+  "rep_strongest.png": [
+   2010,
+   690
+  ],
+  "shot_pair_P002_baseline_014.png": [
+   945,
+   755
+  ],
+  "shot_pair_P002_baseline_016.png": [
+   945,
+   755
+  ],
+  "shot_pair_P002_proposed_006.png": [
+   945,
+   755
+  ],
+  "shot_pair_P002_proposed_015.png": [
+   945,
+   755
+  ],
+  "shot_pair_P002_proposed_030.png": [
+   945,
+   755
+  ],
+  "shot_pair_P002_proposed_035.png": [
+   945,
+   755
+  ],
+  "shot_pair_P002_proposed_037.png": [
+   945,
+   755
+  ],
+  "shot_walk_01_traffic.png": [
+   945,
+   755
+  ],
+  "shot_walk_02_incident.png": [
+   945,
+   755
+  ],
+  "shot_walk_03_alert.png": [
+   945,
+   755
+  ],
+  "shot_walk_04_clusters.png": [
+   945,
+   755
+  ],
+  "shot_walk_05_votes.png": [
+   945,
+   755
+  ],
+  "shot_walk_06_certificate.png": [
+   945,
+   755
+  ],
+  "shot_walk_07_flooding.png": [
+   945,
+   755
+  ],
+  "shot_walk_08_forwarding.png": [
+   945,
+   755
+  ],
+  "shot_walk_09_duplicates.png": [
+   945,
+   755
+  ],
+  "shot_walk_10_rsu.png": [
+   945,
+   755
+  ],
+  "shot_walk_11_route.png": [
+   945,
+   755
+  ],
+  "shot_walk_12_forged.png": [
+   945,
+   755
+  ],
+  "shot_walk_13_final.png": [
+   945,
+   755
+  ],
+  "shot_window_traffic.png": [
+   1518,
+   1097
+  ],
+  "sl_forgery.png": [
+   750,
+   585
+  ],
+  "sl_frames_density.png": [
+   825,
+   330
+  ],
+  "sl_workflow.png": [
+   1845,
+   810
+  ],
+  "sl_zoom_certificate.png": [
+   230,
+   230
+  ],
+  "sl_zoom_votes.png": [
+   230,
+   230
+  ],
+  "system_architecture.png": [
+   3940,
+   1850
+  ],
+  "view_map_P002_baseline_014.png": [
+   565,
+   522
+  ],
+  "view_map_P002_proposed_015.png": [
+   565,
+   522
+  ],
+  "view_map_walk_01_traffic.png": [
+   565,
+   522
+  ],
+  "view_map_walk_02_incident.png": [
+   565,
+   522
+  ],
+  "view_map_walk_03_alert.png": [
+   565,
+   522
+  ],
+  "view_map_walk_04_clusters.png": [
+   565,
+   522
+  ],
+  "view_map_walk_05_votes.png": [
+   565,
+   522
+  ],
+  "view_map_walk_06_certificate.png": [
+   565,
+   522
+  ],
+  "view_map_walk_07_flooding.png": [
+   565,
+   522
+  ],
+  "view_map_walk_08_forwarding.png": [
+   565,
+   522
+  ],
+  "view_map_walk_09_duplicates.png": [
+   565,
+   522
+  ],
+  "view_map_walk_10_rsu.png": [
+   565,
+   522
+  ],
+  "view_map_walk_11_route.png": [
+   565,
+   522
+  ],
+  "view_map_walk_12_forged.png": [
+   565,
+   522
+  ],
+  "view_map_walk_13_final.png": [
+   565,
+   522
+  ],
+  "view_status_P002_baseline_014.png": [
+   945,
+   71
+  ],
+  "view_status_P002_proposed_015.png": [
+   945,
+   71
+  ],
+  "view_status_walk_07_flooding.png": [
+   945,
+   71
+  ],
+  "view_status_walk_09_duplicates.png": [
+   945,
+   71
+  ],
+  "view_status_walk_12_forged.png": [
+   945,
+   71
+  ],
+  "view_status_walk_13_final.png": [
+   945,
+   71
+  ],
+  "workflow_pipeline.png": [
+   2010,
+   825
+  ]
+ }
+}

@@ -1,0 +1,21 @@
+[
+"S.-Y. Ni, Y.-C. Tseng, Y.-S. Chen, and J.-P. Sheu, “The broadcast storm problem in a mobile ad hoc network,” in Proc. 5th Annual ACM/IEEE Int. Conf. on Mobile Computing and Networking (MobiCom), pp. 151–162, 1999.",
+"N. Wisitpongphan, O. K. Tonguz, J. S. Parikh, P. Mudalige, F. Bai, and V. Sadekar, “Broadcast storm mitigation techniques in vehicular ad hoc networks,” IEEE Wireless Communications, vol. 14, pp. 84–94, Dec. 2007.",
+"G. Korkmaz, E. Ekici, F. Özgüner, and Ü. Özgüner, “Urban multi-hop broadcast protocol for inter-vehicle communication systems,” in Proc. 1st ACM Int. Workshop on Vehicular Ad Hoc Networks (VANET), pp. 76–85, 2004.",
+"O. K. Tonguz, N. Wisitpongphan, and F. Bai, “DV-CAST: A distributed vehicular broadcast protocol for vehicular ad hoc networks,” IEEE Wireless Communications, vol. 17, no. 2, pp. 47–57, 2010.",
+"M. Raya, P. Papadimitratos, V. D. Gligor, and J.-P. Hubaux, “On data-centric trust establishment in ephemeral ad hoc networks,” in Proc. IEEE INFOCOM, pp. 1238–1246, 2008.",
+"C. Zhang, R. Lu, X. Lin, P.-H. Ho, and X. Shen, “An efficient identity-based batch verification scheme for vehicular sensor networks,” in Proc. IEEE INFOCOM, 2008.",
+"S. Naskar, C. Brunetta, T. Zhang, G. Hancke, and M. Gidlund, “Authentication framework with enhanced privacy and batch verifiable message sharing in VANETs,” IEEE Transactions on Vehicular Technology, 2025.",
+"M. Azizi and S. Shokrollahi, “RTRV: An RSU-assisted trust-based routing protocol for VANETs,” Ad Hoc Networks, vol. 154, p. 103387, 2024.",
+"Q. Chen and Q. Wu, “Dynamic networking method of vehicles in VANET,” Computers, Materials & Continua, vol. 81, no. 1, pp. 1301–1318, 2024.",
+"R. Kaur, R. Doss, and L. Pan, “The route based emergency message dissemination scheme using multihop wireless network for VANETs,” Telecommunication Systems, vol. 87, no. 4, pp. 1183–1199, 2024.  I",
+"P. A. Lopez, M. Behrisch, L. Bieker-Walz, J. Erdmann, Y.-P. Flötteröd, R. Hilbrich, L. Lücken, J. Rummel, P. Wagner, and E. Wiessner, “Microscopic traffic simulation using SUMO,” in Proc. 21st IEEE Int. Conf. on Intelligent Transportation Systems (ITSC), pp. 2575–2582, 2018.",
+"S. Marti, T. J. Giuli, K. Lai, and M. Baker, “Mitigating routing misbehavior in mobile ad hoc networks,” in Proc. 6th Annual Int. Conf. on Mobile Computing and Networking (MobiCom), pp. 255–265, 2000.",
+"A. Jøsang and R. Ismail, “The beta reputation system,” in Proc. 15th Bled Electronic Commerce Conference, 2002.",
+"M. Ester, H.-P. Kriegel, J. Sander, and X. Xu, “A density-based algorithm for discovering clusters in large spatial databases with noise,” in Proc. 2nd Int. Conf. on Knowledge Discovery and Data Mining (KDD), pp. 226–231, 1996.",
+"D. Boneh, B. Lynn, and H. Shacham, “Short signatures from the Weil pairing,” Journal of Cryptology, vol. 17, no. 4, pp. 297–319, 2004.",
+"Ó. Trullols-Cruces, M. Fiore, C. Casetti, C.-F. Chiasserini, and J. M. Barceló-Ordinas, “Planning roadside infrastructure for information dissemination in intelligent transportation systems,” Computer Communications, vol. 33, no. 4, pp. 432–442, 2010.",
+"IEEE, “IEEE std 802.11p-2010: Wireless access in vehicular environments.” IEEE Standards Association, 2010.",
+"ETSI, “Intelligent transport systems (ITS); vehicular communications; basic set of applications; part 3: Specifications of decentralized environmental notification basic service.” European Standard ETSI EN 302 637-3 V1.3.1, Apr. 2019.",
+"ETSI, “Intelligent transport systems (ITS); vehicular communications; GeoNetworking; part 4: Geographical addressing and forwarding for point-to-point and point-to-multipoint communications; sub-part 1: Media-independent functionality.” European Standard ETSI EN 302 636-4-1 V1.4.1, Jan. 2020."
+]
