@@ -36,6 +36,7 @@ import traci
 
 import config
 import experiment
+import incident_response
 import report
 from channel import geometry, ms_to_slots, slots_to_ms
 from clustering import elect_roles
@@ -52,6 +53,7 @@ VOTE = (225, 50, 150, 255)              # vehicle that has cast a vote (Votes st
 MEMBER = (100, 185, 170, 255)           # cluster member (Cluster / CH stage only)
 HEAD = (0, 0, 0, 255)                   # ring: cluster head
 ROUTE = (122, 70, 200, 255)             # CH-to-CH route hop already traversed
+REROUTED = (40, 170, 80, 255)           # vehicle rerouted around the incident edge (reroute=True, after the replay)
 IDLE = NEUTRAL                          # older name, kept for callers
 RSU_IDLE, RSU_OK, RSU_DUP, RSU_BAD = (170, 178, 190, 255), (16, 150, 72, 255), (150, 205, 165, 255), (210, 40, 40, 255)
 STAGES = ["Incident", "Alert", "Cluster / CH", "Votes", "Certificate", "Forwarding / Route", "RSU"]
@@ -657,11 +659,14 @@ def replay(raw, proto="proposed", forged=None, pace=0.35, title="", snap=None, s
 
 def run(density=config.DEMO_DENSITY, run_index=config.DEMO_RUN, schemes=("flooding", "proposed", "ch_route"),
         pace=0.35, shots=None, lead_in_s=15, wait=True, forged=True, approach=None, archive=True, check=None,
-        capture_dir=None):
+        capture_dir=None, reroute=False):
     """approach=None: the full walkthrough (every scheme in `schemes` in turn, then the forged alert, ending on the
     CH-route delivery). approach="baseline" / "proposed": a SEPARATED run (demo_pairs.py) that replays only that
     approach's schemes and ends on its own outcome; a baseline run shows no clusters and no forged alert, which belong
     to the proposed method. check(raw) runs before SUMO starts; capture_dir keeps live window captures.
+    reroute=True (run.py demo --reroute): once the clock resumes, the stop is detected from live telemetry and the
+    vehicles that accepted the proposed scheme's verified alert are rerouted around the incident edge
+    (incident_response.py, the same chain as the headless run.py incident).
     The defaults replay the fixed showcase scenario (config.DEMO_DENSITY, DEMO_RUN), labelled as such; every other
     seed has its own incident (scenario.build), which comparison pairs and the experiment matrix use."""
     print("Preparing the scenario: simulating every scheme on this seed (a few seconds)...", flush=True)
@@ -846,15 +851,26 @@ def run(density=config.DEMO_DENSITY, run_index=config.DEMO_RUN, schemes=("floodi
             screen = final_screen(raw, schemes[0], "ch_route" in schemes) if approach else final_screen(raw)
             for vid, colour in screen["vehicles"].items():
                 traci.vehicle.setColor(vid, colour)
-            traci.vehicle.setSpeedMode(sc["source_id"], 0)
-            traci.vehicle.setLaneChangeMode(sc["source_id"], 0)
-            traci.vehicle.setSpeed(sc["source_id"], 0)
+            response = None
+            if reroute:                    # the headless chain of run.py incident, on this window's live traffic
+                detector = incident_response.StopDetector(traci)
+                detector.update()          # every vehicle's speed at the paused incident snapshot
+                response = incident_response.Response(traci, raw, dict(zip(live["ids"], live["trust"])), detector)
+            incident_response.crash(traci, sc["source_id"])
             for u in sc["rsus"]:
                 rsu_state(u, *screen["rsus"][u["id"]])
             left_text('service', screen["service"], 1075, 15)
             set_stage(6, True, screen["reached"] - ({2} if approach == "baseline" else set()))
 
             def banner():
+                if response and response.watch:
+                    r = response.result()
+                    n = {k: sum(v["outcome"] == k for v in r["vehicles"]) for k in ("rerouted", "no_alternative")}
+                    line_b = (f"stop detected from live telemetry: {n['rerouted']} alert holders rerouted around "
+                              f"{r['detection']['edge']} (green), {n['no_alternative']} without an alternative"
+                              if r["released"] else "stop NOT detected from telemetry: no alert released, nobody rerouted")
+                    status(screen["banner"][0], f"{line_b}  |  t = {sim_time():.0f} s")
+                    return
                 status(screen["banner"][0], f"{screen['reach']}  |  t = {sim_time():.0f} s, clock running again: "
                                             f"only the crashed vehicle stays stopped")
             if approach:          # a separated run captures this state at once (live_feed): its own banner goes up first
@@ -864,10 +880,23 @@ def run(density=config.DEMO_DENSITY, run_index=config.DEMO_RUN, schemes=("floodi
                       reach=screen["reach"], rsu=screen["rsu"], done=False)
             for k in range(20):
                 traci.simulationStep()
+                if response:
+                    response.step()
+                    if k == 0:
+                        for v in response.result()["vehicles"]:
+                            if v["outcome"] == "rerouted":
+                                traci.vehicle.setColor(v["id"], REROUTED)
                 banner()
                 time.sleep(pace / 3)
                 if k == 5:
                     snap("final", "RSU", screen["banner"][0], None, screen["scheme"])   # = status line a
+            if response:
+                r = response.result()
+                entries = sum(v["entries_onto_incident_edge"] for v in r["vehicles"] if v["outcome"] == "rerouted")
+                print(f"Incident response: detected {r['released']}; rerouted "
+                      f"{sum(v['outcome'] == 'rerouted' for v in r['vehicles'])}, no alternative "
+                      f"{[v['id'] for v in r['vehicles'] if v['outcome'] == 'no_alternative']}; entries onto the incident "
+                      f"edge by rerouted vehicles in {r['followup']['steps']} s: {entries}", flush=True)
             live_feed(run_id=sc["run_id"], event_id=sc["alert"]["event_id"], scheme=screen["scheme"], workflow_stage="RSU",
                       status=screen["banner"][0],
                       stage=f"finished, recorded totals verified; {screen['scheme']}: {screen['rsu']}",

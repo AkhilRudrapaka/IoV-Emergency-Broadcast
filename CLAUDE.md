@@ -14,6 +14,7 @@ Design: `docs/SYSTEM_DESIGN.md`; past audit and decisions: `docs/AUDIT.md`; curr
 - 105/105 tests pass (`python -m pytest validation -q`, ~100 s).
 - `EXP_MALICIOUS_COOPERATION=0.9 ... experiment --densities 200` reproduces the tracked on-off CSVs bit-exactly:
   forged event registered in 25/30 runs. Runtime: 30 runs at 200 vehicles ~35 s; 4 densities x 30 runs ~75 s (16 cores).
+  Since Block G this needs `EXP_ENFORCE_COMMITTEE=0 EXP_TRUST_BURST_K=0` (see below); with the new defaults: 0/30.
 - The "on-off" attacker is i.i.d. per-second cooperation (p = 0.9), not a phased on-off attacker. Its only observable
   signature is the watchdog failure rate (~0.19 vs 0.10 honest). SUMO mobility ignores the malicious label, so kinematic
   features carry no signal by construction. Reputation is one global value per vehicle (no per-observer view).
@@ -21,8 +22,26 @@ Design: `docs/SYSTEM_DESIGN.md`; past audit and decisions: `docs/AUDIT.md`; curr
   0/30 forged registrations at 50/100/200/500 vehicles, genuine alerts 30/30, frames and t90 unchanged; 0.88 starts
   losing genuine alerts at 50 vehicles. Any ML result must be compared with a gate calibrated on held-out seeds, never
   only with 0.7.
-- The certificate check (`corroboration.accept`, called at `protocols.py:110`) counts any >= 3 reputable signers; it does
-  not check that they are the committee (the 5 nearest reputable neighbours of the claimed position).
+- At this tag the certificate check (`corroboration.accept`) counted any >= 3 reputable signers, without checking that
+  they are the committee. Fixed in Block G: see the next section.
+
+## Block G final configuration (verified 2026-11-21; report: `BLOCK_G_FINAL_REPORT.md`)
+- Committee membership enforcement is ON by default (`ENFORCE_COMMITTEE=1`). Every certificate check counts only
+  endorsers in the committee the receiver rebuilds itself (the 5 nearest reputable neighbours of the claimed position):
+  source release and every receiver (`protocols.py:112`), CH-route local rounds, `infrastructure.cluster_votes` and
+  `batch_authenticate`, and the incident re-verification (`incident_response.accepted_by`). A committee listed in a
+  certificate is never used. Crypto, source authentication and the 0.70 gate are unchanged.
+- Committee size/quorum stay 5/3. No separate CH-route quorum (CH-route local rounds use the global quorum).
+- Burst detector OFF by default (`TRUST_BURST_K=0`). k = 4 is an opt-in experimental setting. Measured benefit only
+  against phased attackers with long off-windows (phased 0.9/30 s, 0.8/30 s); not better than a count gate for
+  per-second attackers; cost about 0.7-0.8 % honest exclusion per run on average, above 1 % in about a third of runs
+  (max 3.75 %). On top of enforcement it removed 3 of 941 forgeries (G4): no additive forgery gain.
+- Historical baselines (tracked `results/urban`, Block F, the published 180 runs) are reproduced byte for byte with
+  `EXP_ENFORCE_COMMITTEE=0 EXP_TRUST_BURST_K=0` (`results/hardening/analysis/final_baseline_check.py`). With the new
+  defaults genuine-alert CSVs are identical and only forgery CSVs change (voting-only registered 134/180 -> 1/180), so
+  a default run must never be written into `results/urban`.
+- ML (VeReMi) stays shadow-only (`ML_TRUST_MODE="off"`).
+- 166/166 validation tests (~175 s) and 26/26 VeReMi tests pass with these defaults.
 
 ## How to run safely
 - Entry point `python run.py {experiment,single,explain,sensitivity,demo,pair,web,dashboard}`; every parameter is in

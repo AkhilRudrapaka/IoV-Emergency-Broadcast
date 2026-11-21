@@ -1,0 +1,207 @@
+implementation sha256/16: adversarial fbed29e82ac4a043 corroboration d3485ac854029ccc protocols 7067c3b968e60c63 experiment 878e4e05f69ae317 scenario 628141c4747ca10b config 668f63959e3d24b6 infrastructure 2defb0a8ee2e5b3a incident_response bde0f4241d146b03 
+=== G1 start 2026-11-19T06:14:32Z
+  [1/34] G1 ratio0.1_coop0_colluders3_cc1_enf1
+  [2/34] G1 ratio0.1_coop0_colluders5_cc1_enf1
+  [3/34] G1 ratio0.1_coop0.5_colluders3_cc1_enf1
+  [4/34] G1 ratio0.1_coop0.5_colluders5_cc1_enf1
+  [5/34] G1 ratio0.1_coop0.9_colluders3_cc1_enf1
+  [6/34] G1 ratio0.1_coop0.9_colluders5_cc1_enf1
+  [7/34] G1 ratio0.2_coop0_colluders3_cc1_enf1
+  [8/34] G1 ratio0.2_coop0_colluders5_cc1_enf1
+  [9/34] G1 ratio0.2_coop0.5_colluders3_cc1_enf1
+  [10/34] G1 ratio0.2_coop0.5_colluders5_cc1_enf1
+  [11/34] G1 ratio0.2_coop0.9_colluders3_cc1_enf1
+  [12/34] G1 ratio0.2_coop0.9_colluders5_cc1_enf1
+  [13/34] G1 ratio0.3_coop0_colluders3_cc1_enf1
+  [14/34] G1 ratio0.3_coop0_colluders5_cc1_enf1
+  [15/34] G1 ratio0.3_coop0.5_colluders3_cc1_enf1
+  [16/34] G1 ratio0.3_coop0.5_colluders5_cc1_enf1
+  [17/34] G1 ratio0.3_coop0.9_colluders3_cc1_enf1
+  [18/34] G1 ratio0.3_coop0.9_colluders5_cc1_enf1
+  [19/34] G1 ratio0.1_duty0.5_period10_cc1_enf1
+  [20/34] G1 ratio0.1_duty0.5_period30_cc1_enf1
+  [21/34] G1 ratio0.1_duty0.8_period10_cc1_enf1
+  [22/34] G1 ratio0.1_duty0.8_period30_cc1_enf1
+  [23/34] G1 ratio0.1_duty0.9_period10_cc1_enf1
+  [24/34] G1 ratio0.1_duty0.9_period30_cc1_enf1
+  [25/34] G1 ratio0.1_duty0.95_period10_cc1_enf1
+  [26/34] G1 ratio0.1_duty0.95_period30_cc1_enf1
+  [27/34] G1 ratio0.2_duty0.5_period10_cc1_enf1
+  [28/34] G1 ratio0.2_duty0.5_period30_cc1_enf1
+  [29/34] G1 ratio0.2_duty0.8_period10_cc1_enf1
+  [30/34] G1 ratio0.2_duty0.8_period30_cc1_enf1
+  [31/34] G1 ratio0.2_duty0.9_period10_cc1_enf1
+  [32/34] G1 ratio0.2_duty0.9_period30_cc1_enf1
+  [33/34] G1 ratio0.2_duty0.95_period10_cc1_enf1
+  [34/34] G1 ratio0.2_duty0.95_period30_cc1_enf1
+G1: 34 settings (34 run now), runs 0..29, densities [100, 200, 300]
+results\hardening\G1_genuine_runs.csv
+results\hardening\G1_trust_runs.csv
+results\hardening\G1_forgery_runs.csv
+results\hardening\G1_genuine_summary.csv
+results\hardening\G1_trust_summary.csv
+results\hardening\G1_forgery_summary.csv
+=== G1 done 2026-11-19T06:48:32Z
+=== G2 start 2026-11-19T06:48:32Z
+  [1/24] G2 coop0.9_ratio0.1_m5_q3_colluders5_enf1_cc1
+  [2/24] G2 period30_duty0.9_ratio0.1_m5_q3_colluders5_enf1_cc1
+  [3/24] G2 coop0.9_ratio0.2_m5_q3_colluders5_enf1_cc1
+  [4/24] G2 period30_duty0.9_ratio0.2_m5_q3_colluders5_enf1_cc1
+  [5/24] G2 coop0.9_ratio0.3_m5_q3_colluders5_enf1_cc1
+  [6/24] G2 period30_duty0.9_ratio0.3_m5_q3_colluders5_enf1_cc1
+  [7/24] G2 coop0.9_ratio0.1_m7_q4_colluders7_enf1_cc1
+  [8/24] G2 period30_duty0.9_ratio0.1_m7_q4_colluders7_enf1_cc1
+  [9/24] G2 coop0.9_ratio0.2_m7_q4_colluders7_enf1_cc1
+  [10/24] G2 period30_duty0.9_ratio0.2_m7_q4_colluders7_enf1_cc1
+  [11/24] G2 coop0.9_ratio0.3_m7_q4_colluders7_enf1_cc1
+  [12/24] G2 period30_duty0.9_ratio0.3_m7_q4_colluders7_enf1_cc1
+  [13/24] G2 coop0.9_ratio0.1_m9_q5_colluders9_enf1_cc1
+  [14/24] G2 period30_duty0.9_ratio0.1_m9_q5_colluders9_enf1_cc1
+  [15/24] G2 coop0.9_ratio0.2_m9_q5_colluders9_enf1_cc1
+  [16/24] G2 period30_duty0.9_ratio0.2_m9_q5_colluders9_enf1_cc1
+  [17/24] G2 coop0.9_ratio0.3_m9_q5_colluders9_enf1_cc1
+  [18/24] G2 period30_duty0.9_ratio0.3_m9_q5_colluders9_enf1_cc1
+  [19/24] G2 coop0.9_ratio0.1_m7_q3_colluders7_enf1_cc1
+  [20/24] G2 period30_duty0.9_ratio0.1_m7_q3_colluders7_enf1_cc1
+  [21/24] G2 coop0.9_ratio0.2_m7_q3_colluders7_enf1_cc1
+  [22/24] G2 period30_duty0.9_ratio0.2_m7_q3_colluders7_enf1_cc1
+  [23/24] G2 coop0.9_ratio0.3_m7_q3_colluders7_enf1_cc1
+  [24/24] G2 period30_duty0.9_ratio0.3_m7_q3_colluders7_enf1_cc1
+G2: 24 settings (24 run now), runs 0..29, densities [100, 200, 300]; selected committee: (7, 3)
+results\hardening\G2_genuine_runs.csv
+results\hardening\G2_trust_runs.csv
+results\hardening\G2_forgery_runs.csv
+results\hardening\G2_genuine_summary.csv
+results\hardening\G2_trust_summary.csv
+results\hardening\G2_forgery_summary.csv
+G3a start 08:42:53 UTC
+  [1/20] G3a coop0.9_ratio0.1_k3_cc1
+  [2/20] G3a period30_duty0.8_ratio0.1_k3_cc1
+  [3/20] G3a period30_duty0.9_ratio0.1_k3_cc1
+  [4/20] G3a period30_duty0.95_ratio0.1_k3_cc1
+  [5/20] G3a period10_duty0.9_ratio0.1_k3_cc1
+  [6/20] G3a coop0.9_ratio0.1_k4_cc1
+  [7/20] G3a period30_duty0.8_ratio0.1_k4_cc1
+  [8/20] G3a period30_duty0.9_ratio0.1_k4_cc1
+  [9/20] G3a period30_duty0.95_ratio0.1_k4_cc1
+  [10/20] G3a period10_duty0.9_ratio0.1_k4_cc1
+  [11/20] G3a coop0.9_ratio0.1_k5_cc1
+  [12/20] G3a period30_duty0.8_ratio0.1_k5_cc1
+  [13/20] G3a period30_duty0.9_ratio0.1_k5_cc1
+  [14/20] G3a period30_duty0.95_ratio0.1_k5_cc1
+  [15/20] G3a period10_duty0.9_ratio0.1_k5_cc1
+  [16/20] G3a coop0.9_ratio0.1_k6_cc1
+  [17/20] G3a period30_duty0.8_ratio0.1_k6_cc1
+  [18/20] G3a period30_duty0.9_ratio0.1_k6_cc1
+  [19/20] G3a period30_duty0.95_ratio0.1_k6_cc1
+  [20/20] G3a period10_duty0.9_ratio0.1_k6_cc1
+G3a: 20 settings (20 run now), runs 30..59, densities [100, 200, 300]; chosen k: 4
+results\hardening\G3a_genuine_runs.csv
+results\hardening\G3a_trust_runs.csv
+results\hardening\G3a_forgery_runs.csv
+results\hardening\G3a_genuine_summary.csv
+results\hardening\G3a_trust_summary.csv
+results\hardening\G3a_forgery_summary.csv
+G3a end 09:03:10 UTC
+k0 check start 10:29:13 UTC
+ratio0.1_duty0.9_period30_cc1 runs.csv: identical (342019 bytes)
+ratio0.1_duty0.9_period30_cc1 forgery_runs.csv: identical (21936 bytes)
+ratio0.1_coop0.9_colluders5_cc1 runs.csv: identical (342067 bytes)
+ratio0.1_coop0.9_colluders5_cc1 forgery_runs.csv: identical (21932 bytes)
+G3b start 10:30:56 UTC
+  [1/19] G3b ratio0.1_duty0.5_period10_cc1_k4
+  [2/19] G3b ratio0.1_duty0.5_period30_cc1_k4
+  [3/19] G3b ratio0.1_duty0.8_period10_cc1_k4
+  [4/19] G3b ratio0.1_duty0.8_period30_cc1_k4
+  [5/19] G3b ratio0.1_duty0.9_period10_cc1_k4
+  [6/19] G3b ratio0.1_duty0.9_period30_cc1_k4
+  [7/19] G3b ratio0.1_duty0.95_period10_cc1_k4
+  [8/19] G3b ratio0.1_duty0.95_period30_cc1_k4
+  [9/19] G3b ratio0.2_duty0.5_period10_cc1_k4
+  [10/19] G3b ratio0.2_duty0.5_period30_cc1_k4
+  [11/19] G3b ratio0.2_duty0.8_period10_cc1_k4
+  [12/19] G3b ratio0.2_duty0.8_period30_cc1_k4
+  [13/19] G3b ratio0.2_duty0.9_period10_cc1_k4
+  [14/19] G3b ratio0.2_duty0.9_period30_cc1_k4
+  [15/19] G3b ratio0.2_duty0.95_period10_cc1_k4
+  [16/19] G3b ratio0.2_duty0.95_period30_cc1_k4
+  [17/19] G3b ratio0.1_coop0.9_colluders5_cc1_k4
+  [18/19] G3b ratio0.2_coop0.9_colluders5_cc1_k4
+  [19/19] G3b ratio0.3_coop0.9_colluders5_cc1_k4
+G3b: 19 settings (19 run now), runs 0..29, densities [100, 200, 300]
+results\hardening\G3b_genuine_runs.csv
+results\hardening\G3b_trust_runs.csv
+results\hardening\G3b_forgery_runs.csv
+results\hardening\G3b_genuine_summary.csv
+results\hardening\G3b_trust_summary.csv
+results\hardening\G3b_forgery_summary.csv
+G3b_gate start 10:49:51 UTC
+  [1/19] G3b_gate ratio0.1_duty0.5_period10_cc1_gate0.75
+  [2/19] G3b_gate ratio0.1_duty0.5_period30_cc1_gate0.75
+  [3/19] G3b_gate ratio0.1_duty0.8_period10_cc1_gate0.75
+  [4/19] G3b_gate ratio0.1_duty0.8_period30_cc1_gate0.75
+  [5/19] G3b_gate ratio0.1_duty0.9_period10_cc1_gate0.75
+  [6/19] G3b_gate ratio0.1_duty0.9_period30_cc1_gate0.75
+  [7/19] G3b_gate ratio0.1_duty0.95_period10_cc1_gate0.75
+  [8/19] G3b_gate ratio0.1_duty0.95_period30_cc1_gate0.75
+  [9/19] G3b_gate ratio0.2_duty0.5_period10_cc1_gate0.75
+  [10/19] G3b_gate ratio0.2_duty0.5_period30_cc1_gate0.75
+  [11/19] G3b_gate ratio0.2_duty0.8_period10_cc1_gate0.75
+  [12/19] G3b_gate ratio0.2_duty0.8_period30_cc1_gate0.75
+  [13/19] G3b_gate ratio0.2_duty0.9_period10_cc1_gate0.75
+  [14/19] G3b_gate ratio0.2_duty0.9_period30_cc1_gate0.75
+  [15/19] G3b_gate ratio0.2_duty0.95_period10_cc1_gate0.75
+  [16/19] G3b_gate ratio0.2_duty0.95_period30_cc1_gate0.75
+  [17/19] G3b_gate ratio0.1_coop0.9_colluders5_cc1_gate0.75
+  [18/19] G3b_gate ratio0.2_coop0.9_colluders5_cc1_gate0.75
+  [19/19] G3b_gate ratio0.3_coop0.9_colluders5_cc1_gate0.75
+G3b_gate: 19 settings (19 run now), runs 0..29, densities [100, 200, 300]
+results\hardening\G3b_gate_genuine_runs.csv
+results\hardening\G3b_gate_trust_runs.csv
+results\hardening\G3b_gate_forgery_runs.csv
+results\hardening\G3b_gate_genuine_summary.csv
+results\hardening\G3b_gate_trust_summary.csv
+results\hardening\G3b_gate_forgery_summary.csv
+chain end 11:08:47 UTC rc=0
+final baseline check start 04:41:41 UTC
+final baseline check end 04:45:58 UTC rc=1
+G4 start 04:47:03 UTC
+  [1/25] G4 ratio0.1_coop0_colluders5_cc1_m5_q3_enf1_k4
+  [2/25] G4 ratio0.1_coop0.5_colluders5_cc1_m5_q3_enf1_k4
+  [3/25] G4 ratio0.1_coop0.9_colluders5_cc1_m5_q3_enf1_k4
+  [4/25] G4 ratio0.2_coop0_colluders5_cc1_m5_q3_enf1_k4
+  [5/25] G4 ratio0.2_coop0.5_colluders5_cc1_m5_q3_enf1_k4
+  [6/25] G4 ratio0.2_coop0.9_colluders5_cc1_m5_q3_enf1_k4
+  [7/25] G4 ratio0.3_coop0_colluders5_cc1_m5_q3_enf1_k4
+  [8/25] G4 ratio0.3_coop0.5_colluders5_cc1_m5_q3_enf1_k4
+  [9/25] G4 ratio0.3_coop0.9_colluders5_cc1_m5_q3_enf1_k4
+  [10/25] G4 ratio0.1_duty0.5_period10_cc1_m5_q3_enf1_k4_colluders5
+  [11/25] G4 ratio0.1_duty0.5_period30_cc1_m5_q3_enf1_k4_colluders5
+  [12/25] G4 ratio0.1_duty0.8_period10_cc1_m5_q3_enf1_k4_colluders5
+  [13/25] G4 ratio0.1_duty0.8_period30_cc1_m5_q3_enf1_k4_colluders5
+  [14/25] G4 ratio0.1_duty0.9_period10_cc1_m5_q3_enf1_k4_colluders5
+  [15/25] G4 ratio0.1_duty0.9_period30_cc1_m5_q3_enf1_k4_colluders5
+  [16/25] G4 ratio0.1_duty0.95_period10_cc1_m5_q3_enf1_k4_colluders5
+  [17/25] G4 ratio0.1_duty0.95_period30_cc1_m5_q3_enf1_k4_colluders5
+  [18/25] G4 ratio0.2_duty0.5_period10_cc1_m5_q3_enf1_k4_colluders5
+  [19/25] G4 ratio0.2_duty0.5_period30_cc1_m5_q3_enf1_k4_colluders5
+  [20/25] G4 ratio0.2_duty0.8_period10_cc1_m5_q3_enf1_k4_colluders5
+  [21/25] G4 ratio0.2_duty0.8_period30_cc1_m5_q3_enf1_k4_colluders5
+  [22/25] G4 ratio0.2_duty0.9_period10_cc1_m5_q3_enf1_k4_colluders5
+  [23/25] G4 ratio0.2_duty0.9_period30_cc1_m5_q3_enf1_k4_colluders5
+  [24/25] G4 ratio0.2_duty0.95_period10_cc1_m5_q3_enf1_k4_colluders5
+  [25/25] G4 ratio0.2_duty0.95_period30_cc1_m5_q3_enf1_k4_colluders5
+G4: 25 settings (25 run now), runs 0..29, densities [100, 200, 300]
+results\hardening\G4_genuine_runs.csv
+results\hardening\G4_trust_runs.csv
+results\hardening\G4_forgery_runs.csv
+results\hardening\G4_genuine_summary.csv
+results\hardening\G4_trust_summary.csv
+results\hardening\G4_forgery_summary.csv
+G4 end 05:12:38 UTC rc=0
+post-G4 baseline check start 05:16:27 UTC
+post-G4 baseline check end 05:21:17 UTC rc=0
+cleanup baseline check start 06:30:51 UTC
+cleanup baseline check end 06:35:29 UTC rc=0
+precommit baseline check start 07:42:38 UTC
+precommit baseline check end 07:46:54 UTC rc=0

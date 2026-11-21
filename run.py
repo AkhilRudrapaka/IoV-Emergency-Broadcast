@@ -8,6 +8,10 @@ Entry point.
   python run.py sensitivity           range and misbehaviour sweeps at 200 vehicles
   python run.py demo                  the fixed demo scenario in SUMO-GUI: clusters, voting, flooding, the
                                       proposed scheme, RSU reception, and a forged alert being rejected
+  python run.py incident -d 200 -r 2  headless incident response: staged stop -> detection from live telemetry ->
+                                      verified alert -> TraCI rerouting -> results/incident/ (--runs N: seeds 0..N-1)
+  python run.py incident-compare      routing comparison on seeds 0..29: no incident / no rerouting / shortest path /
+                                      route-preserving detour -> results/incident_routing/
 """
 import argparse
 import glob
@@ -27,9 +31,9 @@ def cmd_experiment(a):
     densities = a.densities or config.DENSITIES
     runs = a.runs or config.RUNS_PER_DENSITY
     print(f"{config.TITLE}\n{len(densities)} densities x {runs} runs x {len(config.PROTOCOLS)} schemes, one incident per run\n")
-    rows, forged = experiment.run_matrix(densities, runs)
+    rows, forged = experiment.run_matrix(densities, runs, first=a.first_run)
     summary, forgery = experiment.write_outputs(rows, forged)
-    report.save_config({"densities": densities, "runs": runs})
+    report.save_config({"densities": densities, "runs": runs, **({"first_run": a.first_run} if a.first_run else {})})
     if a.no_report:
         return
     # The showcase is the fixed demo scenario, so the explainer, the figures and the
@@ -144,7 +148,8 @@ def cmd_demo(a):
     if a.pair or a.approach:
         return pair_demo(a)
     import demo
-    demo.run(a.density, a.run, a.scheme, a.pace, a.shots, wait=not a.no_wait, forged=not a.no_forged)
+    demo.run(a.density, a.run, a.scheme, a.pace, a.shots, wait=not a.no_wait, forged=not a.no_forged,
+             **({"reroute": True} if a.reroute else {}))          # without --reroute: the earlier call, unchanged
 
 
 def pair_demo(a):
@@ -185,6 +190,30 @@ def pair_demo(a):
         raise
     finally:
         demo_pairs.release()
+
+
+def cmd_incident(a):
+    import incident_response
+    if not a.runs:
+        print(incident_response.describe(incident_response.run(a.density, a.run, method=a.method)))
+        return
+    rows, path = incident_response.run_many(a.density, a.runs, method=a.method)
+    for r in rows:
+        print("  ".join(f"{k}={r[k]}" for k in ("run_id", "speed_before_mps", "detected", "rerouted", "no_alternative",
+                                                "unavoidable", "rerouted_entries", "forged_routes_changed")))
+    print(f"detected {sum(r['detected'] for r in rows)}/{len(rows)}; rerouted {sum(r['rerouted'] for r in rows)}; "
+          f"entries by rerouted vehicles {sum(r['rerouted_entries'] for r in rows)}; forged-alert route changes "
+          f"{sum(r['forged_routes_changed'] or 0 for r in rows)}\nsummary: {path}")
+
+
+def cmd_incident_compare(a):
+    import incident_routing
+    print(incident_routing.main(a.density, a.runs, a.end, simulate=not a.analyse_only))
+
+
+def cmd_adversarial(a):
+    import adversarial
+    print(adversarial.main(a.sweep, a.densities, a.runs, summarise_only=a.summarise_only))
 
 
 def cmd_pair(a):
@@ -264,6 +293,7 @@ def main():
     e.add_argument("--densities", type=int, nargs="+")
     e.add_argument("--runs", type=int)
     e.add_argument("--no-report", action="store_true")
+    e.add_argument("--first-run", type=int, default=0, help="first run index (>= 30: held-out seeds, e.g. for calibration)")
     s = sub.add_parser("single")
     s.add_argument("-d", "--density", type=int, default=config.DEMO_DENSITY)
     s.add_argument("-r", "--run", type=int, default=config.DEMO_RUN)
@@ -285,6 +315,8 @@ def main():
                                    "(Windows; e.g. portal/assets/sumo for the portal's SUMO Demonstration section)")
     g.add_argument("--no-wait", action="store_true", help="close SUMO-GUI when the replay ends")
     g.add_argument("--no-forged", action="store_true", help="skip the forged-alert part")
+    g.add_argument("--reroute", action="store_true", help="end with the telemetry detection of the stop and TraCI "
+                                                          "rerouting of the verified alert holders (run.py incident)")
     g.add_argument("--pair", help="a comparison pair (python run.py pair new): replay its scenario, one approach only")
     g.add_argument("--approach", choices=["baseline", "proposed"],
                    help="with --pair: the baseline only, or the proposed method only (its CH-to-CH route stage included)")
@@ -293,11 +325,31 @@ def main():
     q.add_argument("pair_id", nargs="?", help="for show")
     q.add_argument("--baseline", default="flooding", choices=["flooding", "flooding_rad", "slotted1p", "slotted1p_rad"])
     q.add_argument("--scenario", help="new: this scenario (d200_rNN or NN) instead of the next reproducible one")
+    n = sub.add_parser("incident", help="headless incident response: detection, verified alert, TraCI rerouting")
+    n.add_argument("-d", "--density", type=int, default=config.DEMO_DENSITY)
+    n.add_argument("-r", "--run", type=int, default=config.DEMO_RUN)
+    n.add_argument("--runs", type=int, help="seeds 0..N-1 in parallel, plus results/incident/summary_d<density>.csv")
+    n.add_argument("--method", choices=["detour", "shortest"], default=config.REROUTE_METHOD,
+                   help="detour: bypass the incident edge and rejoin the original route (default); shortest: the "
+                        "earlier travel-time shortest path to the destination (comparison baseline)")
+    c = sub.add_parser("incident-compare", help="A no incident / B no rerouting / C shortest / D detour, same demand")
+    c.add_argument("-d", "--density", type=int, default=config.DEMO_DENSITY)
+    c.add_argument("--runs", type=int, default=config.RUNS_PER_DENSITY, help="seeds 0..N-1")
+    c.add_argument("--end", type=int, default=config.ROUTING_EVAL_END_S, help="every session ends at this time (s)")
+    c.add_argument("--analyse-only", action="store_true", help="re-derive the tables and figures from per_vehicle.csv")
+    v2 = sub.add_parser("adversarial", help="Block F attack sweeps -> results/adversarial/ (see adversarial.py)")
+    v2.add_argument("sweep", choices=["A", "B", "C_calibration", "C", "C_gate", "G1", "G2", "G3a", "G3b", "G3b_gate",
+                                         "G4"],
+                    help="A-C_gate: Block F (results/adversarial); G1-G4: Block G (results/hardening)")
+    v2.add_argument("--densities", type=int, nargs="+", default=[100, 200, 300])
+    v2.add_argument("--runs", type=int, default=30)
+    v2.add_argument("--summarise-only", action="store_true", help="re-read finished settings without running any")
     a = ap.parse_args()
     {"experiment": cmd_experiment, "single": cmd_single, "explain": cmd_explain,
      "sensitivity": cmd_sensitivity, "demo": cmd_demo,
      "sync": lambda _: print(infrastructure.sync_cloud(config.RESULTS_DIR)),
-     "dashboard": cmd_dashboard, "pair": cmd_pair,
+     "dashboard": cmd_dashboard, "pair": cmd_pair, "incident": cmd_incident,
+     "incident-compare": cmd_incident_compare, "adversarial": cmd_adversarial,
      "web": lambda a: __import__('web_results').serve(a.port),
      "dispatch": lambda _: print(infrastructure.dispatch_pending(config.RESULTS_DIR))}[a.cmd](a)
 

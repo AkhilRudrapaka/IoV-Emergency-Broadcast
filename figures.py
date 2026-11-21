@@ -23,7 +23,8 @@ COLOR = {"ch_route": "#7759da", "flooding": "#2a78d6", "slotted1p": "#eb6834", "
          "flooding_rad": "#8fb8ea", "slotted1p_rad": "#f4ad8d",          # lighter twin = same rule + random delay
          "no_reputation": "#eda100", "no_security": "#4a3aa7",
          # the forged-alert test runs the same three configurations
-         "voting_reputation": "#1baf7a", "voting_only": "#eda100", "no_voting": "#4a3aa7"}
+         "voting_reputation": "#1baf7a", "voting_only": "#eda100", "no_voting": "#4a3aa7",
+         "voting_reputation_committee": "#e87ba4"}            # opt-in level, only present with config.COMMITTEE_CHECK
 CLUSTER_COLORS = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#4a3aa7", "#e34948"]
 FORWARD, SOURCE = "#eb6834", INK
 

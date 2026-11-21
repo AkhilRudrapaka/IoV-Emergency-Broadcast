@@ -30,7 +30,7 @@ from functools import lru_cache
 from py_ecc.bls import G2ProofOfPossession as bls
 from py_ecc.optimized_bls12_381 import curve_order
 
-from config import COMMITTEE_SIZE, QUORUM, TRUST_CH_THRESHOLD
+from config import COMMITTEE_SIZE, ENFORCE_COMMITTEE, MAX_COLLUDERS, QUORUM, TRUST_CH_THRESHOLD
 
 
 def secret_key(vehicle_id):
@@ -76,24 +76,31 @@ def committee(source, dist, adj, n_vehicles, reputation, use_reputation=True):
     return near[:COMMITTEE_SIZE]
 
 
-def plan(alert, source, dist, adj, n_vehicles, reputation, malicious, genuine=True, use_reputation=True):
+def plan(alert, source, dist, adj, n_vehicles, reputation, malicious, genuine=True, use_reputation=True,
+         require_committee=False):
     """Who may vote and who will. Shared by every forwarding rule run on the same scenario.
 
     Genuine event: the committee's honest members observe it and endorse; misbehaving
     members stay silent. Forged event: honest vehicles observe nothing and stay silent;
-    the forger's misbehaving neighbours collude and endorse it regardless."""
+    the forger's misbehaving neighbours (at most MAX_COLLUDERS) collude and endorse it regardless.
+    require_committee: the opt-in protection level (Block F) that counts only committee endorsers (accept()).
+    ENFORCE_COMMITTEE (Block G) turns it on for every plan, i.e. every voting level."""
     members = committee(source, dist, adj, n_vehicles, reputation, use_reputation)
     if genuine:
         voters = [v for v in members if not malicious[v]]
     else:
         voters = [v for v in sorted(range(n_vehicles), key=lambda v: dist[source, v])
-                  if v != source and adj[source, v] and malicious[v]][:COMMITTEE_SIZE]
+                  if v != source and adj[source, v] and malicious[v]][:MAX_COLLUDERS]
     return {"alert": alert, "committee": members, "voters": voters, "genuine": genuine,
-            "reputation": reputation, "use_reputation": use_reputation}
+            "reputation": reputation, "use_reputation": use_reputation,
+            "require_committee": bool(require_committee or ENFORCE_COMMITTEE)}
 
 
-def accept(alert, cert, reputation_of, use_reputation=True):
-    """The rule every receiver (vehicle or RSU) applies. Returns (accepted, reason)."""
+def accept(alert, cert, reputation_of, use_reputation=True, committee=None):
+    """The rule every receiver (vehicle or RSU) applies. Returns (accepted, reason).
+    committee: None (default) counts any reputable endorser. A list of vehicle IDs (the opt-in Block F level) counts only
+    endorsers in it: the receiver rebuilds the committee of the claimed incident (its nearest reputable neighbours)
+    from beacon positions and the network-wide reputation, which this simulation takes from the recorded snapshot."""
     if cert is None:
         return False, "no certificate"
     signers = tuple(cert["signers"])
@@ -101,8 +108,9 @@ def accept(alert, cert, reputation_of, use_reputation=True):
         return False, "certificate not signed by the alert's source"
     if not verify_aggregate(signers, digest(alert), bytes.fromhex(cert["aggregate"])):
         return False, "BLS aggregate signature invalid"
-    endorsers = [v for v in signers[1:] if not use_reputation or (reputation_of(v) or 0.0) >= TRUST_CH_THRESHOLD]  # unknown = untrusted
+    endorsers = [v for v in signers[1:] if (committee is None or v in committee)
+                 and (not use_reputation or (reputation_of(v) or 0.0) >= TRUST_CH_THRESHOLD)]  # unknown = untrusted
     if len(endorsers) < QUORUM:
-        kind = "reputable " if use_reputation else ""
+        kind = ("reputable " if use_reputation else "") + ("committee " if committee is not None else "")
         return False, f"only {len(endorsers)} {kind}endorser(s), {QUORUM} needed"
     return True, f"BLS aggregate valid, {len(endorsers)} of {len(signers) - 1} endorsers counted"

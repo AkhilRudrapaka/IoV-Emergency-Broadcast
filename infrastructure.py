@@ -12,7 +12,7 @@ import urllib.parse
 from pathlib import Path
 
 import corroboration
-from config import QUORUM, TRUST_CH_THRESHOLD, HOP_LIMIT
+from config import ENFORCE_COMMITTEE, QUORUM, TRUST_CH_THRESHOLD, HOP_LIMIT
 
 
 def shortest_route(xy, adj, roles, trust, source, rsu_nodes):
@@ -58,7 +58,8 @@ def cluster_votes(alert, vehicles, adj, genuine=True):
                    and v['trust'] >= TRUST_CH_THRESHOLD
                    and (not v['malicious'] if genuine else v['malicious'])]
         cert = corroboration.certificate(alert, alert['source_vehicle'], members) if len(members) >= QUORUM else None
-        accepted, reason = corroboration.accept(alert, cert, reputation.get)
+        accepted, reason = corroboration.accept(alert, cert, reputation.get,
+                                                committee=members if ENFORCE_COMMITTEE else None)   # Block G
         records.append({'cluster_head': vehicle['id'], 'cluster': vehicle['dbscan'],
                         'voters': members, 'accepted': accepted, 'reason': reason, 'certificate': cert})
     return records
@@ -68,11 +69,12 @@ def batch_authenticate(items, reputation):
     """Authenticate multiple event certificates individually and deduplicate IDs.
 
     BLS aggregates signers within each event; this does not claim a multi-message
-    cryptographic batch speedup.
+    cryptographic batch speedup. An item is (alert, cert) or (alert, cert, committee): the committee the caller
+    rebuilt for that certificate (Block G, ENFORCE_COMMITTEE), never one taken from the certificate.
     """
     accepted, rejected, seen = [], [], set()
-    for alert, cert in items:
-        ok, reason = corroboration.accept(alert, cert, reputation.get)
+    for alert, cert, *committee in items:
+        ok, reason = corroboration.accept(alert, cert, reputation.get, committee=committee[0] if committee else None)
         if not ok:
             rejected.append({'event_id': alert['event_id'], 'reason': reason})
         elif alert['event_id'] not in seen:

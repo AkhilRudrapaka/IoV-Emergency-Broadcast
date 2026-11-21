@@ -66,6 +66,40 @@ VOTE_SLOT_MS = 0.5         # committee members answer in rank order, one vote fr
 DBSCAN_EPS_M = 40.0        # paper uses eps in (20, 40) m
 DBSCAN_MIN_PTS = 3         # paper's MinPts
 
+# ------------------------------------------------ Block D: VeReMi CAM detector as a trust signal (ml_trust.py)
+ML_TRUST_MODE = "off"      # "off": not run | "shadow": score CAMs and log what-if trust, change nothing | "enforce": refused
+ML_MODEL_DIR = "../../data/veremi_nextgen/InTAS_highway_2/processed/v2/models/block_c"   # frozen Block C model (relative to this file)
+ML_EVIDENCE_WEIGHT = 0.25  # one ML flag counts as 0.25 watchdog failures in the what-if Beta trust
+ML_EVIDENCE_CAP = 40       # at most 40 flags count, i.e. at most 10 equivalent failures: a bounded ML influence
+ML_CAM_DELAY_MS = 1.44     # receive delay given to the synthesized CAMs: median genuine delay in the VeReMi Train data
+
+# ------------------------------------------------ incident response on live SUMO (incident_response.py; run.py incident)
+CRASH_DECEL_MARGIN = 0.5   # m/s^2 above the vType emergencyDecel (SUMO default 9.0) before a one-step speed drop counts as an impact
+CRASH_STOP_SPEED = 0.1     # m/s: the impact must end at standstill
+BLOCKED_EDGE_TT_S = 1e6    # travel time (s) an informed vehicle assumes for the incident edge: avoided whenever another route exists
+INCIDENT_FOLLOWUP_S = 180  # s of traffic simulated after the response, to check that rerouted vehicles never enter the incident edge
+REROUTE_METHOD = "detour"  # "detour": bypass the incident edge and rejoin the original route | "shortest": the earlier
+                           # travel-time shortest path to the destination (comparison baseline) | "none": nobody rerouted
+ROUTING_EVAL_END_S = 3600  # incident_routing.py: every comparison session ends here; the incident stays until then
+
+# ------------------------------------------------ Block F: adversarial evaluation (adversarial.py). Every default below is
+# the earlier behaviour and draws no random number, so the tracked results are reproduced exactly.
+MALICIOUS_DROP_PROB = 1.0  # chance that a misbehaving vehicle drops the emergency alert. 1.0: always (earlier model); below
+                           # 1, one draw per vehicle and run from its own random stream, the same draw for every scheme
+MAX_COLLUDERS = 5          # forged alert: at most this many of the forger's misbehaving neighbours endorse it
+ONOFF_PERIOD_S = 0.0       # 0: per-second cooperation (MALICIOUS_COOPERATION) | > 0: phased on-off attacker with this cycle
+ONOFF_DUTY = 0.9           # phased on-off attacker: share of its cycle in which it relays correctly while watched
+COMMITTEE_CHECK = 0        # 1: the forged-alert test also runs the opt-in level that counts only committee endorsers
+
+# ------------------------------------------------ Block G: security hardening (BLOCK_G_FINAL_REPORT.md). Neither draws a
+# random number. EXP_ENFORCE_COMMITTEE=0 (with TRUST_BURST_K=0) reproduces Block F and the tracked results/urban exactly.
+ENFORCE_COMMITTEE = 1      # 1 (default since Block G): every certificate check (every voting level) counts only endorsers
+                           # in the committee the receiver rebuilds for the claimed incident; a committee listed in a
+                           # certificate is never used. 0: the earlier rule (any reputable endorser), for baselines
+TRUST_BURST_K = 0          # default off. Opt-in (k = 4, G3a/G3b): a vehicle with this many consecutive failed watchdog
+                           # observations loses eligibility
+                           # (cluster head, committee, endorsement); its recorded Beta trust is left unchanged
+
 # ------------------------------------------------ outputs
 RESULTS_DIR = "results/urban"
 # Headline comparison. "+RAD" variants add the same U[0, RAD_MS) random assessment delay the proposed scheme uses,
@@ -100,6 +134,8 @@ import os as _os
 for _k, _v in _os.environ.items():
     if _k.startswith("EXP_") and _k[4:] in globals():
         globals()[_k[4:]] = type(globals()[_k[4:]])(_v)
+if COMMITTEE_CHECK:        # opt-in (Block F): the three default levels, their order and their random streams are unchanged
+    FORGERY = {**FORGERY, "voting_reputation_committee": "Voting + BLS + reputation + committee membership"}
 
 # Place the RSUs on actual intersections in whichever network is selected.
 import xml.etree.ElementTree as _ET

@@ -59,6 +59,9 @@ certificate → radio dissemination → RSU validation → local storage and out
   A missing route or lost quorum prevents forwarding; there is no hidden fallback.
 * Receivers verify real BLS signatures using `py_ecc`. Keys are deterministically
   generated simulation identities, not a deployed vehicular PKI.
+* Security defaults: committee membership enforcement is on (`ENFORCE_COMMITTEE=1`,
+  a 5-seat committee with quorum 3 that every receiver rebuilds itself) and the burst
+  detector is off (`TRUST_BURST_K=0`; k = 4 is an opt-in experimental setting).
 * Batch authentication processes multiple certificates and deduplicates event
   IDs. It performs per-event aggregate verification, not a faster multi-message
   pairing algorithm. Duplicate alerts are registered once per run/event.

@@ -45,6 +45,7 @@ class Protocol:
     def __init__(self, dist, adj, malicious, rsu=None, security=None):
         n = len(adj)
         self.dist, self.adj, self.malicious = dist, adj, malicious
+        self.drops = malicious                       # who drops the alert: every misbehaving vehicle (experiment.droppers)
         self.rsu = np.zeros(n, bool) if rsu is None else rsu
         self.sec = security                          # corroboration plan, or None (ablation: no voting, no BLS)
         self.verify = ms_to_slots(BLS_VERIFY_MS) if security else 0
@@ -106,8 +107,10 @@ class Protocol:
         """The source aggregates the endorsements (real BLS) and broadcasts the certified alert."""
         sec = self.sec
         self.cert = corroboration.certificate(sec["alert"], self.names[self.source], [self.names[v] for v in self.votes])
-        reputation = dict(zip(self.names, sec["reputation"]))
-        self.cert_ok, self.cert_reason = corroboration.accept(sec["alert"], self.cert, reputation.get, sec["use_reputation"])
+        reputation = dict(zip(self.names, sec["reputation"]))   # members: the rebuilt committee, enforced by default
+        members = [self.names[v] for v in sec["committee"]] if sec.get("require_committee") else None
+        self.cert_ok, self.cert_reason = corroboration.accept(sec["alert"], self.cert, reputation.get, sec["use_reputation"],
+                                                              members)
         self.alert_slots = frame_slots(PAYLOAD_BYTES + SIGNATURE_BYTES + SIGNER_ID_BYTES * len(self.cert["signers"]))
         self.rec[self.source]["released"] = t
         self.ch.enqueue(self.source, "ALERT", self.alert_slots)
@@ -133,7 +136,7 @@ class Protocol:
         self.first_rx[v], self.first_from[v], self.hop[v] = accepted_at, s, self.hop[s] + 1
         if self.rsu[v]:
             return "new"                              # endpoint: registers the event (rsu.py), never relays
-        if self.malicious[v]:
+        if self.drops[v]:
             self.decide(v, "DROP", "misbehaving vehicle: never relays")
         elif self.hop[v] >= HOP_LIMIT:
             self.decide(v, "EXPIRED", f"hop limit {HOP_LIMIT} reached")
@@ -201,7 +204,11 @@ class CHRoute(Protocol):
                 if len(round_['received']) >= QUORUM:
                     cert = corroboration.certificate(self.sec['alert'], self.names[self.source],
                                                     [self.names[i] for i in sorted(round_['received'])])
-                    ok, reason = corroboration.accept(self.sec['alert'], cert, dict(zip(self.names, self.reputation)).get)
+                    # enforced committee (Block G): this round's committee is the head and its reputable cluster
+                    # members, rebuilt here from the round itself, never read from the certificate
+                    members = [self.names[i] for i in round_['voters']] if self.sec.get('require_committee') else None
+                    ok, reason = corroboration.accept(self.sec['alert'], cert, dict(zip(self.names, self.reputation)).get,
+                                                      committee=members)
                     round_['certificate'], round_['accepted'], round_['reason'] = cert, ok, reason
                     if ok:
                         self.timers[head] = t + self.verify

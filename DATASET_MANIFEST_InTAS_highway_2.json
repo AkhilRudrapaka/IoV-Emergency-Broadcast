@@ -1,0 +1,6263 @@
+{
+ "created_utc": "2026-11-18T06:55:03+00:00",
+ "subset": "InTAS_highway_2",
+ "source": {
+  "record": "19665762",
+  "doi": "10.5281/zenodo.19665762",
+  "title": "VeReMi NextGen: A Dataset for Evaluating Misbehavior Detection Systems in VANETs",
+  "publication_date": "2026-06-08",
+  "license": "cc-by-4.0",
+  "creators": [
+   "Hermann, Artur",
+   "Remmers, Jan-Niklas",
+   "Eisermann, Dennis",
+   "Erb, Benjamin",
+   "Kargl, Frank"
+  ],
+  "api_url": "https://zenodo.org/api/records/19665762",
+  "record_url": "https://zenodo.org/records/19665762",
+  "files_in_record": 78,
+  "bytes_in_record": 36190437493
+ },
+ "data_dir": "../../data/veremi_nextgen/InTAS_highway_2",
+ "layout": {
+  "archives": "archives/<official file name>",
+  "extracted": "extracted/<archive stem>/<Train|Validation|Test>/<inner folder>/veh_<id>.json"
+ },
+ "environment": {
+  "python": "3.11.4",
+  "platform": "Windows-10-10.0.26300-SP0",
+  "script": "veremi/acquire.py",
+  "script_md5": "a445584ff9291910ecb12ba2c7ff96a6"
+ },
+ "files": [
+  {
+   "file": "InTAS_highway_2.zip",
+   "url": "https://zenodo.org/api/records/19665762/files/InTAS_highway_2.zip/content",
+   "size_official": 19335264,
+   "md5_official": "d5fefb873c5e766b702bd036f18a326d",
+   "action": "downloaded",
+   "downloaded_utc": "2026-11-18T06:34:45+00:00",
+   "seconds": 59.6,
+   "size_actual": 19335264,
+   "md5_actual": "d5fefb873c5e766b702bd036f18a326d",
+   "verified": true
+  },
+  {
+   "file": "InTAS_highway_2_Test_ground_truth.json",
+   "url": "https://zenodo.org/api/records/19665762/files/InTAS_highway_2_Test_ground_truth.json/content",
+   "size_official": 9838094,
+   "md5_official": "2a75db944d3e8ed984b248bb19bb32e7",
+   "action": "downloaded",
+   "downloaded_utc": "2026-11-18T06:35:16+00:00",
+   "seconds": 31.4,
+   "size_actual": 9838094,
+   "md5_actual": "2a75db944d3e8ed984b248bb19bb32e7",
+   "verified": true
+  },
+  {
+   "file": "InTAS_highway_2_Train_groundTruth.json",
+   "url": "https://zenodo.org/api/records/19665762/files/InTAS_highway_2_Train_groundTruth.json/content",
+   "size_official": 18381874,
+   "md5_official": "b3e1e0485919419dabbb196d68409f01",
+   "action": "downloaded",
+   "downloaded_utc": "2026-11-18T06:36:09+00:00",
+   "seconds": 53.2,
+   "size_actual": 18381874,
+   "md5_actual": "b3e1e0485919419dabbb196d68409f01",
+   "verified": true
+  },
+  {
+   "file": "InTAS_highway_2_Validation_groundTruth.json",
+   "url": "https://zenodo.org/api/records/19665762/files/InTAS_highway_2_Validation_groundTruth.json/content",
+   "size_official": 6713056,
+   "md5_official": "8f266c094b380fd4341822d8c005ce61",
+   "action": "downloaded",
+   "downloaded_utc": "2026-11-18T06:36:30+00:00",
+   "seconds": 20.5,
+   "size_actual": 6713056,
+   "md5_actual": "8f266c094b380fd4341822d8c005ce61",
+   "verified": true
+  },
+  {
+   "file": "InTAS_highway_2_accelerationMultiplication.zip",
+   "url": "https://zenodo.org/api/records/19665762/files/InTAS_highway_2_accelerationMultiplication.zip/content",
+   "size_official": 20870025,
+   "md5_official": "e98ba9b27628b72637cb979a545415ca",
+   "action": "downloaded",
+   "downloaded_utc": "2026-11-18T06:37:15+00:00",
+   "seconds": 44.9,
+   "size_actual": 20870025,
+   "md5_actual": "e98ba9b27628b72637cb979a545415ca",
+   "verified": true
+  },
+  {
+   "file": "InTAS_highway_2_constantPositionOffset.zip",
+   "url": "https://zenodo.org/api/records/19665762/files/InTAS_highway_2_constantPositionOffset.zip/content",
+   "size_official": 20872394,
+   "md5_official": "4b8aa6b684a093de218256bae74c1a6e",
+   "action": "downloaded",
+   "downloaded_utc": "2026-11-18T06:38:16+00:00",
+   "seconds": 61.0,
+   "size_actual": 20872394,
+   "md5_actual": "4b8aa6b684a093de218256bae74c1a6e",
+   "verified": true
+  },
+  {
+   "file": "InTAS_highway_2_constantSpeedOffset.zip",
+   "url": "https://zenodo.org/api/records/19665762/files/InTAS_highway_2_constantSpeedOffset.zip/content",
+   "size_official": 20859029,
+   "md5_official": "27a7d170fd937b65736d06054ba97bc4",
+   "action": "downloaded",
+   "downloaded_utc": "2026-11-18T06:39:16+00:00",
+   "seconds": 60.2,
+   "size_actual": 20859029,
+   "md5_actual": "27a7d170fd937b65736d06054ba97bc4",
+   "verified": true
+  },
+  {
+   "file": "InTAS_highway_2_dataReplay.zip",
+   "url": "https://zenodo.org/api/records/19665762/files/InTAS_highway_2_dataReplay.zip/content",
+   "size_official": 19733975,
+   "md5_official": "9515b57c25dd34304642654dd22df66b",
+   "action": "downloaded",
+   "downloaded_utc": "2026-11-18T06:40:21+00:00",
+   "seconds": 64.7,
+   "size_actual": 19733975,
+   "md5_actual": "9515b57c25dd34304642654dd22df66b",
+   "verified": true
+  },
+  {
+   "file": "InTAS_highway_2_dosAttack.zip",
+   "url": "https://zenodo.org/api/records/19665762/files/InTAS_highway_2_dosAttack.zip/content",
+   "size_official": 21935080,
+   "md5_official": "e5bd113ee92944bd34b5ccf52764398d",
+   "action": "downloaded",
+   "downloaded_utc": "2026-11-18T06:41:35+00:00",
+   "seconds": 73.9,
+   "size_actual": 21935080,
+   "md5_actual": "e5bd113ee92944bd34b5ccf52764398d",
+   "verified": true
+  },
+  {
+   "file": "InTAS_highway_2_feignedBraking.zip",
+   "url": "https://zenodo.org/api/records/19665762/files/InTAS_highway_2_feignedBraking.zip/content",
+   "size_official": 20835110,
+   "md5_official": "bd748b4809707cdf5a2e8f5a98f4ece9",
+   "action": "downloaded",
+   "downloaded_utc": "2026-11-18T06:42:13+00:00",
+   "seconds": 38.4,
+   "size_actual": 20835110,
+   "md5_actual": "bd748b4809707cdf5a2e8f5a98f4ece9",
+   "verified": true
+  },
+  {
+   "file": "InTAS_highway_2_positionMirroring.zip",
+   "url": "https://zenodo.org/api/records/19665762/files/InTAS_highway_2_positionMirroring.zip/content",
+   "size_official": 20852744,
+   "md5_official": "516c6c7e85f11a3535a1e618bdd62ad9",
+   "action": "downloaded",
+   "downloaded_utc": "2026-11-18T06:43:20+00:00",
+   "seconds": 66.7,
+   "size_actual": 20852744,
+   "md5_actual": "516c6c7e85f11a3535a1e618bdd62ad9",
+   "verified": true
+  },
+  {
+   "file": "InTAS_highway_2_randomPositionOffset.zip",
+   "url": "https://zenodo.org/api/records/19665762/files/InTAS_highway_2_randomPositionOffset.zip/content",
+   "size_official": 20894253,
+   "md5_official": "0b72ffd770351817deb18fa3ec630a61",
+   "action": "downloaded",
+   "downloaded_utc": "2026-11-18T06:43:45+00:00",
+   "seconds": 25.1,
+   "size_actual": 20894253,
+   "md5_actual": "0b72ffd770351817deb18fa3ec630a61",
+   "verified": true
+  },
+  {
+   "file": "InTAS_highway_2_randomSpeedOffset.zip",
+   "url": "https://zenodo.org/api/records/19665762/files/InTAS_highway_2_randomSpeedOffset.zip/content",
+   "size_official": 20874226,
+   "md5_official": "092c7f5d150f613414de0b0797430968",
+   "action": "downloaded",
+   "downloaded_utc": "2026-11-18T06:44:54+00:00",
+   "seconds": 69.5,
+   "size_actual": 20874226,
+   "md5_actual": "092c7f5d150f613414de0b0797430968",
+   "verified": true
+  },
+  {
+   "file": "InTAS_highway_2_reversedHeading.zip",
+   "url": "https://zenodo.org/api/records/19665762/files/InTAS_highway_2_reversedHeading.zip/content",
+   "size_official": 20845531,
+   "md5_official": "682604522c12256223739fcfd2ea819f",
+   "action": "downloaded",
+   "downloaded_utc": "2026-11-18T06:45:58+00:00",
+   "seconds": 63.5,
+   "size_actual": 20845531,
+   "md5_actual": "682604522c12256223739fcfd2ea819f",
+   "verified": true
+  },
+  {
+   "file": "InTAS_highway_2_suddenConstantSpeed.zip",
+   "url": "https://zenodo.org/api/records/19665762/files/InTAS_highway_2_suddenConstantSpeed.zip/content",
+   "size_official": 20735610,
+   "md5_official": "32351002170f4690460a9f585d7d6048",
+   "action": "downloaded",
+   "downloaded_utc": "2026-11-18T06:47:00+00:00",
+   "seconds": 62.6,
+   "size_actual": 20735610,
+   "md5_actual": "32351002170f4690460a9f585d7d6048",
+   "verified": true
+  },
+  {
+   "file": "InTAS_highway_2_suddenStop.zip",
+   "url": "https://zenodo.org/api/records/19665762/files/InTAS_highway_2_suddenStop.zip/content",
+   "size_official": 19494560,
+   "md5_official": "87721ff84aff3dbda1f2142d9f3d385e",
+   "action": "downloaded",
+   "downloaded_utc": "2026-11-18T06:48:01+00:00",
+   "seconds": 60.7,
+   "size_actual": 19494560,
+   "md5_actual": "87721ff84aff3dbda1f2142d9f3d385e",
+   "verified": true
+  },
+  {
+   "file": "InTAS_highway_2_timeDelayAttack.zip",
+   "url": "https://zenodo.org/api/records/19665762/files/InTAS_highway_2_timeDelayAttack.zip/content",
+   "size_official": 20840827,
+   "md5_official": "84f2002bc770b08be77a7457c2079d59",
+   "action": "downloaded",
+   "downloaded_utc": "2026-11-18T06:48:43+00:00",
+   "seconds": 41.5,
+   "size_actual": 20840827,
+   "md5_actual": "84f2002bc770b08be77a7457c2079d59",
+   "verified": true
+  },
+  {
+   "file": "InTAS_highway_2_trafficCongestionSybil.zip",
+   "url": "https://zenodo.org/api/records/19665762/files/InTAS_highway_2_trafficCongestionSybil.zip/content",
+   "size_official": 36082689,
+   "md5_official": "8f936f49bed227c3a890d78c8fbe8134",
+   "action": "downloaded",
+   "downloaded_utc": "2026-11-18T06:50:09+00:00",
+   "seconds": 86.2,
+   "size_actual": 36082689,
+   "md5_actual": "8f936f49bed227c3a890d78c8fbe8134",
+   "verified": true
+  },
+  {
+   "file": "InTAS_highway_2_zeroSpeedReport.zip",
+   "url": "https://zenodo.org/api/records/19665762/files/InTAS_highway_2_zeroSpeedReport.zip/content",
+   "size_official": 20638499,
+   "md5_official": "d94fa42be71f942befe61fae969bb21a",
+   "action": "downloaded",
+   "downloaded_utc": "2026-11-18T06:50:57+00:00",
+   "seconds": 48.0,
+   "size_actual": 20638499,
+   "md5_actual": "d94fa42be71f942befe61fae969bb21a",
+   "verified": true
+  }
+ ],
+ "totals": {
+  "files": 19,
+  "bytes_official": 380632840,
+  "bytes_verified": 380632840,
+  "all_verified": true
+ },
+ "extraction": [
+  {
+   "archive": "InTAS_highway_2.zip",
+   "splits": {
+    "Train": {
+     "inner_zip": "InTAS_highway_2/Train/InTAS_highway_2.zip",
+     "inner_zip_bytes": 7546350,
+     "members": 482,
+     "uncompressed_bytes": 36096829,
+     "written": 482,
+     "already_identical": 0
+    },
+    "Test": {
+     "inner_zip": "InTAS_highway_2/Test/InTAS_highway_2.zip",
+     "inner_zip_bytes": 8392665,
+     "members": 476,
+     "uncompressed_bytes": 43693283,
+     "written": 476,
+     "already_identical": 0
+    },
+    "Validation": {
+     "inner_zip": "InTAS_highway_2/Validation/InTAS_highway_2.zip",
+     "inner_zip_bytes": 3394905,
+     "members": 152,
+     "uncompressed_bytes": 17171666,
+     "written": 152,
+     "already_identical": 0
+    }
+   }
+  },
+  {
+   "archive": "InTAS_highway_2_accelerationMultiplication.zip",
+   "splits": {
+    "Train": {
+     "inner_zip": "InTAS_highway_2_accelerationMultiplication/Train/InTAS_highway_2_accelerationMultiplication.zip",
+     "inner_zip_bytes": 8051062,
+     "members": 482,
+     "uncompressed_bytes": 37560907,
+     "written": 482,
+     "already_identical": 0
+    },
+    "Test": {
+     "inner_zip": "InTAS_highway_2_accelerationMultiplication/Test/InTAS_highway_2_accelerationMultiplication.zip",
+     "inner_zip_bytes": 9190903,
+     "members": 476,
+     "uncompressed_bytes": 45496313,
+     "written": 476,
+     "already_identical": 0
+    },
+    "Validation": {
+     "inner_zip": "InTAS_highway_2_accelerationMultiplication/Validation/InTAS_highway_2_accelerationMultiplication.zip",
+     "inner_zip_bytes": 3626176,
+     "members": 152,
+     "uncompressed_bytes": 17868092,
+     "written": 152,
+     "already_identical": 0
+    }
+   }
+  },
+  {
+   "archive": "InTAS_highway_2_constantPositionOffset.zip",
+   "splits": {
+    "Train": {
+     "inner_zip": "InTAS_highway_2_constantPositionOffset/Train/InTAS_highway_2_constantPositionOffset.zip",
+     "inner_zip_bytes": 8051438,
+     "members": 482,
+     "uncompressed_bytes": 37564580,
+     "written": 482,
+     "already_identical": 0
+    },
+    "Test": {
+     "inner_zip": "InTAS_highway_2_constantPositionOffset/Test/InTAS_highway_2_constantPositionOffset.zip",
+     "inner_zip_bytes": 9193163,
+     "members": 476,
+     "uncompressed_bytes": 45501432,
+     "written": 476,
+     "already_identical": 0
+    },
+    "Validation": {
+     "inner_zip": "InTAS_highway_2_constantPositionOffset/Validation/InTAS_highway_2_constantPositionOffset.zip",
+     "inner_zip_bytes": 3625989,
+     "members": 152,
+     "uncompressed_bytes": 17870000,
+     "written": 152,
+     "already_identical": 0
+    }
+   }
+  },
+  {
+   "archive": "InTAS_highway_2_constantSpeedOffset.zip",
+   "splits": {
+    "Train": {
+     "inner_zip": "InTAS_highway_2_constantSpeedOffset/Train/InTAS_highway_2_constantSpeedOffset.zip",
+     "inner_zip_bytes": 8043616,
+     "members": 482,
+     "uncompressed_bytes": 37565151,
+     "written": 482,
+     "already_identical": 0
+    },
+    "Test": {
+     "inner_zip": "InTAS_highway_2_constantSpeedOffset/Test/InTAS_highway_2_constantSpeedOffset.zip",
+     "inner_zip_bytes": 9189169,
+     "members": 476,
+     "uncompressed_bytes": 45502962,
+     "written": 476,
+     "already_identical": 0
+    },
+    "Validation": {
+     "inner_zip": "InTAS_highway_2_constantSpeedOffset/Validation/InTAS_highway_2_constantSpeedOffset.zip",
+     "inner_zip_bytes": 3624500,
+     "members": 152,
+     "uncompressed_bytes": 17869453,
+     "written": 152,
+     "already_identical": 0
+    }
+   }
+  },
+  {
+   "archive": "InTAS_highway_2_dataReplay.zip",
+   "splits": {
+    "Train": {
+     "inner_zip": "InTAS_highway_2_dataReplay/Train/InTAS_highway_2_dataReplay.zip",
+     "inner_zip_bytes": 7642375,
+     "members": 482,
+     "uncompressed_bytes": 37564046,
+     "written": 482,
+     "already_identical": 0
+    },
+    "Test": {
+     "inner_zip": "InTAS_highway_2_dataReplay/Test/InTAS_highway_2_dataReplay.zip",
+     "inner_zip_bytes": 8675591,
+     "members": 476,
+     "uncompressed_bytes": 45496729,
+     "written": 476,
+     "already_identical": 0
+    },
+    "Validation": {
+     "inner_zip": "InTAS_highway_2_dataReplay/Validation/InTAS_highway_2_dataReplay.zip",
+     "inner_zip_bytes": 3414445,
+     "members": 152,
+     "uncompressed_bytes": 17870258,
+     "written": 152,
+     "already_identical": 0
+    }
+   }
+  },
+  {
+   "archive": "InTAS_highway_2_dosAttack.zip",
+   "splits": {
+    "Train": {
+     "inner_zip": "InTAS_highway_2_dosAttack/Train/InTAS_highway_2_dosAttack.zip",
+     "inner_zip_bytes": 8478608,
+     "members": 482,
+     "uncompressed_bytes": 55086901,
+     "written": 482,
+     "already_identical": 0
+    },
+    "Test": {
+     "inner_zip": "InTAS_highway_2_dosAttack/Test/InTAS_highway_2_dosAttack.zip",
+     "inner_zip_bytes": 9614253,
+     "members": 476,
+     "uncompressed_bytes": 62428526,
+     "written": 476,
+     "already_identical": 0
+    },
+    "Validation": {
+     "inner_zip": "InTAS_highway_2_dosAttack/Validation/InTAS_highway_2_dosAttack.zip",
+     "inner_zip_bytes": 3840675,
+     "members": 152,
+     "uncompressed_bytes": 25980854,
+     "written": 152,
+     "already_identical": 0
+    }
+   }
+  },
+  {
+   "archive": "InTAS_highway_2_feignedBraking.zip",
+   "splits": {
+    "Train": {
+     "inner_zip": "InTAS_highway_2_feignedBraking/Train/InTAS_highway_2_feignedBraking.zip",
+     "inner_zip_bytes": 8035185,
+     "members": 482,
+     "uncompressed_bytes": 37561670,
+     "written": 482,
+     "already_identical": 0
+    },
+    "Test": {
+     "inner_zip": "InTAS_highway_2_feignedBraking/Test/InTAS_highway_2_feignedBraking.zip",
+     "inner_zip_bytes": 9177735,
+     "members": 476,
+     "uncompressed_bytes": 45500185,
+     "written": 476,
+     "already_identical": 0
+    },
+    "Validation": {
+     "inner_zip": "InTAS_highway_2_feignedBraking/Validation/InTAS_highway_2_feignedBraking.zip",
+     "inner_zip_bytes": 3620546,
+     "members": 152,
+     "uncompressed_bytes": 17868591,
+     "written": 152,
+     "already_identical": 0
+    }
+   }
+  },
+  {
+   "archive": "InTAS_highway_2_positionMirroring.zip",
+   "splits": {
+    "Train": {
+     "inner_zip": "InTAS_highway_2_positionMirroring/Train/InTAS_highway_2_positionMirroring.zip",
+     "inner_zip_bytes": 8042449,
+     "members": 482,
+     "uncompressed_bytes": 37558734,
+     "written": 482,
+     "already_identical": 0
+    },
+    "Test": {
+     "inner_zip": "InTAS_highway_2_positionMirroring/Test/InTAS_highway_2_positionMirroring.zip",
+     "inner_zip_bytes": 9184366,
+     "members": 476,
+     "uncompressed_bytes": 45494412,
+     "written": 476,
+     "already_identical": 0
+    },
+    "Validation": {
+     "inner_zip": "InTAS_highway_2_positionMirroring/Validation/InTAS_highway_2_positionMirroring.zip",
+     "inner_zip_bytes": 3624225,
+     "members": 152,
+     "uncompressed_bytes": 17867606,
+     "written": 152,
+     "already_identical": 0
+    }
+   }
+  },
+  {
+   "archive": "InTAS_highway_2_randomPositionOffset.zip",
+   "splits": {
+    "Train": {
+     "inner_zip": "InTAS_highway_2_randomPositionOffset/Train/InTAS_highway_2_randomPositionOffset.zip",
+     "inner_zip_bytes": 8059978,
+     "members": 482,
+     "uncompressed_bytes": 37564709,
+     "written": 482,
+     "already_identical": 0
+    },
+    "Test": {
+     "inner_zip": "InTAS_highway_2_randomPositionOffset/Test/InTAS_highway_2_randomPositionOffset.zip",
+     "inner_zip_bytes": 9201979,
+     "members": 476,
+     "uncompressed_bytes": 45502700,
+     "written": 476,
+     "already_identical": 0
+    },
+    "Validation": {
+     "inner_zip": "InTAS_highway_2_randomPositionOffset/Validation/InTAS_highway_2_randomPositionOffset.zip",
+     "inner_zip_bytes": 3630532,
+     "members": 152,
+     "uncompressed_bytes": 17869698,
+     "written": 152,
+     "already_identical": 0
+    }
+   }
+  },
+  {
+   "archive": "InTAS_highway_2_randomSpeedOffset.zip",
+   "splits": {
+    "Train": {
+     "inner_zip": "InTAS_highway_2_randomSpeedOffset/Train/InTAS_highway_2_randomSpeedOffset.zip",
+     "inner_zip_bytes": 8050778,
+     "members": 482,
+     "uncompressed_bytes": 37562427,
+     "written": 482,
+     "already_identical": 0
+    },
+    "Test": {
+     "inner_zip": "InTAS_highway_2_randomSpeedOffset/Test/InTAS_highway_2_randomSpeedOffset.zip",
+     "inner_zip_bytes": 9194490,
+     "members": 476,
+     "uncompressed_bytes": 45499027,
+     "written": 476,
+     "already_identical": 0
+    },
+    "Validation": {
+     "inner_zip": "InTAS_highway_2_randomSpeedOffset/Validation/InTAS_highway_2_randomSpeedOffset.zip",
+     "inner_zip_bytes": 3627254,
+     "members": 152,
+     "uncompressed_bytes": 17869245,
+     "written": 152,
+     "already_identical": 0
+    }
+   }
+  },
+  {
+   "archive": "InTAS_highway_2_reversedHeading.zip",
+   "splits": {
+    "Train": {
+     "inner_zip": "InTAS_highway_2_reversedHeading/Train/InTAS_highway_2_reversedHeading.zip",
+     "inner_zip_bytes": 8039567,
+     "members": 482,
+     "uncompressed_bytes": 37559335,
+     "written": 482,
+     "already_identical": 0
+    },
+    "Test": {
+     "inner_zip": "InTAS_highway_2_reversedHeading/Test/InTAS_highway_2_reversedHeading.zip",
+     "inner_zip_bytes": 9182828,
+     "members": 476,
+     "uncompressed_bytes": 45497687,
+     "written": 476,
+     "already_identical": 0
+    },
+    "Validation": {
+     "inner_zip": "InTAS_highway_2_reversedHeading/Validation/InTAS_highway_2_reversedHeading.zip",
+     "inner_zip_bytes": 3621472,
+     "members": 152,
+     "uncompressed_bytes": 17866965,
+     "written": 152,
+     "already_identical": 0
+    }
+   }
+  },
+  {
+   "archive": "InTAS_highway_2_suddenConstantSpeed.zip",
+   "splits": {
+    "Train": {
+     "inner_zip": "InTAS_highway_2_suddenConstantSpeed/Train/InTAS_highway_2_suddenConstantSpeed.zip",
+     "inner_zip_bytes": 7997957,
+     "members": 482,
+     "uncompressed_bytes": 37560626,
+     "written": 482,
+     "already_identical": 0
+    },
+    "Test": {
+     "inner_zip": "InTAS_highway_2_suddenConstantSpeed/Test/InTAS_highway_2_suddenConstantSpeed.zip",
+     "inner_zip_bytes": 9134777,
+     "members": 476,
+     "uncompressed_bytes": 45491110,
+     "written": 476,
+     "already_identical": 0
+    },
+    "Validation": {
+     "inner_zip": "InTAS_highway_2_suddenConstantSpeed/Validation/InTAS_highway_2_suddenConstantSpeed.zip",
+     "inner_zip_bytes": 3601132,
+     "members": 152,
+     "uncompressed_bytes": 17867539,
+     "written": 152,
+     "already_identical": 0
+    }
+   }
+  },
+  {
+   "archive": "InTAS_highway_2_suddenStop.zip",
+   "splits": {
+    "Train": {
+     "inner_zip": "InTAS_highway_2_suddenStop/Train/InTAS_highway_2_suddenStop.zip",
+     "inner_zip_bytes": 7568367,
+     "members": 482,
+     "uncompressed_bytes": 37471400,
+     "written": 482,
+     "already_identical": 0
+    },
+    "Test": {
+     "inner_zip": "InTAS_highway_2_suddenStop/Test/InTAS_highway_2_suddenStop.zip",
+     "inner_zip_bytes": 8630115,
+     "members": 476,
+     "uncompressed_bytes": 45376382,
+     "written": 476,
+     "already_identical": 0
+    },
+    "Validation": {
+     "inner_zip": "InTAS_highway_2_suddenStop/Validation/InTAS_highway_2_suddenStop.zip",
+     "inner_zip_bytes": 3294514,
+     "members": 152,
+     "uncompressed_bytes": 17797220,
+     "written": 152,
+     "already_identical": 0
+    }
+   }
+  },
+  {
+   "archive": "InTAS_highway_2_timeDelayAttack.zip",
+   "splits": {
+    "Train": {
+     "inner_zip": "InTAS_highway_2_timeDelayAttack/Train/InTAS_highway_2_timeDelayAttack.zip",
+     "inner_zip_bytes": 8039041,
+     "members": 482,
+     "uncompressed_bytes": 37559921,
+     "written": 482,
+     "already_identical": 0
+    },
+    "Test": {
+     "inner_zip": "InTAS_highway_2_timeDelayAttack/Test/InTAS_highway_2_timeDelayAttack.zip",
+     "inner_zip_bytes": 9178888,
+     "members": 476,
+     "uncompressed_bytes": 45497809,
+     "written": 476,
+     "already_identical": 0
+    },
+    "Validation": {
+     "inner_zip": "InTAS_highway_2_timeDelayAttack/Validation/InTAS_highway_2_timeDelayAttack.zip",
+     "inner_zip_bytes": 3621234,
+     "members": 152,
+     "uncompressed_bytes": 17867519,
+     "written": 152,
+     "already_identical": 0
+    }
+   }
+  },
+  {
+   "archive": "InTAS_highway_2_trafficCongestionSybil.zip",
+   "splits": {
+    "Train": {
+     "inner_zip": "InTAS_highway_2_trafficCongestionSybil/Train/InTAS_highway_2_trafficCongestionSybil.zip",
+     "inner_zip_bytes": 13974883,
+     "members": 482,
+     "uncompressed_bytes": 73682894,
+     "written": 482,
+     "already_identical": 0
+    },
+    "Test": {
+     "inner_zip": "InTAS_highway_2_trafficCongestionSybil/Test/InTAS_highway_2_trafficCongestionSybil.zip",
+     "inner_zip_bytes": 15715608,
+     "members": 476,
+     "uncompressed_bytes": 86502638,
+     "written": 476,
+     "already_identical": 0
+    },
+    "Validation": {
+     "inner_zip": "InTAS_highway_2_trafficCongestionSybil/Validation/InTAS_highway_2_trafficCongestionSybil.zip",
+     "inner_zip_bytes": 6390394,
+     "members": 152,
+     "uncompressed_bytes": 34585025,
+     "written": 152,
+     "already_identical": 0
+    }
+   }
+  },
+  {
+   "archive": "InTAS_highway_2_zeroSpeedReport.zip",
+   "splits": {
+    "Train": {
+     "inner_zip": "InTAS_highway_2_zeroSpeedReport/Train/InTAS_highway_2_zeroSpeedReport.zip",
+     "inner_zip_bytes": 7955462,
+     "members": 482,
+     "uncompressed_bytes": 37441787,
+     "written": 482,
+     "already_identical": 0
+    },
+    "Test": {
+     "inner_zip": "InTAS_highway_2_zeroSpeedReport/Test/InTAS_highway_2_zeroSpeedReport.zip",
+     "inner_zip_bytes": 9094791,
+     "members": 476,
+     "uncompressed_bytes": 45371642,
+     "written": 476,
+     "already_identical": 0
+    },
+    "Validation": {
+     "inner_zip": "InTAS_highway_2_zeroSpeedReport/Validation/InTAS_highway_2_zeroSpeedReport.zip",
+     "inner_zip_bytes": 3586582,
+     "members": 152,
+     "uncompressed_bytes": 17818416,
+     "written": 152,
+     "already_identical": 0
+    }
+   }
+  }
+ ],
+ "inspection": {
+  "baseline (no attack)": {
+   "Train": {
+    "files": 482,
+    "json_bytes": 36096829,
+    "empty_files": 0,
+    "records": 37701,
+    "senders": 482,
+    "attacker_senders": 0,
+    "mixed_label_senders": 0,
+    "sender_aliases": 482,
+    "attack_share": 0.0,
+    "sender_pos_bbox_m": [
+     216273.9,
+     451710.1,
+     216797.9,
+     454215.3
+    ],
+    "sendTime_range_s": null,
+    "anomalies": {
+     "missing:attacker": 37701,
+     "attacker_not_0_or_1": 37701,
+     "bad_number:receiver.hed": 37701,
+     "bad_number:receiver.acl_noise": 37701,
+     "bad_number:receiver.acl": 37701,
+     "bad_number:receiver.spd": 37701,
+     "bad_number:receiver.hed_noise": 37701,
+     "bad_number:receiver.spd_noise": 37701,
+     "missing:sender.distance_to_road_edge": 37701,
+     "bad_number:sender.hed": 37701,
+     "bad_number:sender.acl_noise": 37701,
+     "bad_number:sender.acl": 37701,
+     "bad_number:sender.spd": 37701,
+     "bad_number:sender.hed_noise": 37701,
+     "bad_number:sender.spd_noise": 37701
+    },
+    "anomaly_examples": {
+     "missing:attacker": "veh_1306.json[0]",
+     "attacker_not_0_or_1": "veh_1306.json[0]",
+     "bad_number:receiver.hed": "veh_1306.json[0]",
+     "bad_number:receiver.acl_noise": "veh_1306.json[0]",
+     "bad_number:receiver.acl": "veh_1306.json[0]",
+     "bad_number:receiver.spd": "veh_1306.json[0]",
+     "bad_number:receiver.hed_noise": "veh_1306.json[0]",
+     "bad_number:receiver.spd_noise": "veh_1306.json[0]",
+     "missing:sender.distance_to_road_edge": "veh_1306.json[0]",
+     "bad_number:sender.hed": "veh_1306.json[0]",
+     "bad_number:sender.acl_noise": "veh_1306.json[0]",
+     "bad_number:sender.acl": "veh_1306.json[0]",
+     "bad_number:sender.spd": "veh_1306.json[0]",
+     "bad_number:sender.hed_noise": "veh_1306.json[0]",
+     "bad_number:sender.spd_noise": "veh_1306.json[0]"
+    },
+    "field_types": {
+     "attacker": {
+      "NoneType": 37701
+     },
+     "messageID": {
+      "str": 37701
+     },
+     "rcvTime": {
+      "str": 37701
+     },
+     "receiver.acl": {
+      "str": 37701
+     },
+     "receiver.acl_noise": {
+      "str": 37701
+     },
+     "receiver.driversProfile": {
+      "str": 37701
+     },
+     "receiver.hed": {
+      "str": 37701
+     },
+     "receiver.hed_noise": {
+      "str": 37701
+     },
+     "receiver.pos": {
+      "str": 37701
+     },
+     "receiver.pos_noise": {
+      "str": 37701
+     },
+     "receiver.spd": {
+      "str": 37701
+     },
+     "receiver.spd_noise": {
+      "str": 37701
+     },
+     "sendTime": {
+      "str": 37701
+     },
+     "sender.acl": {
+      "str": 37701
+     },
+     "sender.acl_noise": {
+      "str": 37701
+     },
+     "sender.driversProfile": {
+      "str": 37701
+     },
+     "sender.hed": {
+      "str": 37701
+     },
+     "sender.hed_noise": {
+      "str": 37701
+     },
+     "sender.pos": {
+      "str": 37701
+     },
+     "sender.pos_noise": {
+      "str": 37701
+     },
+     "sender.spd": {
+      "str": 37701
+     },
+     "sender.spd_noise": {
+      "str": 37701
+     },
+     "sender_alias": {
+      "str": 37701
+     },
+     "sender_id": {
+      "str": 37701
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 29091,
+     "sender:CAUTIOUS": 6605,
+     "sender:NORMAL": 29110,
+     "sender:AGGRESSIVE": 1986,
+     "receiver:CAUTIOUS": 6621,
+     "receiver:AGGRESSIVE": 1989
+    }
+   },
+   "Validation": {
+    "files": 152,
+    "json_bytes": 17171666,
+    "empty_files": 0,
+    "records": 17977,
+    "senders": 152,
+    "attacker_senders": 0,
+    "mixed_label_senders": 0,
+    "sender_aliases": 152,
+    "attack_share": 0.0,
+    "sender_pos_bbox_m": [
+     216280.0,
+     451717.6,
+     216785.8,
+     454129.0
+    ],
+    "sendTime_range_s": null,
+    "anomalies": {
+     "missing:attacker": 17977,
+     "attacker_not_0_or_1": 17977,
+     "bad_number:receiver.hed": 17977,
+     "bad_number:receiver.acl_noise": 17977,
+     "bad_number:receiver.acl": 17977,
+     "bad_number:receiver.spd": 17977,
+     "bad_number:receiver.hed_noise": 17977,
+     "bad_number:receiver.spd_noise": 17977,
+     "missing:sender.distance_to_road_edge": 17977,
+     "bad_number:sender.hed": 17977,
+     "bad_number:sender.acl_noise": 17977,
+     "bad_number:sender.acl": 17977,
+     "bad_number:sender.spd": 17977,
+     "bad_number:sender.hed_noise": 17977,
+     "bad_number:sender.spd_noise": 17977
+    },
+    "anomaly_examples": {
+     "missing:attacker": "veh_3923.json[0]",
+     "attacker_not_0_or_1": "veh_3923.json[0]",
+     "bad_number:receiver.hed": "veh_3923.json[0]",
+     "bad_number:receiver.acl_noise": "veh_3923.json[0]",
+     "bad_number:receiver.acl": "veh_3923.json[0]",
+     "bad_number:receiver.spd": "veh_3923.json[0]",
+     "bad_number:receiver.hed_noise": "veh_3923.json[0]",
+     "bad_number:receiver.spd_noise": "veh_3923.json[0]",
+     "missing:sender.distance_to_road_edge": "veh_3923.json[0]",
+     "bad_number:sender.hed": "veh_3923.json[0]",
+     "bad_number:sender.acl_noise": "veh_3923.json[0]",
+     "bad_number:sender.acl": "veh_3923.json[0]",
+     "bad_number:sender.spd": "veh_3923.json[0]",
+     "bad_number:sender.hed_noise": "veh_3923.json[0]",
+     "bad_number:sender.spd_noise": "veh_3923.json[0]"
+    },
+    "field_types": {
+     "attacker": {
+      "NoneType": 17977
+     },
+     "messageID": {
+      "str": 17977
+     },
+     "rcvTime": {
+      "str": 17977
+     },
+     "receiver.acl": {
+      "str": 17977
+     },
+     "receiver.acl_noise": {
+      "str": 17977
+     },
+     "receiver.driversProfile": {
+      "str": 17977
+     },
+     "receiver.hed": {
+      "str": 17977
+     },
+     "receiver.hed_noise": {
+      "str": 17977
+     },
+     "receiver.pos": {
+      "str": 17977
+     },
+     "receiver.pos_noise": {
+      "str": 17977
+     },
+     "receiver.spd": {
+      "str": 17977
+     },
+     "receiver.spd_noise": {
+      "str": 17977
+     },
+     "sendTime": {
+      "str": 17977
+     },
+     "sender.acl": {
+      "str": 17977
+     },
+     "sender.acl_noise": {
+      "str": 17977
+     },
+     "sender.driversProfile": {
+      "str": 17977
+     },
+     "sender.hed": {
+      "str": 17977
+     },
+     "sender.hed_noise": {
+      "str": 17977
+     },
+     "sender.pos": {
+      "str": 17977
+     },
+     "sender.pos_noise": {
+      "str": 17977
+     },
+     "sender.spd": {
+      "str": 17977
+     },
+     "sender.spd_noise": {
+      "str": 17977
+     },
+     "sender_alias": {
+      "str": 17977
+     },
+     "sender_id": {
+      "str": 17977
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 14118,
+     "sender:NORMAL": 14119,
+     "sender:AGGRESSIVE": 1304,
+     "sender:CAUTIOUS": 2554,
+     "receiver:AGGRESSIVE": 1307,
+     "receiver:CAUTIOUS": 2552
+    }
+   },
+   "Test": {
+    "files": 476,
+    "json_bytes": 43693283,
+    "empty_files": 0,
+    "records": 44259,
+    "senders": 476,
+    "attacker_senders": 0,
+    "mixed_label_senders": 0,
+    "sender_aliases": 476,
+    "attack_share": 0.0,
+    "sender_pos_bbox_m": [
+     216149.0,
+     449728.3,
+     216737.3,
+     451746.4
+    ],
+    "sendTime_range_s": null,
+    "anomalies": {
+     "missing:attacker": 44259,
+     "attacker_not_0_or_1": 44259,
+     "bad_number:receiver.hed": 44259,
+     "bad_number:receiver.acl_noise": 44259,
+     "bad_number:receiver.acl": 44259,
+     "bad_number:receiver.spd": 44259,
+     "bad_number:receiver.hed_noise": 44259,
+     "bad_number:receiver.spd_noise": 44259,
+     "missing:sender.distance_to_road_edge": 44259,
+     "bad_number:sender.hed": 44259,
+     "bad_number:sender.acl_noise": 44259,
+     "bad_number:sender.acl": 44259,
+     "bad_number:sender.spd": 44259,
+     "bad_number:sender.hed_noise": 44259,
+     "bad_number:sender.spd_noise": 44259
+    },
+    "anomaly_examples": {
+     "missing:attacker": "veh_2358.json[0]",
+     "attacker_not_0_or_1": "veh_2358.json[0]",
+     "bad_number:receiver.hed": "veh_2358.json[0]",
+     "bad_number:receiver.acl_noise": "veh_2358.json[0]",
+     "bad_number:receiver.acl": "veh_2358.json[0]",
+     "bad_number:receiver.spd": "veh_2358.json[0]",
+     "bad_number:receiver.hed_noise": "veh_2358.json[0]",
+     "bad_number:receiver.spd_noise": "veh_2358.json[0]",
+     "missing:sender.distance_to_road_edge": "veh_2358.json[0]",
+     "bad_number:sender.hed": "veh_2358.json[0]",
+     "bad_number:sender.acl_noise": "veh_2358.json[0]",
+     "bad_number:sender.acl": "veh_2358.json[0]",
+     "bad_number:sender.spd": "veh_2358.json[0]",
+     "bad_number:sender.hed_noise": "veh_2358.json[0]",
+     "bad_number:sender.spd_noise": "veh_2358.json[0]"
+    },
+    "field_types": {
+     "attacker": {
+      "NoneType": 44259
+     },
+     "messageID": {
+      "str": 44259
+     },
+     "rcvTime": {
+      "str": 44259
+     },
+     "receiver.acl": {
+      "str": 44259
+     },
+     "receiver.acl_noise": {
+      "str": 44259
+     },
+     "receiver.driversProfile": {
+      "str": 44259
+     },
+     "receiver.hed": {
+      "str": 44259
+     },
+     "receiver.hed_noise": {
+      "str": 44259
+     },
+     "receiver.pos": {
+      "str": 44259
+     },
+     "receiver.pos_noise": {
+      "str": 44259
+     },
+     "receiver.spd": {
+      "str": 44259
+     },
+     "receiver.spd_noise": {
+      "str": 44259
+     },
+     "sendTime": {
+      "str": 44259
+     },
+     "sender.acl": {
+      "str": 44259
+     },
+     "sender.acl_noise": {
+      "str": 44259
+     },
+     "sender.driversProfile": {
+      "str": 44259
+     },
+     "sender.hed": {
+      "str": 44259
+     },
+     "sender.hed_noise": {
+      "str": 44259
+     },
+     "sender.pos": {
+      "str": 44259
+     },
+     "sender.pos_noise": {
+      "str": 44259
+     },
+     "sender.spd": {
+      "str": 44259
+     },
+     "sender.spd_noise": {
+      "str": 44259
+     },
+     "sender_alias": {
+      "str": 44259
+     },
+     "sender_id": {
+      "str": 44259
+     }
+    },
+    "drivers_profiles": {
+     "receiver:CAUTIOUS": 7251,
+     "sender:CAUTIOUS": 7264,
+     "sender:NORMAL": 34435,
+     "receiver:NORMAL": 34450,
+     "sender:AGGRESSIVE": 2560,
+     "receiver:AGGRESSIVE": 2558
+    }
+   }
+  },
+  "accelerationMultiplication": {
+   "Train": {
+    "files": 482,
+    "json_bytes": 37560907,
+    "empty_files": 0,
+    "records": 37701,
+    "label_0": 33390,
+    "label_1": 4311,
+    "senders": 482,
+    "attacker_senders": 96,
+    "mixed_label_senders": 94,
+    "sender_aliases": 482,
+    "attack_share": 0.11435,
+    "sender_pos_bbox_m": [
+     216273.9,
+     451710.1,
+     216797.9,
+     454215.3
+    ],
+    "sendTime_range_s": [
+     3601.3,
+     12599.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 37701
+     },
+     "messageID": {
+      "int": 37701
+     },
+     "rcvTime": {
+      "int": 37701
+     },
+     "receiver.acl": {
+      "float": 37701
+     },
+     "receiver.acl_noise": {
+      "float": 37701
+     },
+     "receiver.driversProfile": {
+      "str": 37701
+     },
+     "receiver.hed": {
+      "float": 37701
+     },
+     "receiver.hed_noise": {
+      "float": 37701
+     },
+     "receiver.pos": {
+      "str": 37701
+     },
+     "receiver.pos_noise": {
+      "str": 37701
+     },
+     "receiver.spd": {
+      "float": 37701
+     },
+     "receiver.spd_noise": {
+      "float": 37701
+     },
+     "sendTime": {
+      "int": 37701
+     },
+     "sender.acl": {
+      "float": 37701
+     },
+     "sender.acl_noise": {
+      "float": 37701
+     },
+     "sender.distance_to_road_edge": {
+      "float": 37701
+     },
+     "sender.driversProfile": {
+      "str": 37701
+     },
+     "sender.hed": {
+      "float": 37701
+     },
+     "sender.hed_noise": {
+      "float": 37701
+     },
+     "sender.pos": {
+      "str": 37701
+     },
+     "sender.pos_noise": {
+      "str": 37701
+     },
+     "sender.spd": {
+      "float": 37701
+     },
+     "sender.spd_noise": {
+      "float": 37701
+     },
+     "sender_alias": {
+      "int": 37701
+     },
+     "sender_id": {
+      "str": 37701
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 29091,
+     "sender:CAUTIOUS": 6605,
+     "sender:NORMAL": 29110,
+     "sender:AGGRESSIVE": 1986,
+     "receiver:CAUTIOUS": 6621,
+     "receiver:AGGRESSIVE": 1989
+    }
+   },
+   "Validation": {
+    "files": 152,
+    "json_bytes": 17868092,
+    "empty_files": 0,
+    "records": 17977,
+    "label_0": 15483,
+    "label_1": 2494,
+    "senders": 152,
+    "attacker_senders": 30,
+    "mixed_label_senders": 28,
+    "sender_aliases": 152,
+    "attack_share": 0.13873,
+    "sender_pos_bbox_m": [
+     216280.0,
+     451717.6,
+     216785.8,
+     454129.0
+    ],
+    "sendTime_range_s": [
+     12600.3,
+     14399.5
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 17977
+     },
+     "messageID": {
+      "int": 17977
+     },
+     "rcvTime": {
+      "int": 17977
+     },
+     "receiver.acl": {
+      "float": 17977
+     },
+     "receiver.acl_noise": {
+      "float": 17977
+     },
+     "receiver.driversProfile": {
+      "str": 17977
+     },
+     "receiver.hed": {
+      "float": 17977
+     },
+     "receiver.hed_noise": {
+      "float": 17977
+     },
+     "receiver.pos": {
+      "str": 17977
+     },
+     "receiver.pos_noise": {
+      "str": 17977
+     },
+     "receiver.spd": {
+      "float": 17977
+     },
+     "receiver.spd_noise": {
+      "float": 17977
+     },
+     "sendTime": {
+      "int": 17977
+     },
+     "sender.acl": {
+      "float": 17977
+     },
+     "sender.acl_noise": {
+      "float": 17977
+     },
+     "sender.distance_to_road_edge": {
+      "float": 17977
+     },
+     "sender.driversProfile": {
+      "str": 17977
+     },
+     "sender.hed": {
+      "float": 17977
+     },
+     "sender.hed_noise": {
+      "float": 17977
+     },
+     "sender.pos": {
+      "str": 17977
+     },
+     "sender.pos_noise": {
+      "str": 17977
+     },
+     "sender.spd": {
+      "float": 17977
+     },
+     "sender.spd_noise": {
+      "float": 17977
+     },
+     "sender_alias": {
+      "int": 17977
+     },
+     "sender_id": {
+      "str": 17977
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 14118,
+     "sender:NORMAL": 14119,
+     "sender:AGGRESSIVE": 1304,
+     "sender:CAUTIOUS": 2554,
+     "receiver:AGGRESSIVE": 1307,
+     "receiver:CAUTIOUS": 2552
+    }
+   },
+   "Test": {
+    "files": 476,
+    "json_bytes": 45496313,
+    "empty_files": 0,
+    "records": 44259,
+    "label_0": 40152,
+    "label_1": 4107,
+    "senders": 476,
+    "attacker_senders": 93,
+    "mixed_label_senders": 93,
+    "sender_aliases": 476,
+    "attack_share": 0.09279,
+    "sender_pos_bbox_m": [
+     216149.0,
+     449728.3,
+     216737.3,
+     451746.4
+    ],
+    "sendTime_range_s": [
+     7201.1,
+     14399.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 44259
+     },
+     "messageID": {
+      "int": 44259
+     },
+     "rcvTime": {
+      "int": 44259
+     },
+     "receiver.acl": {
+      "float": 44259
+     },
+     "receiver.acl_noise": {
+      "float": 44259
+     },
+     "receiver.driversProfile": {
+      "str": 44259
+     },
+     "receiver.hed": {
+      "float": 44259
+     },
+     "receiver.hed_noise": {
+      "float": 44259
+     },
+     "receiver.pos": {
+      "str": 44259
+     },
+     "receiver.pos_noise": {
+      "str": 44259
+     },
+     "receiver.spd": {
+      "float": 44259
+     },
+     "receiver.spd_noise": {
+      "float": 44259
+     },
+     "sendTime": {
+      "int": 44259
+     },
+     "sender.acl": {
+      "float": 44259
+     },
+     "sender.acl_noise": {
+      "float": 44259
+     },
+     "sender.distance_to_road_edge": {
+      "float": 44259
+     },
+     "sender.driversProfile": {
+      "str": 44259
+     },
+     "sender.hed": {
+      "float": 44259
+     },
+     "sender.hed_noise": {
+      "float": 44259
+     },
+     "sender.pos": {
+      "str": 44259
+     },
+     "sender.pos_noise": {
+      "str": 44259
+     },
+     "sender.spd": {
+      "float": 44259
+     },
+     "sender.spd_noise": {
+      "float": 44259
+     },
+     "sender_alias": {
+      "int": 44259
+     },
+     "sender_id": {
+      "str": 44259
+     }
+    },
+    "drivers_profiles": {
+     "receiver:CAUTIOUS": 7251,
+     "sender:CAUTIOUS": 7264,
+     "sender:NORMAL": 34435,
+     "receiver:NORMAL": 34450,
+     "sender:AGGRESSIVE": 2560,
+     "receiver:AGGRESSIVE": 2558
+    }
+   }
+  },
+  "constantPositionOffset": {
+   "Train": {
+    "files": 482,
+    "json_bytes": 37564580,
+    "empty_files": 0,
+    "records": 37701,
+    "label_0": 29870,
+    "label_1": 7831,
+    "senders": 482,
+    "attacker_senders": 96,
+    "mixed_label_senders": 0,
+    "sender_aliases": 482,
+    "attack_share": 0.20771,
+    "sender_pos_bbox_m": [
+     216237.7,
+     451655.6,
+     216838.0,
+     454215.3
+    ],
+    "sendTime_range_s": [
+     3601.3,
+     12599.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 37701
+     },
+     "messageID": {
+      "int": 37701
+     },
+     "rcvTime": {
+      "int": 37701
+     },
+     "receiver.acl": {
+      "float": 37701
+     },
+     "receiver.acl_noise": {
+      "float": 37701
+     },
+     "receiver.driversProfile": {
+      "str": 37701
+     },
+     "receiver.hed": {
+      "float": 37701
+     },
+     "receiver.hed_noise": {
+      "float": 37701
+     },
+     "receiver.pos": {
+      "str": 37701
+     },
+     "receiver.pos_noise": {
+      "str": 37701
+     },
+     "receiver.spd": {
+      "float": 37701
+     },
+     "receiver.spd_noise": {
+      "float": 37701
+     },
+     "sendTime": {
+      "int": 37701
+     },
+     "sender.acl": {
+      "float": 37701
+     },
+     "sender.acl_noise": {
+      "float": 37701
+     },
+     "sender.distance_to_road_edge": {
+      "float": 37701
+     },
+     "sender.driversProfile": {
+      "str": 37701
+     },
+     "sender.hed": {
+      "float": 37701
+     },
+     "sender.hed_noise": {
+      "float": 37701
+     },
+     "sender.pos": {
+      "str": 37701
+     },
+     "sender.pos_noise": {
+      "str": 37701
+     },
+     "sender.spd": {
+      "float": 37701
+     },
+     "sender.spd_noise": {
+      "float": 37701
+     },
+     "sender_alias": {
+      "int": 37701
+     },
+     "sender_id": {
+      "str": 37701
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 29091,
+     "sender:CAUTIOUS": 6605,
+     "sender:NORMAL": 29110,
+     "sender:AGGRESSIVE": 1986,
+     "receiver:CAUTIOUS": 6621,
+     "receiver:AGGRESSIVE": 1989
+    }
+   },
+   "Validation": {
+    "files": 152,
+    "json_bytes": 17870000,
+    "empty_files": 0,
+    "records": 17977,
+    "label_0": 14730,
+    "label_1": 3247,
+    "senders": 152,
+    "attacker_senders": 30,
+    "mixed_label_senders": 0,
+    "sender_aliases": 152,
+    "attack_share": 0.18062,
+    "sender_pos_bbox_m": [
+     216222.5,
+     451691.0,
+     216829.8,
+     454129.0
+    ],
+    "sendTime_range_s": [
+     12600.3,
+     14399.5
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 17977
+     },
+     "messageID": {
+      "int": 17977
+     },
+     "rcvTime": {
+      "int": 17977
+     },
+     "receiver.acl": {
+      "float": 17977
+     },
+     "receiver.acl_noise": {
+      "float": 17977
+     },
+     "receiver.driversProfile": {
+      "str": 17977
+     },
+     "receiver.hed": {
+      "float": 17977
+     },
+     "receiver.hed_noise": {
+      "float": 17977
+     },
+     "receiver.pos": {
+      "str": 17977
+     },
+     "receiver.pos_noise": {
+      "str": 17977
+     },
+     "receiver.spd": {
+      "float": 17977
+     },
+     "receiver.spd_noise": {
+      "float": 17977
+     },
+     "sendTime": {
+      "int": 17977
+     },
+     "sender.acl": {
+      "float": 17977
+     },
+     "sender.acl_noise": {
+      "float": 17977
+     },
+     "sender.distance_to_road_edge": {
+      "float": 17977
+     },
+     "sender.driversProfile": {
+      "str": 17977
+     },
+     "sender.hed": {
+      "float": 17977
+     },
+     "sender.hed_noise": {
+      "float": 17977
+     },
+     "sender.pos": {
+      "str": 17977
+     },
+     "sender.pos_noise": {
+      "str": 17977
+     },
+     "sender.spd": {
+      "float": 17977
+     },
+     "sender.spd_noise": {
+      "float": 17977
+     },
+     "sender_alias": {
+      "int": 17977
+     },
+     "sender_id": {
+      "str": 17977
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 14118,
+     "sender:NORMAL": 14119,
+     "sender:AGGRESSIVE": 1304,
+     "sender:CAUTIOUS": 2554,
+     "receiver:AGGRESSIVE": 1307,
+     "receiver:CAUTIOUS": 2552
+    }
+   },
+   "Test": {
+    "files": 476,
+    "json_bytes": 45501432,
+    "empty_files": 0,
+    "records": 44259,
+    "label_1": 8710,
+    "label_0": 35549,
+    "senders": 476,
+    "attacker_senders": 95,
+    "mixed_label_senders": 0,
+    "sender_aliases": 476,
+    "attack_share": 0.1968,
+    "sender_pos_bbox_m": [
+     216087.1,
+     449671.4,
+     216737.3,
+     451785.7
+    ],
+    "sendTime_range_s": [
+     7201.1,
+     14399.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 44259
+     },
+     "messageID": {
+      "int": 44259
+     },
+     "rcvTime": {
+      "int": 44259
+     },
+     "receiver.acl": {
+      "float": 44259
+     },
+     "receiver.acl_noise": {
+      "float": 44259
+     },
+     "receiver.driversProfile": {
+      "str": 44259
+     },
+     "receiver.hed": {
+      "float": 44259
+     },
+     "receiver.hed_noise": {
+      "float": 44259
+     },
+     "receiver.pos": {
+      "str": 44259
+     },
+     "receiver.pos_noise": {
+      "str": 44259
+     },
+     "receiver.spd": {
+      "float": 44259
+     },
+     "receiver.spd_noise": {
+      "float": 44259
+     },
+     "sendTime": {
+      "int": 44259
+     },
+     "sender.acl": {
+      "float": 44259
+     },
+     "sender.acl_noise": {
+      "float": 44259
+     },
+     "sender.distance_to_road_edge": {
+      "float": 44259
+     },
+     "sender.driversProfile": {
+      "str": 44259
+     },
+     "sender.hed": {
+      "float": 44259
+     },
+     "sender.hed_noise": {
+      "float": 44259
+     },
+     "sender.pos": {
+      "str": 44259
+     },
+     "sender.pos_noise": {
+      "str": 44259
+     },
+     "sender.spd": {
+      "float": 44259
+     },
+     "sender.spd_noise": {
+      "float": 44259
+     },
+     "sender_alias": {
+      "int": 44259
+     },
+     "sender_id": {
+      "str": 44259
+     }
+    },
+    "drivers_profiles": {
+     "receiver:CAUTIOUS": 7251,
+     "sender:CAUTIOUS": 7264,
+     "sender:NORMAL": 34435,
+     "receiver:NORMAL": 34450,
+     "sender:AGGRESSIVE": 2560,
+     "receiver:AGGRESSIVE": 2558
+    }
+   }
+  },
+  "constantSpeedOffset": {
+   "Train": {
+    "files": 482,
+    "json_bytes": 37565151,
+    "empty_files": 0,
+    "records": 37701,
+    "label_0": 30171,
+    "label_1": 7530,
+    "senders": 482,
+    "attacker_senders": 96,
+    "mixed_label_senders": 0,
+    "sender_aliases": 482,
+    "attack_share": 0.19973,
+    "sender_pos_bbox_m": [
+     216273.9,
+     451710.1,
+     216797.9,
+     454215.3
+    ],
+    "sendTime_range_s": [
+     3601.3,
+     12599.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 37701
+     },
+     "messageID": {
+      "int": 37701
+     },
+     "rcvTime": {
+      "int": 37701
+     },
+     "receiver.acl": {
+      "float": 37701
+     },
+     "receiver.acl_noise": {
+      "float": 37701
+     },
+     "receiver.driversProfile": {
+      "str": 37701
+     },
+     "receiver.hed": {
+      "float": 37701
+     },
+     "receiver.hed_noise": {
+      "float": 37701
+     },
+     "receiver.pos": {
+      "str": 37701
+     },
+     "receiver.pos_noise": {
+      "str": 37701
+     },
+     "receiver.spd": {
+      "float": 37701
+     },
+     "receiver.spd_noise": {
+      "float": 37701
+     },
+     "sendTime": {
+      "int": 37701
+     },
+     "sender.acl": {
+      "float": 37701
+     },
+     "sender.acl_noise": {
+      "float": 37701
+     },
+     "sender.distance_to_road_edge": {
+      "float": 37701
+     },
+     "sender.driversProfile": {
+      "str": 37701
+     },
+     "sender.hed": {
+      "float": 37701
+     },
+     "sender.hed_noise": {
+      "float": 37701
+     },
+     "sender.pos": {
+      "str": 37701
+     },
+     "sender.pos_noise": {
+      "str": 37701
+     },
+     "sender.spd": {
+      "float": 37701
+     },
+     "sender.spd_noise": {
+      "float": 37701
+     },
+     "sender_alias": {
+      "int": 37701
+     },
+     "sender_id": {
+      "str": 37701
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 29091,
+     "sender:CAUTIOUS": 6605,
+     "sender:NORMAL": 29110,
+     "sender:AGGRESSIVE": 1986,
+     "receiver:CAUTIOUS": 6621,
+     "receiver:AGGRESSIVE": 1989
+    }
+   },
+   "Validation": {
+    "files": 152,
+    "json_bytes": 17869453,
+    "empty_files": 0,
+    "records": 17977,
+    "label_1": 3998,
+    "label_0": 13979,
+    "senders": 152,
+    "attacker_senders": 30,
+    "mixed_label_senders": 0,
+    "sender_aliases": 152,
+    "attack_share": 0.2224,
+    "sender_pos_bbox_m": [
+     216280.0,
+     451717.6,
+     216785.8,
+     454129.0
+    ],
+    "sendTime_range_s": [
+     12600.3,
+     14399.5
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 17977
+     },
+     "messageID": {
+      "int": 17977
+     },
+     "rcvTime": {
+      "int": 17977
+     },
+     "receiver.acl": {
+      "float": 17977
+     },
+     "receiver.acl_noise": {
+      "float": 17977
+     },
+     "receiver.driversProfile": {
+      "str": 17977
+     },
+     "receiver.hed": {
+      "float": 17977
+     },
+     "receiver.hed_noise": {
+      "float": 17977
+     },
+     "receiver.pos": {
+      "str": 17977
+     },
+     "receiver.pos_noise": {
+      "str": 17977
+     },
+     "receiver.spd": {
+      "float": 17977
+     },
+     "receiver.spd_noise": {
+      "float": 17977
+     },
+     "sendTime": {
+      "int": 17977
+     },
+     "sender.acl": {
+      "float": 17977
+     },
+     "sender.acl_noise": {
+      "float": 17977
+     },
+     "sender.distance_to_road_edge": {
+      "float": 17977
+     },
+     "sender.driversProfile": {
+      "str": 17977
+     },
+     "sender.hed": {
+      "float": 17977
+     },
+     "sender.hed_noise": {
+      "float": 17977
+     },
+     "sender.pos": {
+      "str": 17977
+     },
+     "sender.pos_noise": {
+      "str": 17977
+     },
+     "sender.spd": {
+      "float": 17977
+     },
+     "sender.spd_noise": {
+      "float": 17977
+     },
+     "sender_alias": {
+      "int": 17977
+     },
+     "sender_id": {
+      "str": 17977
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 14118,
+     "sender:NORMAL": 14119,
+     "sender:AGGRESSIVE": 1304,
+     "sender:CAUTIOUS": 2554,
+     "receiver:AGGRESSIVE": 1307,
+     "receiver:CAUTIOUS": 2552
+    }
+   },
+   "Test": {
+    "files": 476,
+    "json_bytes": 45502962,
+    "empty_files": 0,
+    "records": 44259,
+    "label_0": 35359,
+    "label_1": 8900,
+    "senders": 476,
+    "attacker_senders": 95,
+    "mixed_label_senders": 0,
+    "sender_aliases": 476,
+    "attack_share": 0.20109,
+    "sender_pos_bbox_m": [
+     216149.0,
+     449728.3,
+     216737.3,
+     451746.4
+    ],
+    "sendTime_range_s": [
+     7201.1,
+     14399.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 44259
+     },
+     "messageID": {
+      "int": 44259
+     },
+     "rcvTime": {
+      "int": 44259
+     },
+     "receiver.acl": {
+      "float": 44259
+     },
+     "receiver.acl_noise": {
+      "float": 44259
+     },
+     "receiver.driversProfile": {
+      "str": 44259
+     },
+     "receiver.hed": {
+      "float": 44259
+     },
+     "receiver.hed_noise": {
+      "float": 44259
+     },
+     "receiver.pos": {
+      "str": 44259
+     },
+     "receiver.pos_noise": {
+      "str": 44259
+     },
+     "receiver.spd": {
+      "float": 44259
+     },
+     "receiver.spd_noise": {
+      "float": 44259
+     },
+     "sendTime": {
+      "int": 44259
+     },
+     "sender.acl": {
+      "float": 44259
+     },
+     "sender.acl_noise": {
+      "float": 44259
+     },
+     "sender.distance_to_road_edge": {
+      "float": 44259
+     },
+     "sender.driversProfile": {
+      "str": 44259
+     },
+     "sender.hed": {
+      "float": 44259
+     },
+     "sender.hed_noise": {
+      "float": 44259
+     },
+     "sender.pos": {
+      "str": 44259
+     },
+     "sender.pos_noise": {
+      "str": 44259
+     },
+     "sender.spd": {
+      "float": 44259
+     },
+     "sender.spd_noise": {
+      "float": 44259
+     },
+     "sender_alias": {
+      "int": 44259
+     },
+     "sender_id": {
+      "str": 44259
+     }
+    },
+    "drivers_profiles": {
+     "receiver:CAUTIOUS": 7251,
+     "sender:CAUTIOUS": 7264,
+     "sender:NORMAL": 34435,
+     "receiver:NORMAL": 34450,
+     "sender:AGGRESSIVE": 2560,
+     "receiver:AGGRESSIVE": 2558
+    }
+   }
+  },
+  "dataReplay": {
+   "Train": {
+    "files": 482,
+    "json_bytes": 37564046,
+    "empty_files": 0,
+    "records": 37701,
+    "label_0": 31160,
+    "label_1": 6541,
+    "senders": 482,
+    "attacker_senders": 96,
+    "mixed_label_senders": 54,
+    "sender_aliases": 482,
+    "attack_share": 0.1735,
+    "sender_pos_bbox_m": [
+     216273.9,
+     451710.1,
+     216797.9,
+     454215.3
+    ],
+    "sendTime_range_s": [
+     3601.3,
+     12599.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 37701
+     },
+     "messageID": {
+      "int": 37701
+     },
+     "rcvTime": {
+      "int": 37701
+     },
+     "receiver.acl": {
+      "float": 37701
+     },
+     "receiver.acl_noise": {
+      "float": 37701
+     },
+     "receiver.driversProfile": {
+      "str": 37701
+     },
+     "receiver.hed": {
+      "float": 37701
+     },
+     "receiver.hed_noise": {
+      "float": 37701
+     },
+     "receiver.pos": {
+      "str": 37701
+     },
+     "receiver.pos_noise": {
+      "str": 37701
+     },
+     "receiver.spd": {
+      "float": 37701
+     },
+     "receiver.spd_noise": {
+      "float": 37701
+     },
+     "sendTime": {
+      "int": 37701
+     },
+     "sender.acl": {
+      "float": 37701
+     },
+     "sender.acl_noise": {
+      "float": 37701
+     },
+     "sender.distance_to_road_edge": {
+      "float": 37701
+     },
+     "sender.driversProfile": {
+      "str": 37701
+     },
+     "sender.hed": {
+      "float": 37701
+     },
+     "sender.hed_noise": {
+      "float": 37701
+     },
+     "sender.pos": {
+      "str": 37701
+     },
+     "sender.pos_noise": {
+      "str": 37701
+     },
+     "sender.spd": {
+      "float": 37701
+     },
+     "sender.spd_noise": {
+      "float": 37701
+     },
+     "sender_alias": {
+      "int": 37701
+     },
+     "sender_id": {
+      "str": 37701
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 29091,
+     "sender:CAUTIOUS": 6709,
+     "sender:NORMAL": 29122,
+     "sender:AGGRESSIVE": 1870,
+     "receiver:CAUTIOUS": 6621,
+     "receiver:AGGRESSIVE": 1989
+    }
+   },
+   "Validation": {
+    "files": 152,
+    "json_bytes": 17870258,
+    "empty_files": 0,
+    "records": 17977,
+    "label_0": 14765,
+    "label_1": 3212,
+    "senders": 152,
+    "attacker_senders": 30,
+    "mixed_label_senders": 16,
+    "sender_aliases": 152,
+    "attack_share": 0.17867,
+    "sender_pos_bbox_m": [
+     216280.0,
+     451720.1,
+     216785.8,
+     454129.0
+    ],
+    "sendTime_range_s": [
+     12600.3,
+     14399.5
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 17977
+     },
+     "messageID": {
+      "int": 17977
+     },
+     "rcvTime": {
+      "int": 17977
+     },
+     "receiver.acl": {
+      "float": 17977
+     },
+     "receiver.acl_noise": {
+      "float": 17977
+     },
+     "receiver.driversProfile": {
+      "str": 17977
+     },
+     "receiver.hed": {
+      "float": 17977
+     },
+     "receiver.hed_noise": {
+      "float": 17977
+     },
+     "receiver.pos": {
+      "str": 17977
+     },
+     "receiver.pos_noise": {
+      "str": 17977
+     },
+     "receiver.spd": {
+      "float": 17977
+     },
+     "receiver.spd_noise": {
+      "float": 17977
+     },
+     "sendTime": {
+      "int": 17977
+     },
+     "sender.acl": {
+      "float": 17977
+     },
+     "sender.acl_noise": {
+      "float": 17977
+     },
+     "sender.distance_to_road_edge": {
+      "float": 17977
+     },
+     "sender.driversProfile": {
+      "str": 17977
+     },
+     "sender.hed": {
+      "float": 17977
+     },
+     "sender.hed_noise": {
+      "float": 17977
+     },
+     "sender.pos": {
+      "str": 17977
+     },
+     "sender.pos_noise": {
+      "str": 17977
+     },
+     "sender.spd": {
+      "float": 17977
+     },
+     "sender.spd_noise": {
+      "float": 17977
+     },
+     "sender_alias": {
+      "int": 17977
+     },
+     "sender_id": {
+      "str": 17977
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 14118,
+     "sender:NORMAL": 13953,
+     "sender:AGGRESSIVE": 1289,
+     "sender:CAUTIOUS": 2735,
+     "receiver:AGGRESSIVE": 1307,
+     "receiver:CAUTIOUS": 2552
+    }
+   },
+   "Test": {
+    "files": 476,
+    "json_bytes": 45496729,
+    "empty_files": 0,
+    "records": 44259,
+    "label_1": 8743,
+    "label_0": 35516,
+    "senders": 476,
+    "attacker_senders": 95,
+    "mixed_label_senders": 50,
+    "sender_aliases": 476,
+    "attack_share": 0.19754,
+    "sender_pos_bbox_m": [
+     216149.0,
+     449728.3,
+     216737.3,
+     451746.4
+    ],
+    "sendTime_range_s": [
+     7201.1,
+     14399.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 44259
+     },
+     "messageID": {
+      "int": 44259
+     },
+     "rcvTime": {
+      "int": 44259
+     },
+     "receiver.acl": {
+      "float": 44259
+     },
+     "receiver.acl_noise": {
+      "float": 44259
+     },
+     "receiver.driversProfile": {
+      "str": 44259
+     },
+     "receiver.hed": {
+      "float": 44259
+     },
+     "receiver.hed_noise": {
+      "float": 44259
+     },
+     "receiver.pos": {
+      "str": 44259
+     },
+     "receiver.pos_noise": {
+      "str": 44259
+     },
+     "receiver.spd": {
+      "float": 44259
+     },
+     "receiver.spd_noise": {
+      "float": 44259
+     },
+     "sendTime": {
+      "int": 44259
+     },
+     "sender.acl": {
+      "float": 44259
+     },
+     "sender.acl_noise": {
+      "float": 44259
+     },
+     "sender.distance_to_road_edge": {
+      "float": 44259
+     },
+     "sender.driversProfile": {
+      "str": 44259
+     },
+     "sender.hed": {
+      "float": 44259
+     },
+     "sender.hed_noise": {
+      "float": 44259
+     },
+     "sender.pos": {
+      "str": 44259
+     },
+     "sender.pos_noise": {
+      "str": 44259
+     },
+     "sender.spd": {
+      "float": 44259
+     },
+     "sender.spd_noise": {
+      "float": 44259
+     },
+     "sender_alias": {
+      "int": 44259
+     },
+     "sender_id": {
+      "str": 44259
+     }
+    },
+    "drivers_profiles": {
+     "receiver:CAUTIOUS": 7251,
+     "sender:NORMAL": 35115,
+     "sender:CAUTIOUS": 6551,
+     "receiver:NORMAL": 34450,
+     "sender:AGGRESSIVE": 2593,
+     "receiver:AGGRESSIVE": 2558
+    }
+   }
+  },
+  "dosAttack": {
+   "Train": {
+    "files": 482,
+    "json_bytes": 55086901,
+    "empty_files": 0,
+    "records": 55290,
+    "label_0": 29569,
+    "label_1": 25721,
+    "repeated_message_in_same_receiver_file": 86,
+    "senders": 482,
+    "attacker_senders": 96,
+    "mixed_label_senders": 0,
+    "sender_aliases": 482,
+    "attack_share": 0.4652,
+    "sender_pos_bbox_m": [
+     216273.9,
+     451710.1,
+     216797.9,
+     454215.3
+    ],
+    "sendTime_range_s": [
+     3601.3,
+     12599.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 55290
+     },
+     "messageID": {
+      "int": 55290
+     },
+     "rcvTime": {
+      "int": 55290
+     },
+     "receiver.acl": {
+      "float": 55290
+     },
+     "receiver.acl_noise": {
+      "float": 55290
+     },
+     "receiver.driversProfile": {
+      "str": 55290
+     },
+     "receiver.hed": {
+      "float": 55290
+     },
+     "receiver.hed_noise": {
+      "float": 55290
+     },
+     "receiver.pos": {
+      "str": 55290
+     },
+     "receiver.pos_noise": {
+      "str": 55290
+     },
+     "receiver.spd": {
+      "float": 55290
+     },
+     "receiver.spd_noise": {
+      "float": 55290
+     },
+     "sendTime": {
+      "int": 55290
+     },
+     "sender.acl": {
+      "float": 55290
+     },
+     "sender.acl_noise": {
+      "float": 55290
+     },
+     "sender.distance_to_road_edge": {
+      "float": 55290
+     },
+     "sender.driversProfile": {
+      "str": 55290
+     },
+     "sender.hed": {
+      "float": 55290
+     },
+     "sender.hed_noise": {
+      "float": 55290
+     },
+     "sender.pos": {
+      "str": 55290
+     },
+     "sender.pos_noise": {
+      "str": 55290
+     },
+     "sender.spd": {
+      "float": 55290
+     },
+     "sender.spd_noise": {
+      "float": 55290
+     },
+     "sender_alias": {
+      "int": 55290
+     },
+     "sender_id": {
+      "str": 55290
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 42279,
+     "sender:CAUTIOUS": 10205,
+     "sender:NORMAL": 42303,
+     "sender:AGGRESSIVE": 2782,
+     "receiver:CAUTIOUS": 9871,
+     "receiver:AGGRESSIVE": 3140
+    }
+   },
+   "Validation": {
+    "files": 152,
+    "json_bytes": 25980854,
+    "empty_files": 0,
+    "records": 26121,
+    "label_1": 11959,
+    "label_0": 14162,
+    "repeated_message_in_same_receiver_file": 1,
+    "senders": 152,
+    "attacker_senders": 30,
+    "mixed_label_senders": 0,
+    "sender_aliases": 152,
+    "attack_share": 0.45783,
+    "sender_pos_bbox_m": [
+     216280.0,
+     451717.6,
+     216785.8,
+     454129.0
+    ],
+    "sendTime_range_s": [
+     12600.3,
+     14399.8
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 26121
+     },
+     "messageID": {
+      "int": 26121
+     },
+     "rcvTime": {
+      "int": 26121
+     },
+     "receiver.acl": {
+      "float": 26121
+     },
+     "receiver.acl_noise": {
+      "float": 26121
+     },
+     "receiver.driversProfile": {
+      "str": 26121
+     },
+     "receiver.hed": {
+      "float": 26121
+     },
+     "receiver.hed_noise": {
+      "float": 26121
+     },
+     "receiver.pos": {
+      "str": 26121
+     },
+     "receiver.pos_noise": {
+      "str": 26121
+     },
+     "receiver.spd": {
+      "float": 26121
+     },
+     "receiver.spd_noise": {
+      "float": 26121
+     },
+     "sendTime": {
+      "int": 26121
+     },
+     "sender.acl": {
+      "float": 26121
+     },
+     "sender.acl_noise": {
+      "float": 26121
+     },
+     "sender.distance_to_road_edge": {
+      "float": 26121
+     },
+     "sender.driversProfile": {
+      "str": 26121
+     },
+     "sender.hed": {
+      "float": 26121
+     },
+     "sender.hed_noise": {
+      "float": 26121
+     },
+     "sender.pos": {
+      "str": 26121
+     },
+     "sender.pos_noise": {
+      "str": 26121
+     },
+     "sender.spd": {
+      "float": 26121
+     },
+     "sender.spd_noise": {
+      "float": 26121
+     },
+     "sender_alias": {
+      "int": 26121
+     },
+     "sender_id": {
+      "str": 26121
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 20523,
+     "sender:NORMAL": 21136,
+     "sender:AGGRESSIVE": 1453,
+     "sender:CAUTIOUS": 3532,
+     "receiver:AGGRESSIVE": 2111,
+     "receiver:CAUTIOUS": 3487
+    }
+   },
+   "Test": {
+    "files": 476,
+    "json_bytes": 62428526,
+    "empty_files": 0,
+    "records": 60718,
+    "label_0": 36066,
+    "label_1": 24652,
+    "repeated_message_in_same_receiver_file": 38,
+    "senders": 476,
+    "attacker_senders": 95,
+    "mixed_label_senders": 0,
+    "sender_aliases": 476,
+    "attack_share": 0.40601,
+    "sender_pos_bbox_m": [
+     216149.0,
+     449728.3,
+     216737.3,
+     451746.4
+    ],
+    "sendTime_range_s": [
+     7201.1,
+     14399.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 60718
+     },
+     "messageID": {
+      "int": 60718
+     },
+     "rcvTime": {
+      "int": 60718
+     },
+     "receiver.acl": {
+      "float": 60718
+     },
+     "receiver.acl_noise": {
+      "float": 60718
+     },
+     "receiver.driversProfile": {
+      "str": 60718
+     },
+     "receiver.hed": {
+      "float": 60718
+     },
+     "receiver.hed_noise": {
+      "float": 60718
+     },
+     "receiver.pos": {
+      "str": 60718
+     },
+     "receiver.pos_noise": {
+      "str": 60718
+     },
+     "receiver.spd": {
+      "float": 60718
+     },
+     "receiver.spd_noise": {
+      "float": 60718
+     },
+     "sendTime": {
+      "int": 60718
+     },
+     "sender.acl": {
+      "float": 60718
+     },
+     "sender.acl_noise": {
+      "float": 60718
+     },
+     "sender.distance_to_road_edge": {
+      "float": 60718
+     },
+     "sender.driversProfile": {
+      "str": 60718
+     },
+     "sender.hed": {
+      "float": 60718
+     },
+     "sender.hed_noise": {
+      "float": 60718
+     },
+     "sender.pos": {
+      "str": 60718
+     },
+     "sender.pos_noise": {
+      "str": 60718
+     },
+     "sender.spd": {
+      "float": 60718
+     },
+     "sender.spd_noise": {
+      "float": 60718
+     },
+     "sender_alias": {
+      "int": 60718
+     },
+     "sender_id": {
+      "str": 60718
+     }
+    },
+    "drivers_profiles": {
+     "receiver:CAUTIOUS": 10746,
+     "sender:CAUTIOUS": 10560,
+     "sender:NORMAL": 46794,
+     "receiver:NORMAL": 46345,
+     "sender:AGGRESSIVE": 3364,
+     "receiver:AGGRESSIVE": 3627
+    }
+   }
+  },
+  "feignedBraking": {
+   "Train": {
+    "files": 482,
+    "json_bytes": 37561670,
+    "empty_files": 0,
+    "records": 37701,
+    "label_1": 2700,
+    "label_0": 35001,
+    "senders": 482,
+    "attacker_senders": 95,
+    "mixed_label_senders": 92,
+    "sender_aliases": 482,
+    "attack_share": 0.07162,
+    "sender_pos_bbox_m": [
+     216273.9,
+     451710.1,
+     216797.9,
+     454215.3
+    ],
+    "sendTime_range_s": [
+     3601.3,
+     12599.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 37701
+     },
+     "messageID": {
+      "int": 37701
+     },
+     "rcvTime": {
+      "int": 37701
+     },
+     "receiver.acl": {
+      "float": 37701
+     },
+     "receiver.acl_noise": {
+      "float": 37701
+     },
+     "receiver.driversProfile": {
+      "str": 37701
+     },
+     "receiver.hed": {
+      "float": 37701
+     },
+     "receiver.hed_noise": {
+      "float": 37701
+     },
+     "receiver.pos": {
+      "str": 37701
+     },
+     "receiver.pos_noise": {
+      "str": 37701
+     },
+     "receiver.spd": {
+      "float": 37701
+     },
+     "receiver.spd_noise": {
+      "float": 37701
+     },
+     "sendTime": {
+      "int": 37701
+     },
+     "sender.acl": {
+      "float": 37701
+     },
+     "sender.acl_noise": {
+      "float": 37701
+     },
+     "sender.distance_to_road_edge": {
+      "float": 37701
+     },
+     "sender.driversProfile": {
+      "str": 37701
+     },
+     "sender.hed": {
+      "float": 37701
+     },
+     "sender.hed_noise": {
+      "float": 37701
+     },
+     "sender.pos": {
+      "str": 37701
+     },
+     "sender.pos_noise": {
+      "str": 37701
+     },
+     "sender.spd": {
+      "float": 37701
+     },
+     "sender.spd_noise": {
+      "float": 37701
+     },
+     "sender_alias": {
+      "int": 37701
+     },
+     "sender_id": {
+      "str": 37701
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 29091,
+     "sender:CAUTIOUS": 6605,
+     "sender:NORMAL": 29110,
+     "sender:AGGRESSIVE": 1986,
+     "receiver:CAUTIOUS": 6621,
+     "receiver:AGGRESSIVE": 1989
+    }
+   },
+   "Validation": {
+    "files": 152,
+    "json_bytes": 17868591,
+    "empty_files": 0,
+    "records": 17977,
+    "label_0": 16218,
+    "label_1": 1759,
+    "senders": 152,
+    "attacker_senders": 30,
+    "mixed_label_senders": 29,
+    "sender_aliases": 152,
+    "attack_share": 0.09785,
+    "sender_pos_bbox_m": [
+     216280.0,
+     451717.6,
+     216785.8,
+     454129.0
+    ],
+    "sendTime_range_s": [
+     12600.3,
+     14399.5
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 17977
+     },
+     "messageID": {
+      "int": 17977
+     },
+     "rcvTime": {
+      "int": 17977
+     },
+     "receiver.acl": {
+      "float": 17977
+     },
+     "receiver.acl_noise": {
+      "float": 17977
+     },
+     "receiver.driversProfile": {
+      "str": 17977
+     },
+     "receiver.hed": {
+      "float": 17977
+     },
+     "receiver.hed_noise": {
+      "float": 17977
+     },
+     "receiver.pos": {
+      "str": 17977
+     },
+     "receiver.pos_noise": {
+      "str": 17977
+     },
+     "receiver.spd": {
+      "float": 17977
+     },
+     "receiver.spd_noise": {
+      "float": 17977
+     },
+     "sendTime": {
+      "int": 17977
+     },
+     "sender.acl": {
+      "float": 17977
+     },
+     "sender.acl_noise": {
+      "float": 17977
+     },
+     "sender.distance_to_road_edge": {
+      "float": 17977
+     },
+     "sender.driversProfile": {
+      "str": 17977
+     },
+     "sender.hed": {
+      "float": 17977
+     },
+     "sender.hed_noise": {
+      "float": 17977
+     },
+     "sender.pos": {
+      "str": 17977
+     },
+     "sender.pos_noise": {
+      "str": 17977
+     },
+     "sender.spd": {
+      "float": 17977
+     },
+     "sender.spd_noise": {
+      "float": 17977
+     },
+     "sender_alias": {
+      "int": 17977
+     },
+     "sender_id": {
+      "str": 17977
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 14118,
+     "sender:NORMAL": 14119,
+     "sender:AGGRESSIVE": 1304,
+     "sender:CAUTIOUS": 2554,
+     "receiver:AGGRESSIVE": 1307,
+     "receiver:CAUTIOUS": 2552
+    }
+   },
+   "Test": {
+    "files": 476,
+    "json_bytes": 45500185,
+    "empty_files": 0,
+    "records": 44259,
+    "label_0": 40763,
+    "label_1": 3496,
+    "senders": 476,
+    "attacker_senders": 95,
+    "mixed_label_senders": 93,
+    "sender_aliases": 476,
+    "attack_share": 0.07899,
+    "sender_pos_bbox_m": [
+     216149.0,
+     449728.3,
+     216737.3,
+     451746.4
+    ],
+    "sendTime_range_s": [
+     7201.1,
+     14399.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 44259
+     },
+     "messageID": {
+      "int": 44259
+     },
+     "rcvTime": {
+      "int": 44259
+     },
+     "receiver.acl": {
+      "float": 44259
+     },
+     "receiver.acl_noise": {
+      "float": 44259
+     },
+     "receiver.driversProfile": {
+      "str": 44259
+     },
+     "receiver.hed": {
+      "float": 44259
+     },
+     "receiver.hed_noise": {
+      "float": 44259
+     },
+     "receiver.pos": {
+      "str": 44259
+     },
+     "receiver.pos_noise": {
+      "str": 44259
+     },
+     "receiver.spd": {
+      "float": 44259
+     },
+     "receiver.spd_noise": {
+      "float": 44259
+     },
+     "sendTime": {
+      "int": 44259
+     },
+     "sender.acl": {
+      "float": 44259
+     },
+     "sender.acl_noise": {
+      "float": 44259
+     },
+     "sender.distance_to_road_edge": {
+      "float": 44259
+     },
+     "sender.driversProfile": {
+      "str": 44259
+     },
+     "sender.hed": {
+      "float": 44259
+     },
+     "sender.hed_noise": {
+      "float": 44259
+     },
+     "sender.pos": {
+      "str": 44259
+     },
+     "sender.pos_noise": {
+      "str": 44259
+     },
+     "sender.spd": {
+      "float": 44259
+     },
+     "sender.spd_noise": {
+      "float": 44259
+     },
+     "sender_alias": {
+      "int": 44259
+     },
+     "sender_id": {
+      "str": 44259
+     }
+    },
+    "drivers_profiles": {
+     "receiver:CAUTIOUS": 7251,
+     "sender:CAUTIOUS": 7264,
+     "sender:NORMAL": 34435,
+     "receiver:NORMAL": 34450,
+     "sender:AGGRESSIVE": 2560,
+     "receiver:AGGRESSIVE": 2558
+    }
+   }
+  },
+  "positionMirroring": {
+   "Train": {
+    "files": 482,
+    "json_bytes": 37558734,
+    "empty_files": 0,
+    "records": 37701,
+    "label_0": 29777,
+    "label_1": 7924,
+    "senders": 482,
+    "attacker_senders": 96,
+    "mixed_label_senders": 0,
+    "sender_aliases": 482,
+    "attack_share": 0.21018,
+    "sender_pos_bbox_m": [
+     216274.5,
+     451709.4,
+     216797.9,
+     454215.3
+    ],
+    "sendTime_range_s": [
+     3601.3,
+     12599.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 37701
+     },
+     "messageID": {
+      "int": 37701
+     },
+     "rcvTime": {
+      "int": 37701
+     },
+     "receiver.acl": {
+      "float": 37701
+     },
+     "receiver.acl_noise": {
+      "float": 37701
+     },
+     "receiver.driversProfile": {
+      "str": 37701
+     },
+     "receiver.hed": {
+      "float": 37701
+     },
+     "receiver.hed_noise": {
+      "float": 37701
+     },
+     "receiver.pos": {
+      "str": 37701
+     },
+     "receiver.pos_noise": {
+      "str": 37701
+     },
+     "receiver.spd": {
+      "float": 37701
+     },
+     "receiver.spd_noise": {
+      "float": 37701
+     },
+     "sendTime": {
+      "int": 37701
+     },
+     "sender.acl": {
+      "float": 37701
+     },
+     "sender.acl_noise": {
+      "float": 37701
+     },
+     "sender.distance_to_road_edge": {
+      "float": 37701
+     },
+     "sender.driversProfile": {
+      "str": 37701
+     },
+     "sender.hed": {
+      "float": 37701
+     },
+     "sender.hed_noise": {
+      "float": 37701
+     },
+     "sender.pos": {
+      "str": 37701
+     },
+     "sender.pos_noise": {
+      "str": 37701
+     },
+     "sender.spd": {
+      "float": 37701
+     },
+     "sender.spd_noise": {
+      "float": 37701
+     },
+     "sender_alias": {
+      "int": 37701
+     },
+     "sender_id": {
+      "str": 37701
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 29091,
+     "sender:CAUTIOUS": 6605,
+     "sender:NORMAL": 29110,
+     "sender:AGGRESSIVE": 1986,
+     "receiver:CAUTIOUS": 6621,
+     "receiver:AGGRESSIVE": 1989
+    }
+   },
+   "Validation": {
+    "files": 152,
+    "json_bytes": 17867606,
+    "empty_files": 0,
+    "records": 17977,
+    "label_1": 4005,
+    "label_0": 13972,
+    "senders": 152,
+    "attacker_senders": 30,
+    "mixed_label_senders": 0,
+    "sender_aliases": 152,
+    "attack_share": 0.22278,
+    "sender_pos_bbox_m": [
+     216280.0,
+     451717.6,
+     216785.8,
+     454129.0
+    ],
+    "sendTime_range_s": [
+     12600.3,
+     14399.5
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 17977
+     },
+     "messageID": {
+      "int": 17977
+     },
+     "rcvTime": {
+      "int": 17977
+     },
+     "receiver.acl": {
+      "float": 17977
+     },
+     "receiver.acl_noise": {
+      "float": 17977
+     },
+     "receiver.driversProfile": {
+      "str": 17977
+     },
+     "receiver.hed": {
+      "float": 17977
+     },
+     "receiver.hed_noise": {
+      "float": 17977
+     },
+     "receiver.pos": {
+      "str": 17977
+     },
+     "receiver.pos_noise": {
+      "str": 17977
+     },
+     "receiver.spd": {
+      "float": 17977
+     },
+     "receiver.spd_noise": {
+      "float": 17977
+     },
+     "sendTime": {
+      "int": 17977
+     },
+     "sender.acl": {
+      "float": 17977
+     },
+     "sender.acl_noise": {
+      "float": 17977
+     },
+     "sender.distance_to_road_edge": {
+      "float": 17977
+     },
+     "sender.driversProfile": {
+      "str": 17977
+     },
+     "sender.hed": {
+      "float": 17977
+     },
+     "sender.hed_noise": {
+      "float": 17977
+     },
+     "sender.pos": {
+      "str": 17977
+     },
+     "sender.pos_noise": {
+      "str": 17977
+     },
+     "sender.spd": {
+      "float": 17977
+     },
+     "sender.spd_noise": {
+      "float": 17977
+     },
+     "sender_alias": {
+      "int": 17977
+     },
+     "sender_id": {
+      "str": 17977
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 14118,
+     "sender:NORMAL": 14119,
+     "sender:AGGRESSIVE": 1304,
+     "sender:CAUTIOUS": 2554,
+     "receiver:AGGRESSIVE": 1307,
+     "receiver:CAUTIOUS": 2552
+    }
+   },
+   "Test": {
+    "files": 476,
+    "json_bytes": 45494412,
+    "empty_files": 0,
+    "records": 44259,
+    "label_1": 9618,
+    "label_0": 34641,
+    "senders": 476,
+    "attacker_senders": 95,
+    "mixed_label_senders": 0,
+    "sender_aliases": 476,
+    "attack_share": 0.21731,
+    "sender_pos_bbox_m": [
+     216145.1,
+     449731.5,
+     216737.3,
+     451746.4
+    ],
+    "sendTime_range_s": [
+     7201.1,
+     14399.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 44259
+     },
+     "messageID": {
+      "int": 44259
+     },
+     "rcvTime": {
+      "int": 44259
+     },
+     "receiver.acl": {
+      "float": 44259
+     },
+     "receiver.acl_noise": {
+      "float": 44259
+     },
+     "receiver.driversProfile": {
+      "str": 44259
+     },
+     "receiver.hed": {
+      "float": 44259
+     },
+     "receiver.hed_noise": {
+      "float": 44259
+     },
+     "receiver.pos": {
+      "str": 44259
+     },
+     "receiver.pos_noise": {
+      "str": 44259
+     },
+     "receiver.spd": {
+      "float": 44259
+     },
+     "receiver.spd_noise": {
+      "float": 44259
+     },
+     "sendTime": {
+      "int": 44259
+     },
+     "sender.acl": {
+      "float": 44259
+     },
+     "sender.acl_noise": {
+      "float": 44259
+     },
+     "sender.distance_to_road_edge": {
+      "float": 44259
+     },
+     "sender.driversProfile": {
+      "str": 44259
+     },
+     "sender.hed": {
+      "float": 44259
+     },
+     "sender.hed_noise": {
+      "float": 44259
+     },
+     "sender.pos": {
+      "str": 44259
+     },
+     "sender.pos_noise": {
+      "str": 44259
+     },
+     "sender.spd": {
+      "float": 44259
+     },
+     "sender.spd_noise": {
+      "float": 44259
+     },
+     "sender_alias": {
+      "int": 44259
+     },
+     "sender_id": {
+      "str": 44259
+     }
+    },
+    "drivers_profiles": {
+     "receiver:CAUTIOUS": 7251,
+     "sender:CAUTIOUS": 7264,
+     "sender:NORMAL": 34435,
+     "receiver:NORMAL": 34450,
+     "sender:AGGRESSIVE": 2560,
+     "receiver:AGGRESSIVE": 2558
+    }
+   }
+  },
+  "randomPositionOffset": {
+   "Train": {
+    "files": 482,
+    "json_bytes": 37564709,
+    "empty_files": 0,
+    "records": 37701,
+    "label_0": 29867,
+    "label_1": 7834,
+    "senders": 482,
+    "attacker_senders": 96,
+    "mixed_label_senders": 0,
+    "sender_aliases": 482,
+    "attack_share": 0.20779,
+    "sender_pos_bbox_m": [
+     216220.3,
+     451657.5,
+     216845.3,
+     454215.3
+    ],
+    "sendTime_range_s": [
+     3601.3,
+     12599.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 37701
+     },
+     "messageID": {
+      "int": 37701
+     },
+     "rcvTime": {
+      "int": 37701
+     },
+     "receiver.acl": {
+      "float": 37701
+     },
+     "receiver.acl_noise": {
+      "float": 37701
+     },
+     "receiver.driversProfile": {
+      "str": 37701
+     },
+     "receiver.hed": {
+      "float": 37701
+     },
+     "receiver.hed_noise": {
+      "float": 37701
+     },
+     "receiver.pos": {
+      "str": 37701
+     },
+     "receiver.pos_noise": {
+      "str": 37701
+     },
+     "receiver.spd": {
+      "float": 37701
+     },
+     "receiver.spd_noise": {
+      "float": 37701
+     },
+     "sendTime": {
+      "int": 37701
+     },
+     "sender.acl": {
+      "float": 37701
+     },
+     "sender.acl_noise": {
+      "float": 37701
+     },
+     "sender.distance_to_road_edge": {
+      "float": 37701
+     },
+     "sender.driversProfile": {
+      "str": 37701
+     },
+     "sender.hed": {
+      "float": 37701
+     },
+     "sender.hed_noise": {
+      "float": 37701
+     },
+     "sender.pos": {
+      "str": 37701
+     },
+     "sender.pos_noise": {
+      "str": 37701
+     },
+     "sender.spd": {
+      "float": 37701
+     },
+     "sender.spd_noise": {
+      "float": 37701
+     },
+     "sender_alias": {
+      "int": 37701
+     },
+     "sender_id": {
+      "str": 37701
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 29091,
+     "sender:CAUTIOUS": 6605,
+     "sender:NORMAL": 29110,
+     "sender:AGGRESSIVE": 1986,
+     "receiver:CAUTIOUS": 6621,
+     "receiver:AGGRESSIVE": 1989
+    }
+   },
+   "Validation": {
+    "files": 152,
+    "json_bytes": 17869698,
+    "empty_files": 0,
+    "records": 17977,
+    "label_0": 14813,
+    "label_1": 3164,
+    "senders": 152,
+    "attacker_senders": 30,
+    "mixed_label_senders": 0,
+    "sender_aliases": 152,
+    "attack_share": 0.176,
+    "sender_pos_bbox_m": [
+     216218.7,
+     451662.9,
+     216831.0,
+     454129.0
+    ],
+    "sendTime_range_s": [
+     12600.3,
+     14399.5
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 17977
+     },
+     "messageID": {
+      "int": 17977
+     },
+     "rcvTime": {
+      "int": 17977
+     },
+     "receiver.acl": {
+      "float": 17977
+     },
+     "receiver.acl_noise": {
+      "float": 17977
+     },
+     "receiver.driversProfile": {
+      "str": 17977
+     },
+     "receiver.hed": {
+      "float": 17977
+     },
+     "receiver.hed_noise": {
+      "float": 17977
+     },
+     "receiver.pos": {
+      "str": 17977
+     },
+     "receiver.pos_noise": {
+      "str": 17977
+     },
+     "receiver.spd": {
+      "float": 17977
+     },
+     "receiver.spd_noise": {
+      "float": 17977
+     },
+     "sendTime": {
+      "int": 17977
+     },
+     "sender.acl": {
+      "float": 17977
+     },
+     "sender.acl_noise": {
+      "float": 17977
+     },
+     "sender.distance_to_road_edge": {
+      "float": 17977
+     },
+     "sender.driversProfile": {
+      "str": 17977
+     },
+     "sender.hed": {
+      "float": 17977
+     },
+     "sender.hed_noise": {
+      "float": 17977
+     },
+     "sender.pos": {
+      "str": 17977
+     },
+     "sender.pos_noise": {
+      "str": 17977
+     },
+     "sender.spd": {
+      "float": 17977
+     },
+     "sender.spd_noise": {
+      "float": 17977
+     },
+     "sender_alias": {
+      "int": 17977
+     },
+     "sender_id": {
+      "str": 17977
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 14118,
+     "sender:NORMAL": 14119,
+     "sender:AGGRESSIVE": 1304,
+     "sender:CAUTIOUS": 2554,
+     "receiver:AGGRESSIVE": 1307,
+     "receiver:CAUTIOUS": 2552
+    }
+   },
+   "Test": {
+    "files": 476,
+    "json_bytes": 45502700,
+    "empty_files": 0,
+    "records": 44259,
+    "label_0": 35979,
+    "label_1": 8280,
+    "senders": 476,
+    "attacker_senders": 95,
+    "mixed_label_senders": 0,
+    "sender_aliases": 476,
+    "attack_share": 0.18708,
+    "sender_pos_bbox_m": [
+     216092.0,
+     449676.9,
+     216737.3,
+     451778.2
+    ],
+    "sendTime_range_s": [
+     7201.1,
+     14399.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 44259
+     },
+     "messageID": {
+      "int": 44259
+     },
+     "rcvTime": {
+      "int": 44259
+     },
+     "receiver.acl": {
+      "float": 44259
+     },
+     "receiver.acl_noise": {
+      "float": 44259
+     },
+     "receiver.driversProfile": {
+      "str": 44259
+     },
+     "receiver.hed": {
+      "float": 44259
+     },
+     "receiver.hed_noise": {
+      "float": 44259
+     },
+     "receiver.pos": {
+      "str": 44259
+     },
+     "receiver.pos_noise": {
+      "str": 44259
+     },
+     "receiver.spd": {
+      "float": 44259
+     },
+     "receiver.spd_noise": {
+      "float": 44259
+     },
+     "sendTime": {
+      "int": 44259
+     },
+     "sender.acl": {
+      "float": 44259
+     },
+     "sender.acl_noise": {
+      "float": 44259
+     },
+     "sender.distance_to_road_edge": {
+      "float": 44259
+     },
+     "sender.driversProfile": {
+      "str": 44259
+     },
+     "sender.hed": {
+      "float": 44259
+     },
+     "sender.hed_noise": {
+      "float": 44259
+     },
+     "sender.pos": {
+      "str": 44259
+     },
+     "sender.pos_noise": {
+      "str": 44259
+     },
+     "sender.spd": {
+      "float": 44259
+     },
+     "sender.spd_noise": {
+      "float": 44259
+     },
+     "sender_alias": {
+      "int": 44259
+     },
+     "sender_id": {
+      "str": 44259
+     }
+    },
+    "drivers_profiles": {
+     "receiver:CAUTIOUS": 7251,
+     "sender:CAUTIOUS": 7264,
+     "sender:NORMAL": 34435,
+     "receiver:NORMAL": 34450,
+     "sender:AGGRESSIVE": 2560,
+     "receiver:AGGRESSIVE": 2558
+    }
+   }
+  },
+  "randomSpeedOffset": {
+   "Train": {
+    "files": 482,
+    "json_bytes": 37562427,
+    "empty_files": 0,
+    "records": 37701,
+    "label_0": 30133,
+    "label_1": 7568,
+    "senders": 482,
+    "attacker_senders": 96,
+    "mixed_label_senders": 0,
+    "sender_aliases": 482,
+    "attack_share": 0.20074,
+    "sender_pos_bbox_m": [
+     216273.9,
+     451710.1,
+     216797.9,
+     454215.3
+    ],
+    "sendTime_range_s": [
+     3601.3,
+     12599.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 37701
+     },
+     "messageID": {
+      "int": 37701
+     },
+     "rcvTime": {
+      "int": 37701
+     },
+     "receiver.acl": {
+      "float": 37701
+     },
+     "receiver.acl_noise": {
+      "float": 37701
+     },
+     "receiver.driversProfile": {
+      "str": 37701
+     },
+     "receiver.hed": {
+      "float": 37701
+     },
+     "receiver.hed_noise": {
+      "float": 37701
+     },
+     "receiver.pos": {
+      "str": 37701
+     },
+     "receiver.pos_noise": {
+      "str": 37701
+     },
+     "receiver.spd": {
+      "float": 37701
+     },
+     "receiver.spd_noise": {
+      "float": 37701
+     },
+     "sendTime": {
+      "int": 37701
+     },
+     "sender.acl": {
+      "float": 37701
+     },
+     "sender.acl_noise": {
+      "float": 37701
+     },
+     "sender.distance_to_road_edge": {
+      "float": 37701
+     },
+     "sender.driversProfile": {
+      "str": 37701
+     },
+     "sender.hed": {
+      "float": 37701
+     },
+     "sender.hed_noise": {
+      "float": 37701
+     },
+     "sender.pos": {
+      "str": 37701
+     },
+     "sender.pos_noise": {
+      "str": 37701
+     },
+     "sender.spd": {
+      "float": 37701
+     },
+     "sender.spd_noise": {
+      "float": 37701
+     },
+     "sender_alias": {
+      "int": 37701
+     },
+     "sender_id": {
+      "str": 37701
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 29091,
+     "sender:CAUTIOUS": 6605,
+     "sender:NORMAL": 29110,
+     "sender:AGGRESSIVE": 1986,
+     "receiver:CAUTIOUS": 6621,
+     "receiver:AGGRESSIVE": 1989
+    }
+   },
+   "Validation": {
+    "files": 152,
+    "json_bytes": 17869245,
+    "empty_files": 0,
+    "records": 17977,
+    "label_0": 14861,
+    "label_1": 3116,
+    "senders": 152,
+    "attacker_senders": 30,
+    "mixed_label_senders": 0,
+    "sender_aliases": 152,
+    "attack_share": 0.17333,
+    "sender_pos_bbox_m": [
+     216280.0,
+     451717.6,
+     216785.8,
+     454129.0
+    ],
+    "sendTime_range_s": [
+     12600.3,
+     14399.5
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 17977
+     },
+     "messageID": {
+      "int": 17977
+     },
+     "rcvTime": {
+      "int": 17977
+     },
+     "receiver.acl": {
+      "float": 17977
+     },
+     "receiver.acl_noise": {
+      "float": 17977
+     },
+     "receiver.driversProfile": {
+      "str": 17977
+     },
+     "receiver.hed": {
+      "float": 17977
+     },
+     "receiver.hed_noise": {
+      "float": 17977
+     },
+     "receiver.pos": {
+      "str": 17977
+     },
+     "receiver.pos_noise": {
+      "str": 17977
+     },
+     "receiver.spd": {
+      "float": 17977
+     },
+     "receiver.spd_noise": {
+      "float": 17977
+     },
+     "sendTime": {
+      "int": 17977
+     },
+     "sender.acl": {
+      "float": 17977
+     },
+     "sender.acl_noise": {
+      "float": 17977
+     },
+     "sender.distance_to_road_edge": {
+      "float": 17977
+     },
+     "sender.driversProfile": {
+      "str": 17977
+     },
+     "sender.hed": {
+      "float": 17977
+     },
+     "sender.hed_noise": {
+      "float": 17977
+     },
+     "sender.pos": {
+      "str": 17977
+     },
+     "sender.pos_noise": {
+      "str": 17977
+     },
+     "sender.spd": {
+      "float": 17977
+     },
+     "sender.spd_noise": {
+      "float": 17977
+     },
+     "sender_alias": {
+      "int": 17977
+     },
+     "sender_id": {
+      "str": 17977
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 14118,
+     "sender:NORMAL": 14119,
+     "sender:AGGRESSIVE": 1304,
+     "sender:CAUTIOUS": 2554,
+     "receiver:AGGRESSIVE": 1307,
+     "receiver:CAUTIOUS": 2552
+    }
+   },
+   "Test": {
+    "files": 476,
+    "json_bytes": 45499027,
+    "empty_files": 0,
+    "records": 44259,
+    "label_0": 35865,
+    "label_1": 8394,
+    "senders": 476,
+    "attacker_senders": 95,
+    "mixed_label_senders": 0,
+    "sender_aliases": 476,
+    "attack_share": 0.18966,
+    "sender_pos_bbox_m": [
+     216149.0,
+     449728.3,
+     216737.3,
+     451746.4
+    ],
+    "sendTime_range_s": [
+     7201.1,
+     14399.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 44259
+     },
+     "messageID": {
+      "int": 44259
+     },
+     "rcvTime": {
+      "int": 44259
+     },
+     "receiver.acl": {
+      "float": 44259
+     },
+     "receiver.acl_noise": {
+      "float": 44259
+     },
+     "receiver.driversProfile": {
+      "str": 44259
+     },
+     "receiver.hed": {
+      "float": 44259
+     },
+     "receiver.hed_noise": {
+      "float": 44259
+     },
+     "receiver.pos": {
+      "str": 44259
+     },
+     "receiver.pos_noise": {
+      "str": 44259
+     },
+     "receiver.spd": {
+      "float": 44259
+     },
+     "receiver.spd_noise": {
+      "float": 44259
+     },
+     "sendTime": {
+      "int": 44259
+     },
+     "sender.acl": {
+      "float": 44259
+     },
+     "sender.acl_noise": {
+      "float": 44259
+     },
+     "sender.distance_to_road_edge": {
+      "float": 44259
+     },
+     "sender.driversProfile": {
+      "str": 44259
+     },
+     "sender.hed": {
+      "float": 44259
+     },
+     "sender.hed_noise": {
+      "float": 44259
+     },
+     "sender.pos": {
+      "str": 44259
+     },
+     "sender.pos_noise": {
+      "str": 44259
+     },
+     "sender.spd": {
+      "float": 44259
+     },
+     "sender.spd_noise": {
+      "float": 44259
+     },
+     "sender_alias": {
+      "int": 44259
+     },
+     "sender_id": {
+      "str": 44259
+     }
+    },
+    "drivers_profiles": {
+     "receiver:CAUTIOUS": 7251,
+     "sender:CAUTIOUS": 7264,
+     "sender:NORMAL": 34435,
+     "receiver:NORMAL": 34450,
+     "sender:AGGRESSIVE": 2560,
+     "receiver:AGGRESSIVE": 2558
+    }
+   }
+  },
+  "reversedHeading": {
+   "Train": {
+    "files": 482,
+    "json_bytes": 37559335,
+    "empty_files": 0,
+    "records": 37701,
+    "label_0": 31041,
+    "label_1": 6660,
+    "senders": 482,
+    "attacker_senders": 96,
+    "mixed_label_senders": 16,
+    "sender_aliases": 482,
+    "attack_share": 0.17665,
+    "sender_pos_bbox_m": [
+     216273.9,
+     451710.1,
+     216797.9,
+     454215.3
+    ],
+    "sendTime_range_s": [
+     3601.3,
+     12599.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 37701
+     },
+     "messageID": {
+      "int": 37701
+     },
+     "rcvTime": {
+      "int": 37701
+     },
+     "receiver.acl": {
+      "float": 37701
+     },
+     "receiver.acl_noise": {
+      "float": 37701
+     },
+     "receiver.driversProfile": {
+      "str": 37701
+     },
+     "receiver.hed": {
+      "float": 37701
+     },
+     "receiver.hed_noise": {
+      "float": 37701
+     },
+     "receiver.pos": {
+      "str": 37701
+     },
+     "receiver.pos_noise": {
+      "str": 37701
+     },
+     "receiver.spd": {
+      "float": 37701
+     },
+     "receiver.spd_noise": {
+      "float": 37701
+     },
+     "sendTime": {
+      "int": 37701
+     },
+     "sender.acl": {
+      "float": 37701
+     },
+     "sender.acl_noise": {
+      "float": 37701
+     },
+     "sender.distance_to_road_edge": {
+      "float": 37701
+     },
+     "sender.driversProfile": {
+      "str": 37701
+     },
+     "sender.hed": {
+      "float": 37701
+     },
+     "sender.hed_noise": {
+      "float": 37701
+     },
+     "sender.pos": {
+      "str": 37701
+     },
+     "sender.pos_noise": {
+      "str": 37701
+     },
+     "sender.spd": {
+      "float": 37701
+     },
+     "sender.spd_noise": {
+      "float": 37701
+     },
+     "sender_alias": {
+      "int": 37701
+     },
+     "sender_id": {
+      "str": 37701
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 29091,
+     "sender:CAUTIOUS": 6605,
+     "sender:NORMAL": 29110,
+     "sender:AGGRESSIVE": 1986,
+     "receiver:CAUTIOUS": 6621,
+     "receiver:AGGRESSIVE": 1989
+    }
+   },
+   "Validation": {
+    "files": 152,
+    "json_bytes": 17866965,
+    "empty_files": 0,
+    "records": 17977,
+    "label_0": 15046,
+    "label_1": 2931,
+    "senders": 152,
+    "attacker_senders": 30,
+    "mixed_label_senders": 6,
+    "sender_aliases": 152,
+    "attack_share": 0.16304,
+    "sender_pos_bbox_m": [
+     216280.0,
+     451717.6,
+     216785.8,
+     454129.0
+    ],
+    "sendTime_range_s": [
+     12600.3,
+     14399.5
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 17977
+     },
+     "messageID": {
+      "int": 17977
+     },
+     "rcvTime": {
+      "int": 17977
+     },
+     "receiver.acl": {
+      "float": 17977
+     },
+     "receiver.acl_noise": {
+      "float": 17977
+     },
+     "receiver.driversProfile": {
+      "str": 17977
+     },
+     "receiver.hed": {
+      "float": 17977
+     },
+     "receiver.hed_noise": {
+      "float": 17977
+     },
+     "receiver.pos": {
+      "str": 17977
+     },
+     "receiver.pos_noise": {
+      "str": 17977
+     },
+     "receiver.spd": {
+      "float": 17977
+     },
+     "receiver.spd_noise": {
+      "float": 17977
+     },
+     "sendTime": {
+      "int": 17977
+     },
+     "sender.acl": {
+      "float": 17977
+     },
+     "sender.acl_noise": {
+      "float": 17977
+     },
+     "sender.distance_to_road_edge": {
+      "float": 17977
+     },
+     "sender.driversProfile": {
+      "str": 17977
+     },
+     "sender.hed": {
+      "float": 17977
+     },
+     "sender.hed_noise": {
+      "float": 17977
+     },
+     "sender.pos": {
+      "str": 17977
+     },
+     "sender.pos_noise": {
+      "str": 17977
+     },
+     "sender.spd": {
+      "float": 17977
+     },
+     "sender.spd_noise": {
+      "float": 17977
+     },
+     "sender_alias": {
+      "int": 17977
+     },
+     "sender_id": {
+      "str": 17977
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 14118,
+     "sender:NORMAL": 14119,
+     "sender:AGGRESSIVE": 1304,
+     "sender:CAUTIOUS": 2554,
+     "receiver:AGGRESSIVE": 1307,
+     "receiver:CAUTIOUS": 2552
+    }
+   },
+   "Test": {
+    "files": 476,
+    "json_bytes": 45497687,
+    "empty_files": 0,
+    "records": 44259,
+    "label_0": 35991,
+    "label_1": 8268,
+    "senders": 476,
+    "attacker_senders": 95,
+    "mixed_label_senders": 15,
+    "sender_aliases": 476,
+    "attack_share": 0.18681,
+    "sender_pos_bbox_m": [
+     216149.0,
+     449728.3,
+     216737.3,
+     451746.4
+    ],
+    "sendTime_range_s": [
+     7201.1,
+     14399.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 44259
+     },
+     "messageID": {
+      "int": 44259
+     },
+     "rcvTime": {
+      "int": 44259
+     },
+     "receiver.acl": {
+      "float": 44259
+     },
+     "receiver.acl_noise": {
+      "float": 44259
+     },
+     "receiver.driversProfile": {
+      "str": 44259
+     },
+     "receiver.hed": {
+      "float": 44259
+     },
+     "receiver.hed_noise": {
+      "float": 44259
+     },
+     "receiver.pos": {
+      "str": 44259
+     },
+     "receiver.pos_noise": {
+      "str": 44259
+     },
+     "receiver.spd": {
+      "float": 44259
+     },
+     "receiver.spd_noise": {
+      "float": 44259
+     },
+     "sendTime": {
+      "int": 44259
+     },
+     "sender.acl": {
+      "float": 44259
+     },
+     "sender.acl_noise": {
+      "float": 44259
+     },
+     "sender.distance_to_road_edge": {
+      "float": 44259
+     },
+     "sender.driversProfile": {
+      "str": 44259
+     },
+     "sender.hed": {
+      "float": 44259
+     },
+     "sender.hed_noise": {
+      "float": 44259
+     },
+     "sender.pos": {
+      "str": 44259
+     },
+     "sender.pos_noise": {
+      "str": 44259
+     },
+     "sender.spd": {
+      "float": 44259
+     },
+     "sender.spd_noise": {
+      "float": 44259
+     },
+     "sender_alias": {
+      "int": 44259
+     },
+     "sender_id": {
+      "str": 44259
+     }
+    },
+    "drivers_profiles": {
+     "receiver:CAUTIOUS": 7251,
+     "sender:CAUTIOUS": 7264,
+     "sender:NORMAL": 34435,
+     "receiver:NORMAL": 34450,
+     "sender:AGGRESSIVE": 2560,
+     "receiver:AGGRESSIVE": 2558
+    }
+   }
+  },
+  "suddenConstantSpeed": {
+   "Train": {
+    "files": 482,
+    "json_bytes": 37560626,
+    "empty_files": 0,
+    "records": 37701,
+    "label_0": 36173,
+    "label_1": 1528,
+    "senders": 482,
+    "attacker_senders": 45,
+    "mixed_label_senders": 45,
+    "sender_aliases": 482,
+    "attack_share": 0.04053,
+    "sender_pos_bbox_m": [
+     216273.9,
+     451710.1,
+     216797.9,
+     454215.3
+    ],
+    "sendTime_range_s": [
+     3601.3,
+     12599.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 37701
+     },
+     "messageID": {
+      "int": 37701
+     },
+     "rcvTime": {
+      "int": 37701
+     },
+     "receiver.acl": {
+      "float": 37701
+     },
+     "receiver.acl_noise": {
+      "float": 37701
+     },
+     "receiver.driversProfile": {
+      "str": 37701
+     },
+     "receiver.hed": {
+      "float": 37701
+     },
+     "receiver.hed_noise": {
+      "float": 37701
+     },
+     "receiver.pos": {
+      "str": 37701
+     },
+     "receiver.pos_noise": {
+      "str": 37701
+     },
+     "receiver.spd": {
+      "float": 37701
+     },
+     "receiver.spd_noise": {
+      "float": 37701
+     },
+     "sendTime": {
+      "int": 37701
+     },
+     "sender.acl": {
+      "float": 37701
+     },
+     "sender.acl_noise": {
+      "float": 37701
+     },
+     "sender.distance_to_road_edge": {
+      "float": 37701
+     },
+     "sender.driversProfile": {
+      "str": 37701
+     },
+     "sender.hed": {
+      "float": 37701
+     },
+     "sender.hed_noise": {
+      "float": 37701
+     },
+     "sender.pos": {
+      "str": 37701
+     },
+     "sender.pos_noise": {
+      "str": 37701
+     },
+     "sender.spd": {
+      "float": 37701
+     },
+     "sender.spd_noise": {
+      "float": 37701
+     },
+     "sender_alias": {
+      "int": 37701
+     },
+     "sender_id": {
+      "str": 37701
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 29091,
+     "sender:CAUTIOUS": 6605,
+     "sender:NORMAL": 29110,
+     "sender:AGGRESSIVE": 1986,
+     "receiver:CAUTIOUS": 6621,
+     "receiver:AGGRESSIVE": 1989
+    }
+   },
+   "Validation": {
+    "files": 152,
+    "json_bytes": 17867539,
+    "empty_files": 0,
+    "records": 17977,
+    "label_0": 17412,
+    "label_1": 565,
+    "senders": 152,
+    "attacker_senders": 16,
+    "mixed_label_senders": 16,
+    "sender_aliases": 152,
+    "attack_share": 0.03143,
+    "sender_pos_bbox_m": [
+     216280.0,
+     451717.6,
+     216785.8,
+     454129.0
+    ],
+    "sendTime_range_s": [
+     12600.3,
+     14399.5
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 17977
+     },
+     "messageID": {
+      "int": 17977
+     },
+     "rcvTime": {
+      "int": 17977
+     },
+     "receiver.acl": {
+      "float": 17977
+     },
+     "receiver.acl_noise": {
+      "float": 17977
+     },
+     "receiver.driversProfile": {
+      "str": 17977
+     },
+     "receiver.hed": {
+      "float": 17977
+     },
+     "receiver.hed_noise": {
+      "float": 17977
+     },
+     "receiver.pos": {
+      "str": 17977
+     },
+     "receiver.pos_noise": {
+      "str": 17977
+     },
+     "receiver.spd": {
+      "float": 17977
+     },
+     "receiver.spd_noise": {
+      "float": 17977
+     },
+     "sendTime": {
+      "int": 17977
+     },
+     "sender.acl": {
+      "float": 17977
+     },
+     "sender.acl_noise": {
+      "float": 17977
+     },
+     "sender.distance_to_road_edge": {
+      "float": 17977
+     },
+     "sender.driversProfile": {
+      "str": 17977
+     },
+     "sender.hed": {
+      "float": 17977
+     },
+     "sender.hed_noise": {
+      "float": 17977
+     },
+     "sender.pos": {
+      "str": 17977
+     },
+     "sender.pos_noise": {
+      "str": 17977
+     },
+     "sender.spd": {
+      "float": 17977
+     },
+     "sender.spd_noise": {
+      "float": 17977
+     },
+     "sender_alias": {
+      "int": 17977
+     },
+     "sender_id": {
+      "str": 17977
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 14118,
+     "sender:NORMAL": 14119,
+     "sender:AGGRESSIVE": 1304,
+     "sender:CAUTIOUS": 2554,
+     "receiver:AGGRESSIVE": 1307,
+     "receiver:CAUTIOUS": 2552
+    }
+   },
+   "Test": {
+    "files": 476,
+    "json_bytes": 45491110,
+    "empty_files": 0,
+    "records": 44259,
+    "label_0": 42688,
+    "label_1": 1571,
+    "senders": 476,
+    "attacker_senders": 34,
+    "mixed_label_senders": 34,
+    "sender_aliases": 476,
+    "attack_share": 0.0355,
+    "sender_pos_bbox_m": [
+     216149.0,
+     449728.3,
+     216737.3,
+     451746.4
+    ],
+    "sendTime_range_s": [
+     7201.1,
+     14399.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 44259
+     },
+     "messageID": {
+      "int": 44259
+     },
+     "rcvTime": {
+      "int": 44259
+     },
+     "receiver.acl": {
+      "float": 44259
+     },
+     "receiver.acl_noise": {
+      "float": 44259
+     },
+     "receiver.driversProfile": {
+      "str": 44259
+     },
+     "receiver.hed": {
+      "float": 44259
+     },
+     "receiver.hed_noise": {
+      "float": 44259
+     },
+     "receiver.pos": {
+      "str": 44259
+     },
+     "receiver.pos_noise": {
+      "str": 44259
+     },
+     "receiver.spd": {
+      "float": 44259
+     },
+     "receiver.spd_noise": {
+      "float": 44259
+     },
+     "sendTime": {
+      "int": 44259
+     },
+     "sender.acl": {
+      "float": 44259
+     },
+     "sender.acl_noise": {
+      "float": 44259
+     },
+     "sender.distance_to_road_edge": {
+      "float": 44259
+     },
+     "sender.driversProfile": {
+      "str": 44259
+     },
+     "sender.hed": {
+      "float": 44259
+     },
+     "sender.hed_noise": {
+      "float": 44259
+     },
+     "sender.pos": {
+      "str": 44259
+     },
+     "sender.pos_noise": {
+      "str": 44259
+     },
+     "sender.spd": {
+      "float": 44259
+     },
+     "sender.spd_noise": {
+      "float": 44259
+     },
+     "sender_alias": {
+      "int": 44259
+     },
+     "sender_id": {
+      "str": 44259
+     }
+    },
+    "drivers_profiles": {
+     "receiver:CAUTIOUS": 7251,
+     "sender:CAUTIOUS": 7264,
+     "sender:NORMAL": 34435,
+     "receiver:NORMAL": 34450,
+     "sender:AGGRESSIVE": 2560,
+     "receiver:AGGRESSIVE": 2558
+    }
+   }
+  },
+  "suddenStop": {
+   "Train": {
+    "files": 482,
+    "json_bytes": 37471400,
+    "empty_files": 0,
+    "records": 37701,
+    "label_0": 34309,
+    "label_1": 3392,
+    "senders": 482,
+    "attacker_senders": 81,
+    "mixed_label_senders": 81,
+    "sender_aliases": 482,
+    "attack_share": 0.08997,
+    "sender_pos_bbox_m": [
+     216273.9,
+     451710.1,
+     216797.9,
+     454215.3
+    ],
+    "sendTime_range_s": [
+     3601.3,
+     12599.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 37701
+     },
+     "messageID": {
+      "int": 37701
+     },
+     "rcvTime": {
+      "int": 37701
+     },
+     "receiver.acl": {
+      "float": 37701
+     },
+     "receiver.acl_noise": {
+      "float": 37701
+     },
+     "receiver.driversProfile": {
+      "str": 37701
+     },
+     "receiver.hed": {
+      "float": 37701
+     },
+     "receiver.hed_noise": {
+      "float": 37701
+     },
+     "receiver.pos": {
+      "str": 37701
+     },
+     "receiver.pos_noise": {
+      "str": 37701
+     },
+     "receiver.spd": {
+      "float": 37701
+     },
+     "receiver.spd_noise": {
+      "float": 37701
+     },
+     "sendTime": {
+      "int": 37701
+     },
+     "sender.acl": {
+      "float": 37701
+     },
+     "sender.acl_noise": {
+      "float": 37701
+     },
+     "sender.distance_to_road_edge": {
+      "float": 37701
+     },
+     "sender.driversProfile": {
+      "str": 37701
+     },
+     "sender.hed": {
+      "float": 37701
+     },
+     "sender.hed_noise": {
+      "float": 37701
+     },
+     "sender.pos": {
+      "str": 37701
+     },
+     "sender.pos_noise": {
+      "str": 37701
+     },
+     "sender.spd": {
+      "float": 37701
+     },
+     "sender.spd_noise": {
+      "float": 37701
+     },
+     "sender_alias": {
+      "int": 37701
+     },
+     "sender_id": {
+      "str": 37701
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 29091,
+     "sender:CAUTIOUS": 6605,
+     "sender:NORMAL": 29110,
+     "sender:AGGRESSIVE": 1986,
+     "receiver:CAUTIOUS": 6621,
+     "receiver:AGGRESSIVE": 1989
+    }
+   },
+   "Validation": {
+    "files": 152,
+    "json_bytes": 17797220,
+    "empty_files": 0,
+    "records": 17977,
+    "label_0": 15758,
+    "label_1": 2219,
+    "senders": 152,
+    "attacker_senders": 27,
+    "mixed_label_senders": 26,
+    "sender_aliases": 152,
+    "attack_share": 0.12344,
+    "sender_pos_bbox_m": [
+     216280.0,
+     451717.6,
+     216785.8,
+     454129.0
+    ],
+    "sendTime_range_s": [
+     12600.3,
+     14399.5
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 17977
+     },
+     "messageID": {
+      "int": 17977
+     },
+     "rcvTime": {
+      "int": 17977
+     },
+     "receiver.acl": {
+      "float": 17977
+     },
+     "receiver.acl_noise": {
+      "float": 17977
+     },
+     "receiver.driversProfile": {
+      "str": 17977
+     },
+     "receiver.hed": {
+      "float": 17977
+     },
+     "receiver.hed_noise": {
+      "float": 17977
+     },
+     "receiver.pos": {
+      "str": 17977
+     },
+     "receiver.pos_noise": {
+      "str": 17977
+     },
+     "receiver.spd": {
+      "float": 17977
+     },
+     "receiver.spd_noise": {
+      "float": 17977
+     },
+     "sendTime": {
+      "int": 17977
+     },
+     "sender.acl": {
+      "float": 17977
+     },
+     "sender.acl_noise": {
+      "float": 17977
+     },
+     "sender.distance_to_road_edge": {
+      "float": 17977
+     },
+     "sender.driversProfile": {
+      "str": 17977
+     },
+     "sender.hed": {
+      "float": 17977
+     },
+     "sender.hed_noise": {
+      "float": 17977
+     },
+     "sender.pos": {
+      "str": 17977
+     },
+     "sender.pos_noise": {
+      "str": 17977
+     },
+     "sender.spd": {
+      "float": 17977
+     },
+     "sender.spd_noise": {
+      "float": 17977
+     },
+     "sender_alias": {
+      "int": 17977
+     },
+     "sender_id": {
+      "str": 17977
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 14118,
+     "sender:NORMAL": 14119,
+     "sender:AGGRESSIVE": 1304,
+     "sender:CAUTIOUS": 2554,
+     "receiver:AGGRESSIVE": 1307,
+     "receiver:CAUTIOUS": 2552
+    }
+   },
+   "Test": {
+    "files": 476,
+    "json_bytes": 45376382,
+    "empty_files": 0,
+    "records": 44259,
+    "label_0": 40319,
+    "label_1": 3940,
+    "senders": 476,
+    "attacker_senders": 92,
+    "mixed_label_senders": 92,
+    "sender_aliases": 476,
+    "attack_share": 0.08902,
+    "sender_pos_bbox_m": [
+     216149.0,
+     449728.3,
+     216737.3,
+     451746.4
+    ],
+    "sendTime_range_s": [
+     7201.1,
+     14399.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 44259
+     },
+     "messageID": {
+      "int": 44259
+     },
+     "rcvTime": {
+      "int": 44259
+     },
+     "receiver.acl": {
+      "float": 44259
+     },
+     "receiver.acl_noise": {
+      "float": 44259
+     },
+     "receiver.driversProfile": {
+      "str": 44259
+     },
+     "receiver.hed": {
+      "float": 44259
+     },
+     "receiver.hed_noise": {
+      "float": 44259
+     },
+     "receiver.pos": {
+      "str": 44259
+     },
+     "receiver.pos_noise": {
+      "str": 44259
+     },
+     "receiver.spd": {
+      "float": 44259
+     },
+     "receiver.spd_noise": {
+      "float": 44259
+     },
+     "sendTime": {
+      "int": 44259
+     },
+     "sender.acl": {
+      "float": 44259
+     },
+     "sender.acl_noise": {
+      "float": 44259
+     },
+     "sender.distance_to_road_edge": {
+      "float": 44259
+     },
+     "sender.driversProfile": {
+      "str": 44259
+     },
+     "sender.hed": {
+      "float": 44259
+     },
+     "sender.hed_noise": {
+      "float": 44259
+     },
+     "sender.pos": {
+      "str": 44259
+     },
+     "sender.pos_noise": {
+      "str": 44259
+     },
+     "sender.spd": {
+      "float": 44259
+     },
+     "sender.spd_noise": {
+      "float": 44259
+     },
+     "sender_alias": {
+      "int": 44259
+     },
+     "sender_id": {
+      "str": 44259
+     }
+    },
+    "drivers_profiles": {
+     "receiver:CAUTIOUS": 7251,
+     "sender:CAUTIOUS": 7264,
+     "sender:NORMAL": 34435,
+     "receiver:NORMAL": 34450,
+     "sender:AGGRESSIVE": 2560,
+     "receiver:AGGRESSIVE": 2558
+    }
+   }
+  },
+  "timeDelayAttack": {
+   "Train": {
+    "files": 482,
+    "json_bytes": 37559921,
+    "empty_files": 0,
+    "records": 37701,
+    "label_0": 30056,
+    "label_1": 7645,
+    "senders": 482,
+    "attacker_senders": 96,
+    "mixed_label_senders": 0,
+    "sender_aliases": 482,
+    "attack_share": 0.20278,
+    "sender_pos_bbox_m": [
+     216273.9,
+     451710.1,
+     216797.9,
+     454215.3
+    ],
+    "sendTime_range_s": [
+     3601.3,
+     12603.3
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 37701
+     },
+     "messageID": {
+      "int": 37701
+     },
+     "rcvTime": {
+      "int": 37701
+     },
+     "receiver.acl": {
+      "float": 37701
+     },
+     "receiver.acl_noise": {
+      "float": 37701
+     },
+     "receiver.driversProfile": {
+      "str": 37701
+     },
+     "receiver.hed": {
+      "float": 37701
+     },
+     "receiver.hed_noise": {
+      "float": 37701
+     },
+     "receiver.pos": {
+      "str": 37701
+     },
+     "receiver.pos_noise": {
+      "str": 37701
+     },
+     "receiver.spd": {
+      "float": 37701
+     },
+     "receiver.spd_noise": {
+      "float": 37701
+     },
+     "sendTime": {
+      "int": 37701
+     },
+     "sender.acl": {
+      "float": 37701
+     },
+     "sender.acl_noise": {
+      "float": 37701
+     },
+     "sender.distance_to_road_edge": {
+      "float": 37701
+     },
+     "sender.driversProfile": {
+      "str": 37701
+     },
+     "sender.hed": {
+      "float": 37701
+     },
+     "sender.hed_noise": {
+      "float": 37701
+     },
+     "sender.pos": {
+      "str": 37701
+     },
+     "sender.pos_noise": {
+      "str": 37701
+     },
+     "sender.spd": {
+      "float": 37701
+     },
+     "sender.spd_noise": {
+      "float": 37701
+     },
+     "sender_alias": {
+      "int": 37701
+     },
+     "sender_id": {
+      "str": 37701
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 29091,
+     "sender:CAUTIOUS": 6605,
+     "sender:NORMAL": 29110,
+     "sender:AGGRESSIVE": 1986,
+     "receiver:CAUTIOUS": 6621,
+     "receiver:AGGRESSIVE": 1989
+    }
+   },
+   "Validation": {
+    "files": 152,
+    "json_bytes": 17867519,
+    "empty_files": 0,
+    "records": 17977,
+    "label_0": 14445,
+    "label_1": 3532,
+    "senders": 152,
+    "attacker_senders": 30,
+    "mixed_label_senders": 0,
+    "sender_aliases": 152,
+    "attack_share": 0.19647,
+    "sender_pos_bbox_m": [
+     216280.0,
+     451717.6,
+     216785.8,
+     454129.0
+    ],
+    "sendTime_range_s": [
+     12600.3,
+     14403.3
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 17977
+     },
+     "messageID": {
+      "int": 17977
+     },
+     "rcvTime": {
+      "int": 17977
+     },
+     "receiver.acl": {
+      "float": 17977
+     },
+     "receiver.acl_noise": {
+      "float": 17977
+     },
+     "receiver.driversProfile": {
+      "str": 17977
+     },
+     "receiver.hed": {
+      "float": 17977
+     },
+     "receiver.hed_noise": {
+      "float": 17977
+     },
+     "receiver.pos": {
+      "str": 17977
+     },
+     "receiver.pos_noise": {
+      "str": 17977
+     },
+     "receiver.spd": {
+      "float": 17977
+     },
+     "receiver.spd_noise": {
+      "float": 17977
+     },
+     "sendTime": {
+      "int": 17977
+     },
+     "sender.acl": {
+      "float": 17977
+     },
+     "sender.acl_noise": {
+      "float": 17977
+     },
+     "sender.distance_to_road_edge": {
+      "float": 17977
+     },
+     "sender.driversProfile": {
+      "str": 17977
+     },
+     "sender.hed": {
+      "float": 17977
+     },
+     "sender.hed_noise": {
+      "float": 17977
+     },
+     "sender.pos": {
+      "str": 17977
+     },
+     "sender.pos_noise": {
+      "str": 17977
+     },
+     "sender.spd": {
+      "float": 17977
+     },
+     "sender.spd_noise": {
+      "float": 17977
+     },
+     "sender_alias": {
+      "int": 17977
+     },
+     "sender_id": {
+      "str": 17977
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 14118,
+     "sender:NORMAL": 14119,
+     "sender:AGGRESSIVE": 1304,
+     "sender:CAUTIOUS": 2554,
+     "receiver:AGGRESSIVE": 1307,
+     "receiver:CAUTIOUS": 2552
+    }
+   },
+   "Test": {
+    "files": 476,
+    "json_bytes": 45497809,
+    "empty_files": 0,
+    "records": 44259,
+    "label_0": 35579,
+    "label_1": 8680,
+    "senders": 476,
+    "attacker_senders": 95,
+    "mixed_label_senders": 0,
+    "sender_aliases": 476,
+    "attack_share": 0.19612,
+    "sender_pos_bbox_m": [
+     216149.0,
+     449728.3,
+     216737.3,
+     451746.4
+    ],
+    "sendTime_range_s": [
+     7201.1,
+     14399.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 44259
+     },
+     "messageID": {
+      "int": 44259
+     },
+     "rcvTime": {
+      "int": 44259
+     },
+     "receiver.acl": {
+      "float": 44259
+     },
+     "receiver.acl_noise": {
+      "float": 44259
+     },
+     "receiver.driversProfile": {
+      "str": 44259
+     },
+     "receiver.hed": {
+      "float": 44259
+     },
+     "receiver.hed_noise": {
+      "float": 44259
+     },
+     "receiver.pos": {
+      "str": 44259
+     },
+     "receiver.pos_noise": {
+      "str": 44259
+     },
+     "receiver.spd": {
+      "float": 44259
+     },
+     "receiver.spd_noise": {
+      "float": 44259
+     },
+     "sendTime": {
+      "int": 44259
+     },
+     "sender.acl": {
+      "float": 44259
+     },
+     "sender.acl_noise": {
+      "float": 44259
+     },
+     "sender.distance_to_road_edge": {
+      "float": 44259
+     },
+     "sender.driversProfile": {
+      "str": 44259
+     },
+     "sender.hed": {
+      "float": 44259
+     },
+     "sender.hed_noise": {
+      "float": 44259
+     },
+     "sender.pos": {
+      "str": 44259
+     },
+     "sender.pos_noise": {
+      "str": 44259
+     },
+     "sender.spd": {
+      "float": 44259
+     },
+     "sender.spd_noise": {
+      "float": 44259
+     },
+     "sender_alias": {
+      "int": 44259
+     },
+     "sender_id": {
+      "str": 44259
+     }
+    },
+    "drivers_profiles": {
+     "receiver:CAUTIOUS": 7251,
+     "sender:NORMAL": 34435,
+     "sender:CAUTIOUS": 7264,
+     "receiver:NORMAL": 34450,
+     "sender:AGGRESSIVE": 2560,
+     "receiver:AGGRESSIVE": 2558
+    }
+   }
+  },
+  "trafficCongestionSybil": {
+   "Train": {
+    "files": 482,
+    "json_bytes": 73682894,
+    "empty_files": 0,
+    "records": 73694,
+    "label_0": 37701,
+    "label_1": 35993,
+    "senders": 19015,
+    "attacker_senders": 18533,
+    "mixed_label_senders": 0,
+    "sender_aliases": 19035,
+    "attack_share": 0.48841,
+    "sender_pos_bbox_m": [
+     216269.3,
+     451706.1,
+     216797.9,
+     454215.3
+    ],
+    "sendTime_range_s": [
+     3601.3,
+     12599.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 73694
+     },
+     "messageID": {
+      "int": 73694
+     },
+     "rcvTime": {
+      "int": 73694
+     },
+     "receiver.acl": {
+      "float": 73694
+     },
+     "receiver.acl_noise": {
+      "float": 73694
+     },
+     "receiver.driversProfile": {
+      "str": 73694
+     },
+     "receiver.hed": {
+      "float": 73694
+     },
+     "receiver.hed_noise": {
+      "float": 73694
+     },
+     "receiver.pos": {
+      "str": 73694
+     },
+     "receiver.pos_noise": {
+      "str": 73694
+     },
+     "receiver.spd": {
+      "float": 73694
+     },
+     "receiver.spd_noise": {
+      "float": 73694
+     },
+     "sendTime": {
+      "int": 73694
+     },
+     "sender.acl": {
+      "float": 73694
+     },
+     "sender.acl_noise": {
+      "float": 73694
+     },
+     "sender.distance_to_road_edge": {
+      "float": 73694
+     },
+     "sender.driversProfile": {
+      "str": 73694
+     },
+     "sender.hed": {
+      "float": 73694
+     },
+     "sender.hed_noise": {
+      "float": 73694
+     },
+     "sender.pos": {
+      "str": 73694
+     },
+     "sender.pos_noise": {
+      "str": 73694
+     },
+     "sender.spd": {
+      "float": 73694
+     },
+     "sender.spd_noise": {
+      "float": 73694
+     },
+     "sender_alias": {
+      "int": 73694
+     },
+     "sender_id": {
+      "str": 73694
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 57146,
+     "sender:CAUTIOUS": 12953,
+     "sender:NORMAL": 55299,
+     "sender:AGGRESSIVE": 5442,
+     "receiver:CAUTIOUS": 13023,
+     "receiver:AGGRESSIVE": 3525
+    }
+   },
+   "Validation": {
+    "files": 152,
+    "json_bytes": 34585025,
+    "empty_files": 0,
+    "records": 34706,
+    "label_0": 17977,
+    "label_1": 16729,
+    "senders": 6957,
+    "attacker_senders": 6805,
+    "mixed_label_senders": 0,
+    "sender_aliases": 6964,
+    "attack_share": 0.48202,
+    "sender_pos_bbox_m": [
+     216276.0,
+     451717.6,
+     216787.5,
+     454129.0
+    ],
+    "sendTime_range_s": [
+     12600.3,
+     14478.9
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 34706
+     },
+     "messageID": {
+      "int": 34706
+     },
+     "rcvTime": {
+      "int": 34706
+     },
+     "receiver.acl": {
+      "float": 34706
+     },
+     "receiver.acl_noise": {
+      "float": 34706
+     },
+     "receiver.driversProfile": {
+      "str": 34706
+     },
+     "receiver.hed": {
+      "float": 34706
+     },
+     "receiver.hed_noise": {
+      "float": 34706
+     },
+     "receiver.pos": {
+      "str": 34706
+     },
+     "receiver.pos_noise": {
+      "str": 34706
+     },
+     "receiver.spd": {
+      "float": 34706
+     },
+     "receiver.spd_noise": {
+      "float": 34706
+     },
+     "sendTime": {
+      "int": 34706
+     },
+     "sender.acl": {
+      "float": 34706
+     },
+     "sender.acl_noise": {
+      "float": 34706
+     },
+     "sender.distance_to_road_edge": {
+      "float": 34706
+     },
+     "sender.driversProfile": {
+      "str": 34706
+     },
+     "sender.hed": {
+      "float": 34706
+     },
+     "sender.hed_noise": {
+      "float": 34706
+     },
+     "sender.pos": {
+      "str": 34706
+     },
+     "sender.pos_noise": {
+      "str": 34706
+     },
+     "sender.spd": {
+      "float": 34706
+     },
+     "sender.spd_noise": {
+      "float": 34706
+     },
+     "sender_alias": {
+      "int": 34706
+     },
+     "sender_id": {
+      "str": 34706
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 26572,
+     "sender:NORMAL": 28267,
+     "sender:AGGRESSIVE": 2110,
+     "sender:CAUTIOUS": 4329,
+     "receiver:AGGRESSIVE": 2855,
+     "receiver:CAUTIOUS": 5279
+    }
+   },
+   "Test": {
+    "files": 476,
+    "json_bytes": 86502638,
+    "empty_files": 0,
+    "records": 83894,
+    "label_0": 44259,
+    "label_1": 39635,
+    "senders": 17258,
+    "attacker_senders": 16782,
+    "mixed_label_senders": 0,
+    "sender_aliases": 17271,
+    "attack_share": 0.47244,
+    "sender_pos_bbox_m": [
+     216144.6,
+     449723.5,
+     216737.3,
+     451750.9
+    ],
+    "sendTime_range_s": [
+     7201.1,
+     14576.3
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 83894
+     },
+     "messageID": {
+      "int": 83894
+     },
+     "rcvTime": {
+      "int": 83894
+     },
+     "receiver.acl": {
+      "float": 83894
+     },
+     "receiver.acl_noise": {
+      "float": 83894
+     },
+     "receiver.driversProfile": {
+      "str": 83894
+     },
+     "receiver.hed": {
+      "float": 83894
+     },
+     "receiver.hed_noise": {
+      "float": 83894
+     },
+     "receiver.pos": {
+      "str": 83894
+     },
+     "receiver.pos_noise": {
+      "str": 83894
+     },
+     "receiver.spd": {
+      "float": 83894
+     },
+     "receiver.spd_noise": {
+      "float": 83894
+     },
+     "sendTime": {
+      "int": 83894
+     },
+     "sender.acl": {
+      "float": 83894
+     },
+     "sender.acl_noise": {
+      "float": 83894
+     },
+     "sender.distance_to_road_edge": {
+      "float": 83894
+     },
+     "sender.driversProfile": {
+      "str": 83894
+     },
+     "sender.hed": {
+      "float": 83894
+     },
+     "sender.hed_noise": {
+      "float": 83894
+     },
+     "sender.pos": {
+      "str": 83894
+     },
+     "sender.pos_noise": {
+      "str": 83894
+     },
+     "sender.spd": {
+      "float": 83894
+     },
+     "sender.spd_noise": {
+      "float": 83894
+     },
+     "sender_alias": {
+      "int": 83894
+     },
+     "sender_id": {
+      "str": 83894
+     }
+    },
+    "drivers_profiles": {
+     "receiver:CAUTIOUS": 13671,
+     "sender:CAUTIOUS": 9843,
+     "sender:NORMAL": 66432,
+     "receiver:NORMAL": 65116,
+     "sender:AGGRESSIVE": 7619,
+     "receiver:AGGRESSIVE": 5107
+    }
+   }
+  },
+  "zeroSpeedReport": {
+   "Train": {
+    "files": 482,
+    "json_bytes": 37441787,
+    "empty_files": 0,
+    "records": 37701,
+    "label_0": 29866,
+    "label_1": 7835,
+    "senders": 482,
+    "attacker_senders": 96,
+    "mixed_label_senders": 20,
+    "sender_aliases": 482,
+    "attack_share": 0.20782,
+    "sender_pos_bbox_m": [
+     216273.9,
+     451710.1,
+     216797.9,
+     454215.3
+    ],
+    "sendTime_range_s": [
+     3601.3,
+     12599.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 37701
+     },
+     "messageID": {
+      "int": 37701
+     },
+     "rcvTime": {
+      "int": 37701
+     },
+     "receiver.acl": {
+      "float": 37701
+     },
+     "receiver.acl_noise": {
+      "float": 37701
+     },
+     "receiver.driversProfile": {
+      "str": 37701
+     },
+     "receiver.hed": {
+      "float": 37701
+     },
+     "receiver.hed_noise": {
+      "float": 37701
+     },
+     "receiver.pos": {
+      "str": 37701
+     },
+     "receiver.pos_noise": {
+      "str": 37701
+     },
+     "receiver.spd": {
+      "float": 37701
+     },
+     "receiver.spd_noise": {
+      "float": 37701
+     },
+     "sendTime": {
+      "int": 37701
+     },
+     "sender.acl": {
+      "float": 37701
+     },
+     "sender.acl_noise": {
+      "float": 37701
+     },
+     "sender.distance_to_road_edge": {
+      "float": 37701
+     },
+     "sender.driversProfile": {
+      "str": 37701
+     },
+     "sender.hed": {
+      "float": 37701
+     },
+     "sender.hed_noise": {
+      "float": 37701
+     },
+     "sender.pos": {
+      "str": 37701
+     },
+     "sender.pos_noise": {
+      "str": 37701
+     },
+     "sender.spd": {
+      "float": 37701
+     },
+     "sender.spd_noise": {
+      "float": 37701
+     },
+     "sender_alias": {
+      "int": 37701
+     },
+     "sender_id": {
+      "str": 37701
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 29091,
+     "sender:CAUTIOUS": 6605,
+     "sender:NORMAL": 29110,
+     "sender:AGGRESSIVE": 1986,
+     "receiver:CAUTIOUS": 6621,
+     "receiver:AGGRESSIVE": 1989
+    }
+   },
+   "Validation": {
+    "files": 152,
+    "json_bytes": 17818416,
+    "empty_files": 0,
+    "records": 17977,
+    "label_1": 3256,
+    "label_0": 14721,
+    "senders": 152,
+    "attacker_senders": 30,
+    "mixed_label_senders": 6,
+    "sender_aliases": 152,
+    "attack_share": 0.18112,
+    "sender_pos_bbox_m": [
+     216280.0,
+     451717.6,
+     216785.8,
+     454129.0
+    ],
+    "sendTime_range_s": [
+     12600.3,
+     14399.5
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 17977
+     },
+     "messageID": {
+      "int": 17977
+     },
+     "rcvTime": {
+      "int": 17977
+     },
+     "receiver.acl": {
+      "float": 17977
+     },
+     "receiver.acl_noise": {
+      "float": 17977
+     },
+     "receiver.driversProfile": {
+      "str": 17977
+     },
+     "receiver.hed": {
+      "float": 17977
+     },
+     "receiver.hed_noise": {
+      "float": 17977
+     },
+     "receiver.pos": {
+      "str": 17977
+     },
+     "receiver.pos_noise": {
+      "str": 17977
+     },
+     "receiver.spd": {
+      "float": 17977
+     },
+     "receiver.spd_noise": {
+      "float": 17977
+     },
+     "sendTime": {
+      "int": 17977
+     },
+     "sender.acl": {
+      "float": 17977
+     },
+     "sender.acl_noise": {
+      "float": 17977
+     },
+     "sender.distance_to_road_edge": {
+      "float": 17977
+     },
+     "sender.driversProfile": {
+      "str": 17977
+     },
+     "sender.hed": {
+      "float": 17977
+     },
+     "sender.hed_noise": {
+      "float": 17977
+     },
+     "sender.pos": {
+      "str": 17977
+     },
+     "sender.pos_noise": {
+      "str": 17977
+     },
+     "sender.spd": {
+      "float": 17977
+     },
+     "sender.spd_noise": {
+      "float": 17977
+     },
+     "sender_alias": {
+      "int": 17977
+     },
+     "sender_id": {
+      "str": 17977
+     }
+    },
+    "drivers_profiles": {
+     "receiver:NORMAL": 14118,
+     "sender:NORMAL": 14119,
+     "sender:AGGRESSIVE": 1304,
+     "sender:CAUTIOUS": 2554,
+     "receiver:AGGRESSIVE": 1307,
+     "receiver:CAUTIOUS": 2552
+    }
+   },
+   "Test": {
+    "files": 476,
+    "json_bytes": 45371642,
+    "empty_files": 0,
+    "records": 44259,
+    "label_0": 35849,
+    "label_1": 8410,
+    "senders": 476,
+    "attacker_senders": 95,
+    "mixed_label_senders": 19,
+    "sender_aliases": 476,
+    "attack_share": 0.19002,
+    "sender_pos_bbox_m": [
+     216149.0,
+     449728.3,
+     216737.3,
+     451746.4
+    ],
+    "sendTime_range_s": [
+     7201.1,
+     14399.4
+    ],
+    "anomalies": {},
+    "anomaly_examples": {},
+    "field_types": {
+     "attacker": {
+      "int": 44259
+     },
+     "messageID": {
+      "int": 44259
+     },
+     "rcvTime": {
+      "int": 44259
+     },
+     "receiver.acl": {
+      "float": 44259
+     },
+     "receiver.acl_noise": {
+      "float": 44259
+     },
+     "receiver.driversProfile": {
+      "str": 44259
+     },
+     "receiver.hed": {
+      "float": 44259
+     },
+     "receiver.hed_noise": {
+      "float": 44259
+     },
+     "receiver.pos": {
+      "str": 44259
+     },
+     "receiver.pos_noise": {
+      "str": 44259
+     },
+     "receiver.spd": {
+      "float": 44259
+     },
+     "receiver.spd_noise": {
+      "float": 44259
+     },
+     "sendTime": {
+      "int": 44259
+     },
+     "sender.acl": {
+      "float": 44259
+     },
+     "sender.acl_noise": {
+      "float": 44259
+     },
+     "sender.distance_to_road_edge": {
+      "float": 44259
+     },
+     "sender.driversProfile": {
+      "str": 44259
+     },
+     "sender.hed": {
+      "float": 44259
+     },
+     "sender.hed_noise": {
+      "float": 44259
+     },
+     "sender.pos": {
+      "str": 44259
+     },
+     "sender.pos_noise": {
+      "str": 44259
+     },
+     "sender.spd": {
+      "float": 44259
+     },
+     "sender.spd_noise": {
+      "float": 44259
+     },
+     "sender_alias": {
+      "int": 44259
+     },
+     "sender_id": {
+      "str": 44259
+     }
+    },
+    "drivers_profiles": {
+     "receiver:CAUTIOUS": 7251,
+     "sender:CAUTIOUS": 7264,
+     "sender:NORMAL": 34435,
+     "receiver:NORMAL": 34450,
+     "sender:AGGRESSIVE": 2560,
+     "receiver:AGGRESSIVE": 2558
+    }
+   }
+  }
+ },
+ "ground_truth_files": [
+  {
+   "split": "Test",
+   "file": "InTAS_highway_2_Test_ground_truth.json",
+   "records": 18892,
+   "distinct_(sender_id,messageID)": 18892,
+   "schema_variants": {
+    "flat": 18892
+   },
+   "key_sets": {
+    "acl, acl_noise, driversProfile, hed, hed_noise, messageID, pos, pos_noise, rcvTime, sendTime, sender_alias, sender_id, spd, spd_noise": 18892
+   },
+   "has_attacker_field": false,
+   "missing_id_fields": {
+    "sender_id": 0,
+    "messageID": 0
+   },
+   "value_types": {
+    "rcvTime": {
+     "str": 18892
+    },
+    "sendTime": {
+     "str": 18892
+    },
+    "sender_id": {
+     "str": 18892
+    },
+    "sender_alias": {
+     "str": 18892
+    },
+    "messageID": {
+     "str": 18892
+    },
+    "pos": {
+     "str": 18892
+    },
+    "pos_noise": {
+     "str": 18892
+    },
+    "spd": {
+     "str": 18892
+    },
+    "spd_noise": {
+     "str": 18892
+    },
+    "acl": {
+     "str": 18892
+    },
+    "acl_noise": {
+     "str": 18892
+    },
+    "hed": {
+     "str": 18892
+    },
+    "hed_noise": {
+     "str": 18892
+    },
+    "driversProfile": {
+     "str": 18892
+    }
+   },
+   "baseline_messages_in_split": 18892,
+   "baseline_messages_found_in_ground_truth": 18892
+  },
+  {
+   "split": "Train",
+   "file": "InTAS_highway_2_Train_groundTruth.json",
+   "records": 19186,
+   "distinct_(sender_id,messageID)": 19186,
+   "schema_variants": {
+    "nested (receiver/sender)": 19186
+   },
+   "key_sets": {
+    "messageID, rcvTime, receiver, sendTime, sender, sender_alias, sender_id": 19186
+   },
+   "has_attacker_field": false,
+   "missing_id_fields": {
+    "sender_id": 0,
+    "messageID": 0
+   },
+   "value_types": {
+    "rcvTime": {
+     "str": 19186
+    },
+    "sendTime": {
+     "str": 19186
+    },
+    "sender_id": {
+     "str": 19186
+    },
+    "sender_alias": {
+     "str": 19186
+    },
+    "messageID": {
+     "str": 19186
+    }
+   },
+   "baseline_messages_in_split": 19186,
+   "baseline_messages_found_in_ground_truth": 19186
+  },
+  {
+   "split": "Validation",
+   "file": "InTAS_highway_2_Validation_groundTruth.json",
+   "records": 7023,
+   "distinct_(sender_id,messageID)": 7023,
+   "schema_variants": {
+    "nested (receiver/sender)": 7023
+   },
+   "key_sets": {
+    "messageID, rcvTime, receiver, sendTime, sender, sender_alias, sender_id": 7023
+   },
+   "has_attacker_field": false,
+   "missing_id_fields": {
+    "sender_id": 0,
+    "messageID": 0
+   },
+   "value_types": {
+    "rcvTime": {
+     "str": 7023
+    },
+    "sendTime": {
+     "str": 7023
+    },
+    "sender_id": {
+     "str": 7023
+    },
+    "sender_alias": {
+     "str": 7023
+    },
+    "messageID": {
+     "str": 7023
+    }
+   },
+   "baseline_messages_in_split": 7023,
+   "baseline_messages_found_in_ground_truth": 7023
+  }
+ ],
+ "failures": [],
+ "status": "OK"
+}

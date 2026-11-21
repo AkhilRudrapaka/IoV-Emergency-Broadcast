@@ -1,0 +1,14 @@
+{
+ "chosen_gate": 0.88,
+ "candidates": [
+  0.7,
+  0.75,
+  0.8,
+  0.84,
+  0.86,
+  0.88,
+  0.9
+ ],
+ "seeds": "runs 30-59 (held out)",
+ "rule": "smallest gate with no forged alert accepted at the default full level (both attackers, every density) and a genuine acceptance rate no lower than at the 0.70 gate"
+}

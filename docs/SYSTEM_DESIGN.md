@@ -96,6 +96,8 @@ local SQLite outbox only.
 | Expired or replayed alert | The RSU judges age on **its own clock** (simulation time + delay), not on the alert's claim. Older than 600 s means rejected. Refreshing `created_s` breaks the signed digest. An already registered event ID is a duplicate. |
 | Duplicate vote (report) | The source counts each endorser once (`s not in self.votes`). The certificate also rejects repeated signer IDs. |
 
+Security defaults since Block G: committee membership enforcement is on (`ENFORCE_COMMITTEE=1`: every receiver counts only endorsers in the 5-seat committee it rebuilds for the claimed position, quorum 3 of 5, so colluders outside that committee are rejected even with honest-looking reputation), the burst detector is off (`TRUST_BURST_K=0`; k = 4 is an opt-in experimental setting), and the forged-alert rows above describe the earlier rule, which `EXP_ENFORCE_COMMITTEE=0` reproduces.
+
 ## 4. Evaluation protocol
 
 * **Matrix.** Densities 50, 100, 200, 250, 300, 500 vehicles × 30 seeds, `seed = 10000 + 100·d + r`, one incident per run. Every

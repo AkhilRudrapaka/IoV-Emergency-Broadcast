@@ -156,6 +156,8 @@ The baselines are blind flooding (default), flooding + random delay, slotted 1-p
 
 ## 8. Generate research results
 
+Security defaults: committee membership enforcement is on (`ENFORCE_COMMITTEE=1`; every receiver counts only endorsers in the 5-seat committee it rebuilds, quorum 3 of 5) and the burst detector is off (`TRUST_BURST_K=0`; k = 4 is an opt-in experimental setting), so reproduce the tracked `results/urban` baseline with `EXP_ENFORCE_COMMITTEE=0`.
+
 Start with a small experiment:
 
 ```bash

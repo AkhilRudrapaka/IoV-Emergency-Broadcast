@@ -1,0 +1,9 @@
+baseline_off vs results/urban/processed: runs.csv identical, summary.csv identical, paired.csv identical, forgery_runs.csv identical, forgery_summary.csv identical
+onoff09_off vs results/urban/sensitivity/onoff_0.9/processed: runs.csv identical, summary.csv identical, paired.csv identical, forgery_runs.csv identical, forgery_summary.csv identical
+default_on vs results/urban/processed: runs.csv identical, summary.csv identical, paired.csv identical, forgery_runs.csv DIFFERENT, forgery_summary.csv DIFFERENT
+   tracked (enforcement off): runs where any vehicle accepted the forgery {'no_voting': (180, 180), 'voting_only': (134, 180), 'voting_reputation': (0, 180)}; RSU registered it {'no_voting': 180, 'voting_only': 134, 'voting_reputation': 0}
+   new default (enforcement on): runs where any vehicle accepted the forgery {'no_voting': (180, 180), 'voting_only': (1, 180), 'voting_reputation': (0, 180)}; RSU registered it {'no_voting': 180, 'voting_only': 1, 'voting_reputation': 0}
+onoff09_on vs results/urban/sensitivity/onoff_0.9/processed: runs.csv identical, summary.csv identical, paired.csv identical, forgery_runs.csv DIFFERENT, forgery_summary.csv DIFFERENT
+   tracked (enforcement off): runs where any vehicle accepted the forgery {'no_voting': (30, 30), 'voting_only': (26, 30), 'voting_reputation': (25, 30)}; RSU registered it {'no_voting': 30, 'voting_only': 26, 'voting_reputation': 25}
+   new default (enforcement on): runs where any vehicle accepted the forgery {'no_voting': (30, 30), 'voting_only': (0, 30), 'voting_reputation': (0, 30)}; RSU registered it {'no_voting': 30, 'voting_only': 0, 'voting_reputation': 0}
+BASELINE REPRODUCED AND GENUINE UNCHANGED

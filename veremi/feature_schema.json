@@ -1,0 +1,245 @@
+{
+ "version": 2,
+ "row": "one received message (receiver-level observation)",
+ "window": 5,
+ "notes": [
+  "timeDelayAttack shifts sendTime AND rcvTime by the same delay (attackGenerator.py:199-200), so delay_ms carries no signal for that attack by construction",
+  "features never read the ground-truth files or the attacker label; the eval-only diagnostic label is stored outside X"
+ ],
+ "rate_window_s": 1.0,
+ "heading_convention": "degrees, north = 0, clockwise",
+ "fitted_transforms": "none: every feature is a deterministic function of the message and the receiver's earlier messages; any scaler added later must be fitted on Train only",
+ "features": [
+  {
+   "index": 0,
+   "name": "spd",
+   "source": "sender.spd",
+   "calculation": "reported speed",
+   "type": "float m/s",
+   "available_at_inference": true,
+   "missing": "never missing"
+  },
+  {
+   "index": 1,
+   "name": "acl",
+   "source": "sender.acl",
+   "calculation": "reported acceleration",
+   "type": "float m/s^2",
+   "available_at_inference": true,
+   "missing": "never missing"
+  },
+  {
+   "index": 2,
+   "name": "dist_tx_rx_m",
+   "source": "sender.pos, receiver.pos",
+   "calculation": "2-D distance between reported sender position and receiver's own position",
+   "type": "float m",
+   "available_at_inference": true,
+   "missing": "never missing"
+  },
+  {
+   "index": 3,
+   "name": "abs_rel_speed",
+   "source": "sender.spd, receiver.spd",
+   "calculation": "|reported speed - receiver's own speed|",
+   "type": "float m/s",
+   "available_at_inference": true,
+   "missing": "never missing"
+  },
+  {
+   "index": 4,
+   "name": "heading_diff_rx_deg",
+   "source": "sender.hed, receiver.hed",
+   "calculation": "absolute angular difference of the two headings",
+   "type": "float deg [0,180]",
+   "available_at_inference": true,
+   "missing": "never missing"
+  },
+  {
+   "index": 5,
+   "name": "delay_ms",
+   "source": "rcvTime, sendTime",
+   "calculation": "rcvTime - sendTime",
+   "type": "float ms",
+   "available_at_inference": true,
+   "missing": "never missing"
+  },
+  {
+   "index": 6,
+   "name": "has_prev",
+   "source": "stream",
+   "calculation": "1 if the receiver got an earlier message from this pseudonym, else 0",
+   "type": "binary",
+   "available_at_inference": true,
+   "missing": "never missing"
+  },
+  {
+   "index": 7,
+   "name": "n_prev",
+   "source": "stream",
+   "calculation": "number of earlier messages from this pseudonym at this receiver",
+   "type": "count",
+   "available_at_inference": true,
+   "missing": "never missing"
+  },
+  {
+   "index": 8,
+   "name": "rate_1s",
+   "source": "stream, rcvTime",
+   "calculation": "earlier messages from this pseudonym received within the last 1 s",
+   "type": "count",
+   "available_at_inference": true,
+   "missing": "never missing (0 without history)"
+  },
+  {
+   "index": 9,
+   "name": "dt_send_s",
+   "source": "sendTime",
+   "calculation": "sendTime - previous sendTime of this pseudonym (negative = out of order)",
+   "type": "float s",
+   "available_at_inference": true,
+   "missing": "NaN when the receiver has no earlier message from this pseudonym (has_prev = 0)"
+  },
+  {
+   "index": 10,
+   "name": "dt_rcv_s",
+   "source": "rcvTime",
+   "calculation": "rcvTime - previous rcvTime of this pseudonym",
+   "type": "float s",
+   "available_at_inference": true,
+   "missing": "NaN when the receiver has no earlier message from this pseudonym (has_prev = 0)"
+  },
+  {
+   "index": 11,
+   "name": "dpos_m",
+   "source": "sender.pos",
+   "calculation": "2-D distance to the previous reported position",
+   "type": "float m",
+   "available_at_inference": true,
+   "missing": "NaN when the receiver has no earlier message from this pseudonym (has_prev = 0)"
+  },
+  {
+   "index": 12,
+   "name": "implied_speed",
+   "source": "sender.pos, sendTime",
+   "calculation": "dpos_m / dt_send_s",
+   "type": "float m/s",
+   "available_at_inference": true,
+   "missing": "NaN when the receiver has no earlier message from this pseudonym (has_prev = 0); also NaN when dt_send_s <= 0"
+  },
+  {
+   "index": 13,
+   "name": "speed_residual",
+   "source": "sender.pos, sender.spd, sendTime",
+   "calculation": "|implied_speed - mean(spd, previous spd)|",
+   "type": "float m/s",
+   "available_at_inference": true,
+   "missing": "NaN when the receiver has no earlier message from this pseudonym (has_prev = 0); also NaN when dt_send_s <= 0"
+  },
+  {
+   "index": 14,
+   "name": "dspd",
+   "source": "sender.spd",
+   "calculation": "spd - previous spd",
+   "type": "float m/s",
+   "available_at_inference": true,
+   "missing": "NaN when the receiver has no earlier message from this pseudonym (has_prev = 0)"
+  },
+  {
+   "index": 15,
+   "name": "implied_acl",
+   "source": "sender.spd, sendTime",
+   "calculation": "dspd / dt_send_s",
+   "type": "float m/s^2",
+   "available_at_inference": true,
+   "missing": "NaN when the receiver has no earlier message from this pseudonym (has_prev = 0); also NaN when dt_send_s <= 0"
+  },
+  {
+   "index": 16,
+   "name": "acl_residual",
+   "source": "sender.spd, sender.acl, sendTime",
+   "calculation": "|implied_acl - mean(acl, previous acl)|",
+   "type": "float m/s^2",
+   "available_at_inference": true,
+   "missing": "NaN when the receiver has no earlier message from this pseudonym (has_prev = 0); also NaN when dt_send_s <= 0"
+  },
+  {
+   "index": 17,
+   "name": "dhed_deg",
+   "source": "sender.hed",
+   "calculation": "absolute angular change of heading since the previous message",
+   "type": "float deg [0,180]",
+   "available_at_inference": true,
+   "missing": "NaN when the receiver has no earlier message from this pseudonym (has_prev = 0)"
+  },
+  {
+   "index": 18,
+   "name": "yaw_rate_dps",
+   "source": "sender.hed, sendTime",
+   "calculation": "dhed_deg / dt_send_s",
+   "type": "float deg/s",
+   "available_at_inference": true,
+   "missing": "NaN when the receiver has no earlier message from this pseudonym (has_prev = 0); also NaN when dt_send_s <= 0"
+  },
+  {
+   "index": 19,
+   "name": "bearing_residual_deg",
+   "source": "sender.pos, sender.hed",
+   "calculation": "angle between direction of travel (north = 0, clockwise) and reported heading",
+   "type": "float deg [0,180]",
+   "available_at_inference": true,
+   "missing": "NaN when the receiver has no earlier message from this pseudonym (has_prev = 0); also NaN when dpos_m < 1 m"
+  },
+  {
+   "index": 20,
+   "name": "pos_pred_error_m",
+   "source": "sender.pos, sender.spd, sender.hed, sendTime",
+   "calculation": "distance between reported position and dead-reckoned position (previous position + previous spd * dt along previous heading)",
+   "type": "float m",
+   "available_at_inference": true,
+   "missing": "NaN when the receiver has no earlier message from this pseudonym (has_prev = 0)"
+  },
+  {
+   "index": 21,
+   "name": "speed_residual_mean5",
+   "source": "stream",
+   "calculation": "mean speed_residual over the last 5 messages of this pseudonym (current included)",
+   "type": "float m/s",
+   "available_at_inference": true,
+   "missing": "NaN when none of them has a speed_residual"
+  },
+  {
+   "index": 22,
+   "name": "pos_pred_error_max5",
+   "source": "stream",
+   "calculation": "max pos_pred_error_m over the last 5 messages (current included)",
+   "type": "float m",
+   "available_at_inference": true,
+   "missing": "NaN when none of them has a pos_pred_error_m"
+  },
+  {
+   "index": 23,
+   "name": "dt_send_min5",
+   "source": "stream",
+   "calculation": "min dt_send_s over the last 5 messages (current included)",
+   "type": "float s",
+   "available_at_inference": true,
+   "missing": "NaN when none of them has a dt_send_s"
+  }
+ ],
+ "excluded": {
+  "attacker": "the target label",
+  "ground-truth files": "ground truth only; used for mapping verification, never for features",
+  "sender_id": "true vehicle identity; a receiver only sees the pseudonym",
+  "receiver id (file name)": "identity",
+  "sender_alias": "pseudonym; used only to group a receiver's history, never as a value",
+  "messageID": "dataset bookkeeping identifier, not CAM content; correlated with time",
+  "rcvTime, sendTime (absolute)": "absolute time identifies the split and the scenario period; only differences are used",
+  "sender.pos, receiver.pos (absolute)": "absolute location identifies the area (Test is a different area); only distances are used",
+  "sender.hed, receiver.hed (absolute)": "road orientation proxy for location; only angular differences are used",
+  "sender.distance_to_road_edge": "not part of the transmitted message: added after the attacks by Generator/enrichMsgsWithFutherInfo/enrichMsgs.py:158-163 from the REPORTED sender position and the SUMO road map. Computable only by a receiver with the same lane-level map, so it is kept as metadata (road_edge_dist) for an explicitly labelled map-based variant",
+  "*_noise fields": "realised sensor error, not a transmitted confidence: the generator recovers the true position as reported - pos_noise (Generator/attackGenerator/attackGenerator.py:179-188); a real receiver cannot know it. Also unmodified by the attacks checked, so any signal would be a sender-selection artefact",
+  "driversProfile": "simulation metadata a receiver cannot observe; attack share differs by profile (selection shortcut)",
+  "receiver.acl, receiver.*_noise": "receiver-own values not needed by any feature"
+ }
+}

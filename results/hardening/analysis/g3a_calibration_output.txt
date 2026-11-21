@@ -1,0 +1,174 @@
+## A. Completion
+coop0.9_ratio0.1_k3_cc1: raw 90/90, missing [], extra [], runs.csv rows 1170
+period30_duty0.8_ratio0.1_k3_cc1: raw 90/90, missing [], extra [], runs.csv rows 1170
+period30_duty0.9_ratio0.1_k3_cc1: raw 90/90, missing [], extra [], runs.csv rows 1170
+period30_duty0.95_ratio0.1_k3_cc1: raw 90/90, missing [], extra [], runs.csv rows 1170
+period10_duty0.9_ratio0.1_k3_cc1: raw 90/90, missing [], extra [], runs.csv rows 1170
+coop0.9_ratio0.1_k4_cc1: raw 90/90, missing [], extra [], runs.csv rows 1170
+period30_duty0.8_ratio0.1_k4_cc1: raw 90/90, missing [], extra [], runs.csv rows 1170
+period30_duty0.9_ratio0.1_k4_cc1: raw 90/90, missing [], extra [], runs.csv rows 1170
+period30_duty0.95_ratio0.1_k4_cc1: raw 90/90, missing [], extra [], runs.csv rows 1170
+period10_duty0.9_ratio0.1_k4_cc1: raw 90/90, missing [], extra [], runs.csv rows 1170
+coop0.9_ratio0.1_k5_cc1: raw 90/90, missing [], extra [], runs.csv rows 1170
+period30_duty0.8_ratio0.1_k5_cc1: raw 90/90, missing [], extra [], runs.csv rows 1170
+period30_duty0.9_ratio0.1_k5_cc1: raw 90/90, missing [], extra [], runs.csv rows 1170
+period30_duty0.95_ratio0.1_k5_cc1: raw 90/90, missing [], extra [], runs.csv rows 1170
+period10_duty0.9_ratio0.1_k5_cc1: raw 90/90, missing [], extra [], runs.csv rows 1170
+coop0.9_ratio0.1_k6_cc1: raw 90/90, missing [], extra [], runs.csv rows 1170
+period30_duty0.8_ratio0.1_k6_cc1: raw 90/90, missing [], extra [], runs.csv rows 1170
+period30_duty0.9_ratio0.1_k6_cc1: raw 90/90, missing [], extra [], runs.csv rows 1170
+period30_duty0.95_ratio0.1_k6_cc1: raw 90/90, missing [], extra [], runs.csv rows 1170
+period10_duty0.9_ratio0.1_k6_cc1: raw 90/90, missing [], extra [], runs.csv rows 1170
+trust rows 1800, genuine rows 10800, forgery rows 7200
+
+## B. Beta trust and run lengths across k (same seed), and against k = 0 (C_calibration, gate 0.70)
+(type, run) groups: 450; Beta trust identical across k: 450; longest run identical across k: 450; flag == (longest run >= k): 450; flags nested (k+1 flagged => k flagged): 450
+per-second 0.9: per-vehicle Beta trust identical to the k = 0 run on the same seed: 90 of 90 runs
+phased 0.9/30 s: per-vehicle Beta trust identical to the k = 0 run on the same seed: 90 of 90 runs
+
+## C. Honest false alarm (% of honest vehicles flagged per run)
+k | attacker | 100: mean ± CI (n) / max run / runs > 1 % | 200: mean ± CI (n) / max run / runs > 1 % | 300: mean ± CI (n) / max run / runs > 1 %
+3 | per-second 0.9 | 5.67 ± 0.73 (n=30) / 10.00 / 30 | 6.80 ± 0.75 (n=30) / 11.11 / 30 | 6.31 ± 0.84 (n=30) / 10.74 / 30
+3 | phased 0.8/30 s | 5.70 ± 0.93 (n=30) / 11.11 / 30 | 6.44 ± 0.73 (n=30) / 10.56 / 30 | 6.21 ± 0.88 (n=30) / 9.26 / 30
+3 | phased 0.9/30 s | 5.70 ± 0.93 (n=30) / 11.11 / 30 | 6.44 ± 0.73 (n=30) / 10.56 / 30 | 6.21 ± 0.88 (n=30) / 9.26 / 30
+3 | phased 0.95/30 s | 5.70 ± 0.93 (n=30) / 11.11 / 30 | 6.44 ± 0.73 (n=30) / 10.56 / 30 | 6.21 ± 0.88 (n=30) / 9.26 / 30
+3 | phased 0.9/10 s | 5.70 ± 0.93 (n=30) / 11.11 / 30 | 6.44 ± 0.73 (n=30) / 10.56 / 30 | 6.21 ± 0.88 (n=30) / 9.26 / 30
+4 | per-second 0.9 | 0.63 ± 0.32 (n=30) / 3.33 / 13 | 0.67 ± 0.25 (n=30) / 2.22 / 9 | 0.58 ± 0.16 (n=30) / 1.11 / 8
+4 | phased 0.8/30 s | 0.56 ± 0.34 (n=30) / 4.44 / 12 | 0.72 ± 0.22 (n=30) / 1.67 / 12 | 0.62 ± 0.16 (n=30) / 1.85 / 5
+4 | phased 0.9/30 s | 0.56 ± 0.34 (n=30) / 4.44 / 12 | 0.72 ± 0.22 (n=30) / 1.67 / 12 | 0.62 ± 0.16 (n=30) / 1.85 / 5
+4 | phased 0.95/30 s | 0.56 ± 0.34 (n=30) / 4.44 / 12 | 0.72 ± 0.22 (n=30) / 1.67 / 12 | 0.62 ± 0.16 (n=30) / 1.85 / 5
+4 | phased 0.9/10 s | 0.56 ± 0.34 (n=30) / 4.44 / 12 | 0.72 ± 0.22 (n=30) / 1.67 / 12 | 0.62 ± 0.16 (n=30) / 1.85 / 5
+5 | per-second 0.9 | 0.15 ± 0.14 (n=30) / 1.11 / 4 | 0.02 ± 0.04 (n=30) / 0.56 / 0 | 0.06 ± 0.05 (n=30) / 0.37 / 0
+5 | phased 0.8/30 s | 0.07 ± 0.11 (n=30) / 1.11 / 2 | 0.11 ± 0.08 (n=30) / 0.56 / 0 | 0.05 ± 0.05 (n=30) / 0.37 / 0
+5 | phased 0.9/30 s | 0.07 ± 0.11 (n=30) / 1.11 / 2 | 0.11 ± 0.08 (n=30) / 0.56 / 0 | 0.05 ± 0.05 (n=30) / 0.37 / 0
+5 | phased 0.95/30 s | 0.07 ± 0.11 (n=30) / 1.11 / 2 | 0.11 ± 0.08 (n=30) / 0.56 / 0 | 0.05 ± 0.05 (n=30) / 0.37 / 0
+5 | phased 0.9/10 s | 0.07 ± 0.11 (n=30) / 1.11 / 2 | 0.11 ± 0.08 (n=30) / 0.56 / 0 | 0.05 ± 0.05 (n=30) / 0.37 / 0
+6 | per-second 0.9 | 0.00 ± 0.00 (n=30) / 0.00 / 0 | 0.02 ± 0.04 (n=30) / 0.56 / 0 | 0.00 ± 0.00 (n=30) / 0.00 / 0
+6 | phased 0.8/30 s | 0.00 ± 0.00 (n=30) / 0.00 / 0 | 0.00 ± 0.00 (n=30) / 0.00 / 0 | 0.02 ± 0.04 (n=30) / 0.37 / 0
+6 | phased 0.9/30 s | 0.00 ± 0.00 (n=30) / 0.00 / 0 | 0.00 ± 0.00 (n=30) / 0.00 / 0 | 0.02 ± 0.04 (n=30) / 0.37 / 0
+6 | phased 0.95/30 s | 0.00 ± 0.00 (n=30) / 0.00 / 0 | 0.00 ± 0.00 (n=30) / 0.00 / 0 | 0.02 ± 0.04 (n=30) / 0.37 / 0
+6 | phased 0.9/10 s | 0.00 ± 0.00 (n=30) / 0.00 / 0 | 0.00 ± 0.00 (n=30) / 0.00 / 0 | 0.02 ± 0.04 (n=30) / 0.37 / 0
+worst mean over settings and densities: {3: 6.796, 4: 0.722, 5: 0.148, 6: 0.025} % -> chosen k: 4
+G3a_calibration_choice.json: {'chosen_k': 4, 'candidates': [3, 4, 5, 6], 'worst_mean_honest_flagged': {'3': 0.06796296296296296, '4': 0.007222222222222224, '5': 0.0014814814814814816, '6': 0.0002469135802469136}, 'rule': 'k = the smallest of 3, 4, 5, 6 for which, in every G3a setting (5 attackers) and at every density, the mean over runs of the share of honest vehicles flagged by the burst detector is <= 0.01. No such k: G3 is negative, G3b is not run and G4 has no detector.', 'seeds': 'runs 30-59 (held out)'}
+
+## D. Attacker detection (pooled over densities, n = 90 runs; per-run shares of the attackers)
+per-second 0.9: Beta below gate (no detector) 2.2 ± 0.9 (n=90) %
+  k=3: flagged 34.0 ± 2.7 (n=90) % [per density 30.7 ± 4.9 (n=30), 36.0 ± 4.2 (n=30), 35.2 ± 5.2 (n=30)]; flagged with Beta >= gate (newly ineligible) 32.0 ± 2.7 (n=90) %; ineligible total 34.2 ± 2.7 (n=90) %
+  k=4: flagged 8.2 ± 1.6 (n=90) % [per density 8.0 ± 4.0 (n=30), 8.2 ± 2.3 (n=30), 8.3 ± 2.4 (n=30)]; flagged with Beta >= gate (newly ineligible) 7.5 ± 1.5 (n=90) %; ineligible total 9.7 ± 1.8 (n=90) %
+  k=5: flagged 1.4 ± 0.6 (n=90) % [per density 1.3 ± 1.3 (n=30), 1.7 ± 0.9 (n=30), 1.3 ± 0.8 (n=30)]; flagged with Beta >= gate (newly ineligible) 1.2 ± 0.5 (n=90) %; ineligible total 3.5 ± 1.1 (n=90) %
+  k=6: flagged 0.4 ± 0.3 (n=90) % [per density 0.3 ± 0.7 (n=30), 0.5 ± 0.6 (n=30), 0.3 ± 0.4 (n=30)]; flagged with Beta >= gate (newly ineligible) 0.2 ± 0.3 (n=90) %; ineligible total 2.5 ± 0.9 (n=90) %
+phased 0.8/30 s: Beta below gate (no detector) 32.9 ± 2.4 (n=90) %
+  k=3: flagged 100.0 ± 0.1 (n=90) % [per density 100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 99.9 ± 0.2 (n=30)]; flagged with Beta >= gate (newly ineligible) 67.1 ± 2.3 (n=90) %; ineligible total 100.0 ± 0.1 (n=90) %
+  k=4: flagged 100.0 ± 0.1 (n=90) % [per density 100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 99.9 ± 0.2 (n=30)]; flagged with Beta >= gate (newly ineligible) 67.1 ± 2.3 (n=90) %; ineligible total 100.0 ± 0.1 (n=90) %
+  k=5: flagged 100.0 ± 0.1 (n=90) % [per density 100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 99.9 ± 0.2 (n=30)]; flagged with Beta >= gate (newly ineligible) 67.1 ± 2.3 (n=90) %; ineligible total 100.0 ± 0.1 (n=90) %
+  k=6: flagged 99.9 ± 0.1 (n=90) % [per density 100.0 ± 0.0 (n=30), 99.8 ± 0.3 (n=30), 99.9 ± 0.2 (n=30)]; flagged with Beta >= gate (newly ineligible) 67.1 ± 2.3 (n=90) %; ineligible total 100.0 ± 0.1 (n=90) %
+phased 0.9/30 s: Beta below gate (no detector) 0.5 ± 0.4 (n=90) %
+  k=3: flagged 100.0 ± 0.1 (n=90) % [per density 100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 99.9 ± 0.2 (n=30)]; flagged with Beta >= gate (newly ineligible) 99.5 ± 0.4 (n=90) %; ineligible total 100.0 ± 0.1 (n=90) %
+  k=4: flagged 40.7 ± 3.0 (n=90) % [per density 41.0 ± 6.4 (n=30), 39.8 ± 5.2 (n=30), 41.3 ± 4.2 (n=30)]; flagged with Beta >= gate (newly ineligible) 40.3 ± 3.0 (n=90) %; ineligible total 40.8 ± 3.0 (n=90) %
+  k=5: flagged 7.6 ± 1.7 (n=90) % [per density 8.3 ± 4.2 (n=30), 6.0 ± 2.4 (n=30), 8.4 ± 2.0 (n=30)]; flagged with Beta >= gate (newly ineligible) 7.5 ± 1.7 (n=90) %; ineligible total 8.0 ± 1.7 (n=90) %
+  k=6: flagged 1.0 ± 0.6 (n=90) % [per density 1.0 ± 1.5 (n=30), 1.0 ± 0.9 (n=30), 0.9 ± 0.6 (n=30)]; flagged with Beta >= gate (newly ineligible) 0.9 ± 0.6 (n=90) %; ineligible total 1.4 ± 0.7 (n=90) %
+phased 0.95/30 s: Beta below gate (no detector) 0.2 ± 0.2 (n=90) %
+  k=3: flagged 27.2 ± 2.5 (n=90) % [per density 26.0 ± 4.3 (n=30), 27.7 ± 4.3 (n=30), 27.9 ± 4.6 (n=30)]; flagged with Beta >= gate (newly ineligible) 27.0 ± 2.5 (n=90) %; ineligible total 27.2 ± 2.5 (n=90) %
+  k=4: flagged 4.6 ± 1.0 (n=90) % [per density 5.0 ± 1.9 (n=30), 4.3 ± 2.1 (n=30), 4.3 ± 1.3 (n=30)]; flagged with Beta >= gate (newly ineligible) 4.5 ± 1.0 (n=90) %; ineligible total 4.7 ± 1.0 (n=90) %
+  k=5: flagged 0.5 ± 0.4 (n=90) % [per density 0.7 ± 0.9 (n=30), 0.3 ± 0.5 (n=30), 0.4 ± 0.4 (n=30)]; flagged with Beta >= gate (newly ineligible) 0.5 ± 0.4 (n=90) %; ineligible total 0.7 ± 0.4 (n=90) %
+  k=6: flagged 0.0 ± 0.0 (n=90) % [per density 0.0 ± 0.0 (n=30), 0.0 ± 0.0 (n=30), 0.0 ± 0.0 (n=30)]; flagged with Beta >= gate (newly ineligible) 0.0 ± 0.0 (n=90) %; ineligible total 0.2 ± 0.2 (n=90) %
+phased 0.9/10 s: Beta below gate (no detector) 0.5 ± 0.3 (n=90) %
+  k=3: flagged 20.2 ± 2.4 (n=90) % [per density 19.3 ± 5.5 (n=30), 21.0 ± 3.4 (n=30), 20.3 ± 3.7 (n=30)]; flagged with Beta >= gate (newly ineligible) 19.9 ± 2.4 (n=90) %; ineligible total 20.4 ± 2.4 (n=90) %
+  k=4: flagged 2.9 ± 1.2 (n=90) % [per density 4.0 ± 3.2 (n=30), 2.5 ± 1.3 (n=30), 2.2 ± 0.9 (n=30)]; flagged with Beta >= gate (newly ineligible) 2.7 ± 1.0 (n=90) %; ineligible total 3.2 ± 1.1 (n=90) %
+  k=5: flagged 0.3 ± 0.3 (n=90) % [per density 0.3 ± 0.7 (n=30), 0.3 ± 0.5 (n=30), 0.2 ± 0.3 (n=30)]; flagged with Beta >= gate (newly ineligible) 0.2 ± 0.3 (n=90) %; ineligible total 0.7 ± 0.4 (n=90) %
+  k=6: flagged 0.1 ± 0.1 (n=90) % [per density 0.0 ± 0.0 (n=30), 0.2 ± 0.3 (n=30), 0.1 ± 0.2 (n=30)]; flagged with Beta >= gate (newly ineligible) 0.1 ± 0.1 (n=90) %; ineligible total 0.6 ± 0.3 (n=90) %
+
+## E. Beta trust of flagged vehicles: recorded Beta (unchanged) -> decision trust min(Beta, 0.5)
+per-second 0.9, k=3: attackers 625 flagged, Beta mean 0.775 [0.57, 0.88] -> decision mean 0.500; Beta >= gate (eligibility removed): 591; honest 1031 flagged, Beta mean 0.858 [0.73, 0.95] -> decision mean 0.500; Beta >= gate (eligibility removed): 1031
+per-second 0.9, k=4: attackers 148 flagged, Beta mean 0.760 [0.57, 0.86] -> decision mean 0.500; Beta >= gate (eligibility removed): 136; honest 100 flagged, Beta mean 0.842 [0.76, 0.91] -> decision mean 0.500; Beta >= gate (eligibility removed): 100
+per-second 0.9, k=5: attackers 26 flagged, Beta mean 0.753 [0.57, 0.86] -> decision mean 0.500; Beta >= gate (eligibility removed): 22; honest 10 flagged, Beta mean 0.834 [0.77, 0.86] -> decision mean 0.500; Beta >= gate (eligibility removed): 10
+per-second 0.9, k=6: attackers 7 flagged, Beta mean 0.706 [0.57, 0.79] -> decision mean 0.500; Beta >= gate (eligibility removed): 4; honest 1 flagged, Beta mean 0.768 [0.77, 0.77] -> decision mean 0.500; Beta >= gate (eligibility removed): 1
+phased 0.8/30 s, k=3: attackers 1799 flagged, Beta mean 0.715 [0.56, 0.85] -> decision mean 0.500; Beta >= gate (eligibility removed): 1207; honest 1005 flagged, Beta mean 0.857 [0.70, 0.95] -> decision mean 0.500; Beta >= gate (eligibility removed): 1005
+phased 0.8/30 s, k=4: attackers 1799 flagged, Beta mean 0.715 [0.56, 0.85] -> decision mean 0.500; Beta >= gate (eligibility removed): 1207; honest 104 flagged, Beta mean 0.847 [0.75, 0.92] -> decision mean 0.500; Beta >= gate (eligibility removed): 104
+phased 0.8/30 s, k=5: attackers 1799 flagged, Beta mean 0.715 [0.56, 0.85] -> decision mean 0.500; Beta >= gate (eligibility removed): 1207; honest 12 flagged, Beta mean 0.834 [0.78, 0.88] -> decision mean 0.500; Beta >= gate (eligibility removed): 12
+phased 0.8/30 s, k=6: attackers 1798 flagged, Beta mean 0.715 [0.56, 0.85] -> decision mean 0.500; Beta >= gate (eligibility removed): 1207; honest 2 flagged, Beta mean 0.823 [0.81, 0.83] -> decision mean 0.500; Beta >= gate (eligibility removed): 2
+phased 0.9/30 s, k=3: attackers 1799 flagged, Beta mean 0.801 [0.65, 0.90] -> decision mean 0.500; Beta >= gate (eligibility removed): 1791; honest 1005 flagged, Beta mean 0.857 [0.70, 0.95] -> decision mean 0.500; Beta >= gate (eligibility removed): 1005
+phased 0.9/30 s, k=4: attackers 734 flagged, Beta mean 0.789 [0.65, 0.89] -> decision mean 0.500; Beta >= gate (eligibility removed): 727; honest 104 flagged, Beta mean 0.847 [0.75, 0.92] -> decision mean 0.500; Beta >= gate (eligibility removed): 104
+phased 0.9/30 s, k=5: attackers 137 flagged, Beta mean 0.781 [0.69, 0.85] -> decision mean 0.500; Beta >= gate (eligibility removed): 135; honest 12 flagged, Beta mean 0.834 [0.78, 0.88] -> decision mean 0.500; Beta >= gate (eligibility removed): 12
+phased 0.9/30 s, k=6: attackers 17 flagged, Beta mean 0.774 [0.69, 0.83] -> decision mean 0.500; Beta >= gate (eligibility removed): 16; honest 2 flagged, Beta mean 0.823 [0.81, 0.83] -> decision mean 0.500; Beta >= gate (eligibility removed): 2
+phased 0.95/30 s, k=3: attackers 495 flagged, Beta mean 0.823 [0.69, 0.91] -> decision mean 0.500; Beta >= gate (eligibility removed): 492; honest 1005 flagged, Beta mean 0.857 [0.70, 0.95] -> decision mean 0.500; Beta >= gate (eligibility removed): 1005
+phased 0.95/30 s, k=4: attackers 80 flagged, Beta mean 0.808 [0.69, 0.87] -> decision mean 0.500; Beta >= gate (eligibility removed): 79; honest 104 flagged, Beta mean 0.847 [0.75, 0.92] -> decision mean 0.500; Beta >= gate (eligibility removed): 104
+phased 0.95/30 s, k=5: attackers 8 flagged, Beta mean 0.800 [0.77, 0.83] -> decision mean 0.500; Beta >= gate (eligibility removed): 8; honest 12 flagged, Beta mean 0.834 [0.78, 0.88] -> decision mean 0.500; Beta >= gate (eligibility removed): 12
+phased 0.95/30 s, k=6: attackers 0 flagged; honest 2 flagged, Beta mean 0.823 [0.81, 0.83] -> decision mean 0.500; Beta >= gate (eligibility removed): 2
+phased 0.9/10 s, k=3: attackers 367 flagged, Beta mean 0.782 [0.65, 0.86] -> decision mean 0.500; Beta >= gate (eligibility removed): 360; honest 1005 flagged, Beta mean 0.857 [0.70, 0.95] -> decision mean 0.500; Beta >= gate (eligibility removed): 1005
+phased 0.9/10 s, k=4: attackers 47 flagged, Beta mean 0.762 [0.65, 0.83] -> decision mean 0.500; Beta >= gate (eligibility removed): 43; honest 104 flagged, Beta mean 0.847 [0.75, 0.92] -> decision mean 0.500; Beta >= gate (eligibility removed): 104
+phased 0.9/10 s, k=5: attackers 5 flagged, Beta mean 0.753 [0.70, 0.80] -> decision mean 0.500; Beta >= gate (eligibility removed): 4; honest 12 flagged, Beta mean 0.834 [0.78, 0.88] -> decision mean 0.500; Beta >= gate (eligibility removed): 12
+phased 0.9/10 s, k=6: attackers 2 flagged, Beta mean 0.750 [0.73, 0.77] -> decision mean 0.500; Beta >= gate (eligibility removed): 2; honest 2 flagged, Beta mean 0.823 [0.81, 0.83] -> decision mean 0.500; Beta >= gate (eligibility removed): 2
+
+## F. Cluster-head selection: recorded roles vs the same election on Beta trust (no detector)
+recomputed Beta-trust roles == recorded roles of the k = 0 runs: 180 of 180
+per-second 0.9, k=3: recorded roles reproduced 90/90; attacker CH, no detector 2.07 ± 0.34 (n=90); attacker CH, detector 1.36 ± 0.27 (n=90); honest CH removed 1.30 ± 0.25 (n=90); honest CH added 1.99 ± 0.32 (n=90); CH total, no detector 19.32 ± 1.21 (n=90); CH total, detector 19.30 ± 1.20 (n=90)
+per-second 0.9, k=4: recorded roles reproduced 90/90; attacker CH, no detector 2.07 ± 0.34 (n=90); attacker CH, detector 1.89 ± 0.31 (n=90); honest CH removed 0.11 ± 0.07 (n=90); honest CH added 0.29 ± 0.12 (n=90); CH total, no detector 19.32 ± 1.21 (n=90); CH total, detector 19.32 ± 1.21 (n=90)
+per-second 0.9, k=5: recorded roles reproduced 90/90; attacker CH, no detector 2.07 ± 0.34 (n=90); attacker CH, detector 2.03 ± 0.33 (n=90); honest CH removed 0.02 ± 0.03 (n=90); honest CH added 0.06 ± 0.06 (n=90); CH total, no detector 19.32 ± 1.21 (n=90); CH total, detector 19.32 ± 1.21 (n=90)
+per-second 0.9, k=6: recorded roles reproduced 90/90; attacker CH, no detector 2.07 ± 0.34 (n=90); attacker CH, detector 2.07 ± 0.34 (n=90); honest CH removed 0.00 ± 0.00 (n=90); honest CH added 0.00 ± 0.00 (n=90); CH total, no detector 19.32 ± 1.21 (n=90); CH total, detector 19.32 ± 1.21 (n=90)
+phased 0.8/30 s, k=3: recorded roles reproduced 90/90; attacker CH, no detector 1.44 ± 0.26 (n=90); attacker CH, detector 0.00 ± 0.00 (n=90); honest CH removed 1.17 ± 0.22 (n=90); honest CH added 2.59 ± 0.32 (n=90); CH total, no detector 19.32 ± 1.21 (n=90); CH total, detector 19.30 ± 1.21 (n=90)
+phased 0.8/30 s, k=4: recorded roles reproduced 90/90; attacker CH, no detector 1.44 ± 0.26 (n=90); attacker CH, detector 0.00 ± 0.00 (n=90); honest CH removed 0.11 ± 0.07 (n=90); honest CH added 1.56 ± 0.26 (n=90); CH total, no detector 19.32 ± 1.21 (n=90); CH total, detector 19.32 ± 1.21 (n=90)
+phased 0.8/30 s, k=5: recorded roles reproduced 90/90; attacker CH, no detector 1.44 ± 0.26 (n=90); attacker CH, detector 0.00 ± 0.00 (n=90); honest CH removed 0.00 ± 0.00 (n=90); honest CH added 1.44 ± 0.26 (n=90); CH total, no detector 19.32 ± 1.21 (n=90); CH total, detector 19.32 ± 1.21 (n=90)
+phased 0.8/30 s, k=6: recorded roles reproduced 90/90; attacker CH, no detector 1.44 ± 0.26 (n=90); attacker CH, detector 0.00 ± 0.00 (n=90); honest CH removed 0.00 ± 0.00 (n=90); honest CH added 1.44 ± 0.26 (n=90); CH total, no detector 19.32 ± 1.21 (n=90); CH total, detector 19.32 ± 1.21 (n=90)
+phased 0.9/30 s, k=3: recorded roles reproduced 90/90; attacker CH, no detector 2.09 ± 0.33 (n=90); attacker CH, detector 0.00 ± 0.00 (n=90); honest CH removed 1.11 ± 0.20 (n=90); honest CH added 3.18 ± 0.37 (n=90); CH total, no detector 19.32 ± 1.21 (n=90); CH total, detector 19.30 ± 1.21 (n=90)
+phased 0.9/30 s, k=4: recorded roles reproduced 90/90; attacker CH, no detector 2.09 ± 0.33 (n=90); attacker CH, detector 1.24 ± 0.25 (n=90); honest CH removed 0.10 ± 0.06 (n=90); honest CH added 0.94 ± 0.21 (n=90); CH total, no detector 19.32 ± 1.21 (n=90); CH total, detector 19.32 ± 1.21 (n=90)
+phased 0.9/30 s, k=5: recorded roles reproduced 90/90; attacker CH, no detector 2.09 ± 0.33 (n=90); attacker CH, detector 1.96 ± 0.33 (n=90); honest CH removed 0.00 ± 0.00 (n=90); honest CH added 0.13 ± 0.08 (n=90); CH total, no detector 19.32 ± 1.21 (n=90); CH total, detector 19.32 ± 1.21 (n=90)
+phased 0.9/30 s, k=6: recorded roles reproduced 90/90; attacker CH, no detector 2.09 ± 0.33 (n=90); attacker CH, detector 2.08 ± 0.33 (n=90); honest CH removed 0.00 ± 0.00 (n=90); honest CH added 0.01 ± 0.02 (n=90); CH total, no detector 19.32 ± 1.21 (n=90); CH total, detector 19.32 ± 1.21 (n=90)
+phased 0.95/30 s, k=3: recorded roles reproduced 90/90; attacker CH, no detector 2.10 ± 0.34 (n=90); attacker CH, detector 1.62 ± 0.29 (n=90); honest CH removed 1.11 ± 0.20 (n=90); honest CH added 1.59 ± 0.25 (n=90); CH total, no detector 19.32 ± 1.21 (n=90); CH total, detector 19.32 ± 1.21 (n=90)
+phased 0.95/30 s, k=4: recorded roles reproduced 90/90; attacker CH, no detector 2.10 ± 0.34 (n=90); attacker CH, detector 2.08 ± 0.33 (n=90); honest CH removed 0.10 ± 0.06 (n=90); honest CH added 0.12 ± 0.07 (n=90); CH total, no detector 19.32 ± 1.21 (n=90); CH total, detector 19.32 ± 1.21 (n=90)
+phased 0.95/30 s, k=5: recorded roles reproduced 90/90; attacker CH, no detector 2.10 ± 0.34 (n=90); attacker CH, detector 2.10 ± 0.34 (n=90); honest CH removed 0.00 ± 0.00 (n=90); honest CH added 0.00 ± 0.00 (n=90); CH total, no detector 19.32 ± 1.21 (n=90); CH total, detector 19.32 ± 1.21 (n=90)
+phased 0.95/30 s, k=6: recorded roles reproduced 90/90; attacker CH, no detector 2.10 ± 0.34 (n=90); attacker CH, detector 2.10 ± 0.34 (n=90); honest CH removed 0.00 ± 0.00 (n=90); honest CH added 0.00 ± 0.00 (n=90); CH total, no detector 19.32 ± 1.21 (n=90); CH total, detector 19.32 ± 1.21 (n=90)
+phased 0.9/10 s, k=3: recorded roles reproduced 90/90; attacker CH, no detector 2.09 ± 0.33 (n=90); attacker CH, detector 1.74 ± 0.30 (n=90); honest CH removed 1.11 ± 0.20 (n=90); honest CH added 1.46 ± 0.22 (n=90); CH total, no detector 19.32 ± 1.21 (n=90); CH total, detector 19.32 ± 1.21 (n=90)
+phased 0.9/10 s, k=4: recorded roles reproduced 90/90; attacker CH, no detector 2.09 ± 0.33 (n=90); attacker CH, detector 2.04 ± 0.33 (n=90); honest CH removed 0.10 ± 0.06 (n=90); honest CH added 0.14 ± 0.07 (n=90); CH total, no detector 19.32 ± 1.21 (n=90); CH total, detector 19.32 ± 1.21 (n=90)
+phased 0.9/10 s, k=5: recorded roles reproduced 90/90; attacker CH, no detector 2.09 ± 0.33 (n=90); attacker CH, detector 2.09 ± 0.33 (n=90); honest CH removed 0.00 ± 0.00 (n=90); honest CH added 0.00 ± 0.00 (n=90); CH total, no detector 19.32 ± 1.21 (n=90); CH total, detector 19.32 ± 1.21 (n=90)
+phased 0.9/10 s, k=6: recorded roles reproduced 90/90; attacker CH, no detector 2.09 ± 0.33 (n=90); attacker CH, detector 2.09 ± 0.33 (n=90); honest CH removed 0.00 ± 0.00 (n=90); honest CH added 0.00 ± 0.00 (n=90); CH total, no detector 19.32 ± 1.21 (n=90); CH total, detector 19.32 ± 1.21 (n=90)
+
+## G. Committee, genuine alert and forgery outcomes (per run; n = 90 pooled, 30 per density)
+per-second 0.9, k=0 (C_cal 0.70): attackers on committee 0.46 ± 0.13 (n=90); genuine accepted 98.9 ± 2.2 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 96.7 ± 6.8 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=89) %; CH relay 83.3 ± 14.2 (n=30) %; forged accepted default 73.3 ± 9.3 (n=90) %, committee level 1.1 ± 2.2 (n=90) %
+per-second 0.9, k=3: attackers on committee 0.34 ± 0.11 (n=90); genuine accepted 100.0 ± 0.0 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=90) %; CH relay 86.7 ± 12.9 (n=30) %; forged accepted default 22.2 ± 8.8 (n=90) %, committee level 0.0 ± 0.0 (n=90) %
+per-second 0.9, k=4: attackers on committee 0.44 ± 0.13 (n=90); genuine accepted 98.9 ± 2.2 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 96.7 ± 6.8 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=89) %; CH relay 86.7 ± 12.9 (n=30) %; forged accepted default 56.7 ± 10.4 (n=90) %, committee level 1.1 ± 2.2 (n=90) %
+per-second 0.9, k=5: attackers on committee 0.46 ± 0.13 (n=90); genuine accepted 98.9 ± 2.2 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 96.7 ± 6.8 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=89) %; CH relay 83.3 ± 14.2 (n=30) %; forged accepted default 72.2 ± 9.4 (n=90) %, committee level 1.1 ± 2.2 (n=90) %
+per-second 0.9, k=6: attackers on committee 0.46 ± 0.13 (n=90); genuine accepted 98.9 ± 2.2 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 96.7 ± 6.8 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=89) %; CH relay 83.3 ± 14.2 (n=30) %; forged accepted default 72.2 ± 9.4 (n=90) %, committee level 1.1 ± 2.2 (n=90) %
+phased 0.8/30 s, k=3: attackers on committee 0.00 ± 0.00 (n=90); genuine accepted 100.0 ± 0.0 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=90) %; CH relay 86.7 ± 12.9 (n=30) %; forged accepted default 0.0 ± 0.0 (n=90) %, committee level 0.0 ± 0.0 (n=90) %
+phased 0.8/30 s, k=4: attackers on committee 0.00 ± 0.00 (n=90); genuine accepted 100.0 ± 0.0 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=90) %; CH relay 93.3 ± 9.5 (n=30) %; forged accepted default 0.0 ± 0.0 (n=90) %, committee level 0.0 ± 0.0 (n=90) %
+phased 0.8/30 s, k=5: attackers on committee 0.00 ± 0.00 (n=90); genuine accepted 100.0 ± 0.0 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=90) %; CH relay 93.3 ± 9.5 (n=30) %; forged accepted default 0.0 ± 0.0 (n=90) %, committee level 0.0 ± 0.0 (n=90) %
+phased 0.8/30 s, k=6: attackers on committee 0.00 ± 0.00 (n=90); genuine accepted 100.0 ± 0.0 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=90) %; CH relay 93.3 ± 9.5 (n=30) %; forged accepted default 0.0 ± 0.0 (n=90) %, committee level 0.0 ± 0.0 (n=90) %
+phased 0.9/30 s, k=0 (C_cal 0.70): attackers on committee 0.48 ± 0.13 (n=90); genuine accepted 98.9 ± 2.2 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 96.7 ± 6.8 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=89) %; CH relay 83.3 ± 14.2 (n=30) %; forged accepted default 76.7 ± 8.9 (n=90) %, committee level 1.1 ± 2.2 (n=90) %
+phased 0.9/30 s, k=3: attackers on committee 0.00 ± 0.00 (n=90); genuine accepted 100.0 ± 0.0 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=90) %; CH relay 86.7 ± 12.9 (n=30) %; forged accepted default 0.0 ± 0.0 (n=90) %, committee level 0.0 ± 0.0 (n=90) %
+phased 0.9/30 s, k=4: attackers on committee 0.31 ± 0.12 (n=90); genuine accepted 98.9 ± 2.2 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 96.7 ± 6.8 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=89) %; CH relay 86.7 ± 12.9 (n=30) %; forged accepted default 16.7 ± 7.8 (n=90) %, committee level 0.0 ± 0.0 (n=90) %
+phased 0.9/30 s, k=5: attackers on committee 0.44 ± 0.13 (n=90); genuine accepted 98.9 ± 2.2 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 96.7 ± 6.8 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=89) %; CH relay 83.3 ± 14.2 (n=30) %; forged accepted default 57.8 ± 10.4 (n=90) %, committee level 1.1 ± 2.2 (n=90) %
+phased 0.9/30 s, k=6: attackers on committee 0.47 ± 0.13 (n=90); genuine accepted 98.9 ± 2.2 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 96.7 ± 6.8 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=89) %; CH relay 83.3 ± 14.2 (n=30) %; forged accepted default 72.2 ± 9.4 (n=90) %, committee level 1.1 ± 2.2 (n=90) %
+phased 0.95/30 s, k=3: attackers on committee 0.40 ± 0.12 (n=90); genuine accepted 100.0 ± 0.0 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=90) %; CH relay 73.3 ± 16.8 (n=30) %; forged accepted default 36.7 ± 10.1 (n=90) %, committee level 1.1 ± 2.2 (n=90) %
+phased 0.95/30 s, k=4: attackers on committee 0.48 ± 0.13 (n=90); genuine accepted 98.9 ± 2.2 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 96.7 ± 6.8 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=89) %; CH relay 83.3 ± 14.2 (n=30) %; forged accepted default 72.2 ± 9.4 (n=90) %, committee level 1.1 ± 2.2 (n=90) %
+phased 0.95/30 s, k=5: attackers on committee 0.48 ± 0.13 (n=90); genuine accepted 98.9 ± 2.2 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 96.7 ± 6.8 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=89) %; CH relay 83.3 ± 14.2 (n=30) %; forged accepted default 75.6 ± 9.1 (n=90) %, committee level 1.1 ± 2.2 (n=90) %
+phased 0.95/30 s, k=6: attackers on committee 0.48 ± 0.13 (n=90); genuine accepted 98.9 ± 2.2 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 96.7 ± 6.8 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=89) %; CH relay 83.3 ± 14.2 (n=30) %; forged accepted default 77.8 ± 8.8 (n=90) %, committee level 1.1 ± 2.2 (n=90) %
+phased 0.9/10 s, k=3: attackers on committee 0.40 ± 0.12 (n=90); genuine accepted 100.0 ± 0.0 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=90) %; CH relay 76.7 ± 16.1 (n=30) %; forged accepted default 41.1 ± 10.4 (n=90) %, committee level 1.1 ± 2.2 (n=90) %
+phased 0.9/10 s, k=4: attackers on committee 0.48 ± 0.13 (n=90); genuine accepted 98.9 ± 2.2 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 96.7 ± 6.8 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=89) %; CH relay 83.3 ± 14.2 (n=30) %; forged accepted default 74.4 ± 9.2 (n=90) %, committee level 1.1 ± 2.2 (n=90) %
+phased 0.9/10 s, k=5: attackers on committee 0.48 ± 0.13 (n=90); genuine accepted 98.9 ± 2.2 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 96.7 ± 6.8 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=89) %; CH relay 83.3 ± 14.2 (n=30) %; forged accepted default 76.7 ± 8.9 (n=90) %, committee level 1.1 ± 2.2 (n=90) %
+phased 0.9/10 s, k=6: attackers on committee 0.48 ± 0.13 (n=90); genuine accepted 98.9 ± 2.2 (n=90) % [100.0 ± 0.0 (n=30), 100.0 ± 0.0 (n=30), 96.7 ± 6.8 (n=30)]; proposed delivery (accepted) 100.0 ± 0.0 (n=89) %; CH relay 83.3 ± 14.2 (n=30) %; forged accepted default 76.7 ± 8.9 (n=90) %, committee level 1.1 ± 2.2 (n=90) %
+
+## H. Paired by seed against k = 0 (C_calibration gate 0.70): gains / losses
+per-second 0.9, k=3: genuine accepted +1 / -0 of 90 (p = 1); proposed delivery lower on 0 of 89 both-accepted seeds; CH relay +2 / -1 of 30 (p = 1); forged accepted (default) +0 / -46 of 90 (p = 2.8e-14)
+per-second 0.9, k=4: genuine accepted +0 / -0 of 90; proposed delivery lower on 0 of 89 both-accepted seeds; CH relay +1 / -0 of 30 (p = 1); forged accepted (default) +0 / -15 of 90 (p = 6.1e-05)
+per-second 0.9, k=5: genuine accepted +0 / -0 of 90; proposed delivery lower on 0 of 89 both-accepted seeds; CH relay +0 / -0 of 30; forged accepted (default) +0 / -1 of 90 (p = 1)
+per-second 0.9, k=6: genuine accepted +0 / -0 of 90; proposed delivery lower on 0 of 89 both-accepted seeds; CH relay +0 / -0 of 30; forged accepted (default) +0 / -1 of 90 (p = 1)
+phased 0.9/30 s, k=3: genuine accepted +1 / -0 of 90 (p = 1); proposed delivery lower on 0 of 89 both-accepted seeds; CH relay +3 / -2 of 30 (p = 1); forged accepted (default) +0 / -69 of 90 (p = 3.4e-21)
+phased 0.9/30 s, k=4: genuine accepted +0 / -0 of 90; proposed delivery lower on 0 of 89 both-accepted seeds; CH relay +1 / -0 of 30 (p = 1); forged accepted (default) +0 / -54 of 90 (p = 1.1e-16)
+phased 0.9/30 s, k=5: genuine accepted +0 / -0 of 90; proposed delivery lower on 0 of 89 both-accepted seeds; CH relay +0 / -0 of 30; forged accepted (default) +0 / -17 of 90 (p = 1.5e-05)
+phased 0.9/30 s, k=6: genuine accepted +0 / -0 of 90; proposed delivery lower on 0 of 89 both-accepted seeds; CH relay +0 / -0 of 30; forged accepted (default) +0 / -4 of 90 (p = 0.12)
+
+## I. Count-based gates on the same held-out seeds (C_calibration, no detector): honest vs attackers below gate
+per-second 0.9, gate 0.7: honest below gate 0.00 ± 0.00 (n=90) %; attackers below gate 2.2 ± 0.9 (n=90) %
+per-second 0.9, gate 0.75: honest below gate 0.04 ± 0.04 (n=90) %; attackers below gate 12.3 ± 1.8 (n=90) %
+per-second 0.9, gate 0.8: honest below gate 1.00 ± 0.25 (n=90) %; attackers below gate 44.5 ± 2.6 (n=90) %
+per-second 0.9, gate 0.84: honest below gate 7.84 ± 0.90 (n=90) %; attackers below gate 78.5 ± 2.4 (n=90) %
+per-second 0.9, gate 0.86: honest below gate 18.55 ± 1.23 (n=90) %; attackers below gate 89.2 ± 1.8 (n=90) %
+per-second 0.9, gate 0.88: honest below gate 36.66 ± 1.24 (n=90) %; attackers below gate 95.6 ± 1.1 (n=90) %
+per-second 0.9, gate 0.9: honest below gate 59.41 ± 0.93 (n=90) %; attackers below gate 98.8 ± 0.5 (n=90) %
+phased 0.9/30 s, gate 0.7: honest below gate 0.01 ± 0.01 (n=90) %; attackers below gate 0.5 ± 0.4 (n=90) %
+phased 0.9/30 s, gate 0.75: honest below gate 0.05 ± 0.05 (n=90) %; attackers below gate 7.3 ± 1.5 (n=90) %
+phased 0.9/30 s, gate 0.8: honest below gate 1.06 ± 0.26 (n=90) %; attackers below gate 45.1 ± 2.7 (n=90) %
+phased 0.9/30 s, gate 0.84: honest below gate 7.68 ± 0.81 (n=90) %; attackers below gate 85.2 ± 1.8 (n=90) %
+phased 0.9/30 s, gate 0.86: honest below gate 18.60 ± 1.03 (n=90) %; attackers below gate 95.1 ± 1.1 (n=90) %
+phased 0.9/30 s, gate 0.88: honest below gate 36.55 ± 0.99 (n=90) %; attackers below gate 98.7 ± 0.7 (n=90) %
+phased 0.9/30 s, gate 0.9: honest below gate 59.33 ± 0.83 (n=90) %; attackers below gate 99.9 ± 0.2 (n=90) %

@@ -1,0 +1,1419 @@
+{
+ "chosen": [
+  5,
+  3
+ ],
+ "selection_rule_choice": [
+  9,
+  5
+ ],
+ "eligible_candidates": [
+  "5/3",
+  "7/4",
+  "9/5"
+ ],
+ "contrast_only": [
+  "7/3"
+ ],
+ "candidates": {
+  "5/3": {
+   "m": 5,
+   "q": 3,
+   "candidate": true,
+   "admissible": true,
+   "adoptable": true,
+   "criterion1_violations": [],
+   "criterion2_violations": [],
+   "withholding_explained_regressions": [],
+   "ch_route_violations": [],
+   "pooled_genuine_accepted": 0.8962962962962963,
+   "pooled_default_forgery_accepted": 0.06111111111111111
+  },
+  "7/4": {
+   "m": 7,
+   "q": 4,
+   "candidate": true,
+   "admissible": true,
+   "adoptable": false,
+   "criterion1_violations": [],
+   "criterion2_violations": [],
+   "withholding_explained_regressions": [
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d300_r07",
+     "attackers_in_committee": 4.0,
+     "committee_size": 7.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d300_r07",
+     "attackers_in_committee": 4.0,
+     "committee_size": 7.0
+    },
+    {
+     "cell": [
+      0.3,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d300_r13",
+     "attackers_in_committee": 4.0,
+     "committee_size": 7.0
+    }
+   ],
+   "ch_route_violations": [
+    {
+     "cell": [
+      0.1,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r14",
+     "metric": "honest_delivery",
+     "g2": 0.30337078651685395,
+     "block_f": 0.4606741573033708
+    },
+    {
+     "cell": [
+      0.1,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r14",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.1,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r26",
+     "metric": "honest_delivery",
+     "g2": 0.20224719101123595,
+     "block_f": 0.38202247191011235
+    },
+    {
+     "cell": [
+      0.1,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r26",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.1,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r14",
+     "metric": "honest_delivery",
+     "g2": 0.30337078651685395,
+     "block_f": 0.4606741573033708
+    },
+    {
+     "cell": [
+      0.1,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r14",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.1,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r26",
+     "metric": "honest_delivery",
+     "g2": 0.20224719101123595,
+     "block_f": 0.38202247191011235
+    },
+    {
+     "cell": [
+      0.1,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r26",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r00",
+     "metric": "honest_delivery",
+     "g2": 0.21518987341772153,
+     "block_f": 0.3924050632911392
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r00",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r08",
+     "metric": "honest_delivery",
+     "g2": 0.22784810126582278,
+     "block_f": 0.4177215189873418
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r08",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r26",
+     "metric": "honest_delivery",
+     "g2": 0.3037974683544304,
+     "block_f": 0.4430379746835443
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r26",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d200_r25",
+     "metric": "honest_delivery",
+     "g2": 0.2138364779874214,
+     "block_f": 0.27672955974842767
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d200_r25",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d300_r12",
+     "metric": "honest_delivery",
+     "g2": 0.2301255230125523,
+     "block_f": 0.2803347280334728
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d300_r12",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d300_r25",
+     "metric": "honest_delivery",
+     "g2": 0.3807531380753138,
+     "block_f": 0.5815899581589958
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d300_r25",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r00",
+     "metric": "honest_delivery",
+     "g2": 0.21518987341772153,
+     "block_f": 0.3924050632911392
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r00",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r08",
+     "metric": "honest_delivery",
+     "g2": 0.22784810126582278,
+     "block_f": 0.4177215189873418
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r08",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r26",
+     "metric": "honest_delivery",
+     "g2": 0.3037974683544304,
+     "block_f": 0.4430379746835443
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r26",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d200_r25",
+     "metric": "honest_delivery",
+     "g2": 0.2138364779874214,
+     "block_f": 0.27672955974842767
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d200_r25",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d300_r12",
+     "metric": "honest_delivery",
+     "g2": 0.2301255230125523,
+     "block_f": 0.2803347280334728
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d300_r12",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d300_r25",
+     "metric": "honest_delivery",
+     "g2": 0.3807531380753138,
+     "block_f": 0.5815899581589958
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d300_r25",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.3,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r06",
+     "metric": "honest_delivery",
+     "g2": 0.18840579710144928,
+     "block_f": 0.5217391304347826
+    },
+    {
+     "cell": [
+      0.3,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r06",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.3,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d300_r22",
+     "metric": "honest_delivery",
+     "g2": 0.45454545454545453,
+     "block_f": 0.6124401913875598
+    },
+    {
+     "cell": [
+      0.3,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d300_r22",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    }
+   ],
+   "pooled_genuine_accepted": 0.9314814814814815,
+   "pooled_default_forgery_accepted": 0.03888888888888889
+  },
+  "9/5": {
+   "m": 9,
+   "q": 5,
+   "candidate": true,
+   "admissible": true,
+   "adoptable": false,
+   "criterion1_violations": [],
+   "criterion2_violations": [],
+   "withholding_explained_regressions": [
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d300_r11",
+     "attackers_in_committee": 5.0,
+     "committee_size": 9.0
+    },
+    {
+     "cell": [
+      0.3,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r23",
+     "attackers_in_committee": 5.0,
+     "committee_size": 9.0
+    }
+   ],
+   "ch_route_violations": [
+    {
+     "cell": [
+      0.1,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r05",
+     "metric": "honest_delivery",
+     "g2": 0.2247191011235955,
+     "block_f": 0.4943820224719101
+    },
+    {
+     "cell": [
+      0.1,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r05",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.1,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r14",
+     "metric": "honest_delivery",
+     "g2": 0.30337078651685395,
+     "block_f": 0.4606741573033708
+    },
+    {
+     "cell": [
+      0.1,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r14",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.1,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r17",
+     "metric": "honest_delivery",
+     "g2": 0.43820224719101125,
+     "block_f": 0.5730337078651685
+    },
+    {
+     "cell": [
+      0.1,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r17",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.1,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r26",
+     "metric": "honest_delivery",
+     "g2": 0.20224719101123595,
+     "block_f": 0.38202247191011235
+    },
+    {
+     "cell": [
+      0.1,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r26",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.1,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d200_r10",
+     "metric": "honest_delivery",
+     "g2": 0.16759776536312848,
+     "block_f": 0.4581005586592179
+    },
+    {
+     "cell": [
+      0.1,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d200_r10",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.1,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d200_r12",
+     "metric": "honest_delivery",
+     "g2": 0.20670391061452514,
+     "block_f": 0.2737430167597765
+    },
+    {
+     "cell": [
+      0.1,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r05",
+     "metric": "honest_delivery",
+     "g2": 0.2247191011235955,
+     "block_f": 0.4943820224719101
+    },
+    {
+     "cell": [
+      0.1,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r05",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.1,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r14",
+     "metric": "honest_delivery",
+     "g2": 0.30337078651685395,
+     "block_f": 0.4606741573033708
+    },
+    {
+     "cell": [
+      0.1,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r14",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.1,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r17",
+     "metric": "honest_delivery",
+     "g2": 0.43820224719101125,
+     "block_f": 0.5730337078651685
+    },
+    {
+     "cell": [
+      0.1,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r17",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.1,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r26",
+     "metric": "honest_delivery",
+     "g2": 0.20224719101123595,
+     "block_f": 0.38202247191011235
+    },
+    {
+     "cell": [
+      0.1,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r26",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.1,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d200_r10",
+     "metric": "honest_delivery",
+     "g2": 0.16759776536312848,
+     "block_f": 0.4581005586592179
+    },
+    {
+     "cell": [
+      0.1,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d200_r10",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.1,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d200_r12",
+     "metric": "honest_delivery",
+     "g2": 0.20670391061452514,
+     "block_f": 0.2737430167597765
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r00",
+     "metric": "honest_delivery",
+     "g2": 0.21518987341772153,
+     "block_f": 0.3924050632911392
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r00",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r08",
+     "metric": "honest_delivery",
+     "g2": 0.22784810126582278,
+     "block_f": 0.4177215189873418
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r08",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r26",
+     "metric": "honest_delivery",
+     "g2": 0.3037974683544304,
+     "block_f": 0.4430379746835443
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r26",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d200_r05",
+     "metric": "honest_delivery",
+     "g2": 0.23270440251572327,
+     "block_f": 0.39622641509433965
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d200_r05",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d200_r20",
+     "metric": "honest_delivery",
+     "g2": 0.2138364779874214,
+     "block_f": 0.3584905660377358
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d200_r20",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d200_r25",
+     "metric": "honest_delivery",
+     "g2": 0.2138364779874214,
+     "block_f": 0.27672955974842767
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d200_r25",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d300_r07",
+     "metric": "honest_delivery",
+     "g2": 0.24686192468619247,
+     "block_f": 0.3598326359832636
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d300_r07",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d300_r12",
+     "metric": "honest_delivery",
+     "g2": 0.2301255230125523,
+     "block_f": 0.2803347280334728
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d300_r12",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d300_r25",
+     "metric": "honest_delivery",
+     "g2": 0.3807531380753138,
+     "block_f": 0.5815899581589958
+    },
+    {
+     "cell": [
+      0.2,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d300_r25",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r00",
+     "metric": "honest_delivery",
+     "g2": 0.21518987341772153,
+     "block_f": 0.3924050632911392
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r00",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r08",
+     "metric": "honest_delivery",
+     "g2": 0.22784810126582278,
+     "block_f": 0.4177215189873418
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r08",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r26",
+     "metric": "honest_delivery",
+     "g2": 0.3037974683544304,
+     "block_f": 0.4430379746835443
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d100_r26",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d200_r05",
+     "metric": "honest_delivery",
+     "g2": 0.23270440251572327,
+     "block_f": 0.39622641509433965
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d200_r05",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d200_r20",
+     "metric": "honest_delivery",
+     "g2": 0.2138364779874214,
+     "block_f": 0.3584905660377358
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d200_r20",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d200_r25",
+     "metric": "honest_delivery",
+     "g2": 0.2138364779874214,
+     "block_f": 0.27672955974842767
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d200_r25",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d300_r07",
+     "metric": "honest_delivery",
+     "g2": 0.24686192468619247,
+     "block_f": 0.3598326359832636
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d300_r07",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d300_r12",
+     "metric": "honest_delivery",
+     "g2": 0.2301255230125523,
+     "block_f": 0.2803347280334728
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d300_r12",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d300_r25",
+     "metric": "honest_delivery",
+     "g2": 0.3807531380753138,
+     "block_f": 0.5815899581589958
+    },
+    {
+     "cell": [
+      0.2,
+      0.0,
+      30.0,
+      0.9
+     ],
+     "run_id": "d300_r25",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.3,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r03",
+     "metric": "honest_delivery",
+     "g2": 0.15942028985507245,
+     "block_f": 0.2318840579710145
+    },
+    {
+     "cell": [
+      0.3,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r06",
+     "metric": "honest_delivery",
+     "g2": 0.18840579710144928,
+     "block_f": 0.5217391304347826
+    },
+    {
+     "cell": [
+      0.3,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r06",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.3,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r13",
+     "metric": "honest_delivery",
+     "g2": 0.30434782608695654,
+     "block_f": 0.5652173913043478
+    },
+    {
+     "cell": [
+      0.3,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d100_r13",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.3,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d200_r02",
+     "metric": "honest_delivery",
+     "g2": 0.1510791366906475,
+     "block_f": 0.31654676258992803
+    },
+    {
+     "cell": [
+      0.3,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d200_r02",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.3,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d200_r04",
+     "metric": "honest_delivery",
+     "g2": 0.1510791366906475,
+     "block_f": 0.5251798561151079
+    },
+    {
+     "cell": [
+      0.3,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d200_r04",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.3,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d200_r27",
+     "metric": "honest_delivery",
+     "g2": 0.2517985611510791,
+     "block_f": 0.3597122302158273
+    },
+    {
+     "cell": [
+      0.3,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d200_r27",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    },
+    {
+     "cell": [
+      0.3,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d300_r22",
+     "metric": "honest_delivery",
+     "g2": 0.45454545454545453,
+     "block_f": 0.6124401913875598
+    },
+    {
+     "cell": [
+      0.3,
+      0.9,
+      0.0,
+      0.9
+     ],
+     "run_id": "d300_r22",
+     "metric": "rsu_relay_received",
+     "g2": 0.0,
+     "block_f": 1.0
+    }
+   ],
+   "pooled_genuine_accepted": 0.9666666666666667,
+   "pooled_default_forgery_accepted": 0.018518518518518517
+  },
+  "7/3": {
+   "m": 7,
+   "q": 3,
+   "candidate": false,
+   "admissible": true,
+   "adoptable": false,
+   "criterion1_violations": [],
+   "criterion2_violations": [],
+   "withholding_explained_regressions": [],
+   "ch_route_violations": [],
+   "pooled_genuine_accepted": 0.9851851851851852,
+   "pooled_default_forgery_accepted": 0.1685185185185185
+  }
+ },
+ "admissible_rule": "criterion 1: in every G2 cell with a Block F reference (per-second 0.9 at 10/20/30 %; phased 0.9/30 s at 10/20 %), the default-level forgery acceptance rate is <= Block F's default-level rate at every density. Criterion 2: no seed where Block F accepted the genuine alert and G2 did not, unless G2 had >= m - q + 1 attackers on the committee (the withholding rule; reported); and no seed where both accepted and the proposed scheme's honest delivery is lower than in Block F (strict). Cells without a Block F reference (phased 0.9/30 s at 30 %) are reported but not used in either criterion.",
+ "selection_rule": "among admissible configurations (5/3 included): highest pooled genuine acceptance over all G2 runs; then lowest pooled default-level forgery acceptance; then the smallest committee.",
+ "adoption_rule": "plan section 8 criterion 2 (genuine acceptance and delivery not lower than Block F on any seed) applied to every genuine path of the proposed design: the proposed broadcast (G2_admissible criterion 2) and the CH route (honest delivery and relayed RSU reception, strict, on seeds where both accepted the genuine alert). Stated in G2_RESULTS_REPORT.md section 7 before this correction.",
+ "correction": "G2_selection.json (kept as the historical record) chose 7/3 because the coded candidate list included the 7/3 contrast arm, and it had no way to select nothing."
+}

@@ -1,0 +1,28 @@
+
+5/3: 172 CH-route local rounds, 162 succeeded (94.2 %); mean endorsements sent 4.55
+  heads with >= q-1 honest eligible members: 162 (94.2 %); with >= 2 (enough for q = 3): 162 (94.2 %)
+  failed rounds, cluster too small: < q-1 eligible members: 0
+  failed rounds, silent attackers: >= q-1 eligible, < q-1 honest: 10
+  failed rounds, radio: >= q-1 honest voters, < q endorsements decoded: 0
+  eligible members per head (capped at m): 2: 18, 3: 30, 4: 6, 5: 118
+
+7/3: 181 CH-route local rounds, 171 succeeded (94.5 %); mean endorsements sent 5.39
+  heads with >= q-1 honest eligible members: 171 (94.5 %); with >= 2 (enough for q = 3): 171 (94.5 %)
+  failed rounds, cluster too small: < q-1 eligible members: 0
+  failed rounds, silent attackers: >= q-1 eligible, < q-1 honest: 10
+  failed rounds, radio: >= q-1 honest voters, < q endorsements decoded: 0
+  eligible members per head (capped at m): 2: 20, 3: 32, 4: 6, 5: 15, 6: 12, 7: 96
+
+7/4: 175 CH-route local rounds, 143 succeeded (81.7 %); mean endorsements sent 5.39
+  heads with >= q-1 honest eligible members: 143 (81.7 %); with >= 2 (enough for q = 3): 165 (94.3 %)
+  failed rounds, cluster too small: < q-1 eligible members: 20
+  failed rounds, silent attackers: >= q-1 eligible, < q-1 honest: 12
+  failed rounds, radio: >= q-1 honest voters, < q endorsements decoded: 0
+  eligible members per head (capped at m): 2: 20, 3: 28, 4: 6, 5: 15, 6: 12, 7: 94
+
+9/5: 173 CH-route local rounds, 117 succeeded (67.6 %); mean endorsements sent 5.99
+  heads with >= q-1 honest eligible members: 117 (67.6 %); with >= 2 (enough for q = 3): 163 (94.2 %)
+  failed rounds, cluster too small: < q-1 eligible members: 48
+  failed rounds, silent attackers: >= q-1 eligible, < q-1 honest: 8
+  failed rounds, radio: >= q-1 honest voters, < q endorsements decoded: 0
+  eligible members per head (capped at m): 2: 20, 3: 28, 4: 6, 5: 15, 6: 12, 7: 21, 8: 14, 9: 57

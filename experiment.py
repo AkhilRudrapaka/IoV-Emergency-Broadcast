@@ -26,7 +26,7 @@ from channel import geometry, simulate, slots_to_ms
 from clustering import elect_roles
 from metrics import METRICS, run_metrics, summarize
 from protocols import Flooding, Slotted1P, Proposed, CHRoute
-from scenario import build, create_alert
+from scenario import build, create_alert, decision_trust
 
 RAW, PROCESSED = os.path.join(config.RESULTS_DIR, "raw"), os.path.join(config.RESULTS_DIR, "processed")
 FORGERY_METRICS = ["certificate_formed", "accepted_share", "rsu_registered", "transmissions"]
@@ -53,7 +53,7 @@ def arms(sc, net, alert, source, genuine=True):
     tier = {k: np.concatenate([v[1], pad]) for k, v in roles.items()}
     tier["none"] = np.zeros(len(adj), int)
     plan = lambda **kw: corroboration.plan(alert, source, dist, adj, nv, sc["trust"], malicious, genuine, **kw)
-    sec, sec_norep = plan(), plan(use_reputation=False)
+    sec, sec_norep, sec_committee = plan(), plan(use_reputation=False), plan(require_committee=True)
     route = infrastructure.shortest_route(
         np.vstack([sc['xy'], list(config.RSU_POSITIONS.values())]), adj,
         roles['full'][0], sc['trust'], source, set(np.flatnonzero(is_rsu)))
@@ -76,13 +76,25 @@ def arms(sc, net, alert, source, genuine=True):
         "no_cluster_forwarding": (lambda: proposed("none"), roles["full"]),
         "no_reputation": (lambda: proposed("no_reputation", sec_norep), roles["no_reputation"]),
         "no_security": (lambda: proposed(security=None), roles["full"]),
+        # opt-in protection level (Block F, config.COMMITTEE_CHECK): only run by the forged-alert test when enabled
+        "proposed_committee": (lambda: proposed(security=sec_committee), roles["full"]),
     }, roles["full"]
+
+
+def droppers(sc, malicious):
+    """Which misbehaving vehicles drop this run's alerts. MALICIOUS_DROP_PROB = 1 (default): all of them, no random number
+    drawn. Below 1: each one independently, from its own stream [seed, 300] (no other stream shifts), so every scheme and
+    the forged-alert test see the same droppers."""
+    if config.MALICIOUS_DROP_PROB >= 1:
+        return malicious
+    return malicious & (np.random.default_rng([sc["seed"], 300]).random(len(malicious)) < config.MALICIOUS_DROP_PROB)
 
 
 def run_arm(make, role, sc, net, alert, source, rng, genuine=True):
     nv, names, is_rsu, malicious, dist, adj = net
     proto = make()
     proto.names = names
+    proto.drops = droppers(sc, malicious)
     log = simulate(proto, adj, source, rng)
     m, event, receptions = run_metrics(adj, source, malicious, proto, log, nv, names, alert, genuine,
                                        now_s=sc["incident_time_s"])   # the RSUs' own clock, not the alert's claim
@@ -107,11 +119,14 @@ def run_one(density, run, protocols=config.PROTOCOLS, save=True, archive=True):
     from datetime import datetime
     started_at = datetime.now().astimezone()
     sc = build(density, run)
+    # Block G (TRUST_BURST_K): decisions use the decision trust (burst-flagged vehicles ineligible); every record keeps
+    # the Beta trust of sc. Without the detector dec is sc itself.
+    dec = dict(sc, trust=decision_trust(sc)) if "burst_flagged" in sc else sc
     net = network(sc)
     nv, names, is_rsu, malicious, dist, adj = net
     base = {"run_id": sc["run_id"], "density": density, "run": run, "seed": sc["seed"]}
 
-    schemes, (role, _, labels) = arms(sc, net, sc["alert"], sc["source"])
+    schemes, (role, _, labels) = arms(dec, net, sc["alert"], sc["source"])
     rows, raw = [], {"scenario": scenario_record(sc, adj, role, labels), "protocols": {}}
     for name in protocols:
         make, roles = schemes[name]
@@ -121,10 +136,10 @@ def run_one(density, run, protocols=config.PROTOCOLS, save=True, archive=True):
                      "incident_time_s": sc["incident_time_s"], "incident_vehicle": sc["source_id"],
                      "incident_x": sc["incident_xy"][0], "incident_y": sc["incident_xy"][1], **m})
 
-    forged_rows, raw["forgery"] = forged_alert(sc, net, base)
+    forged_rows, raw["forgery"] = forged_alert(sc, net, base, dec)
     route = infrastructure.shortest_route(
         np.vstack([sc['xy'], list(config.RSU_POSITIONS.values())]), adj,
-        role, sc['trust'], sc['source'], set(np.flatnonzero(is_rsu)))
+        role, dec['trust'], sc['source'], set(np.flatnonzero(is_rsu)))
     route['vehicle_ids'] = [names[i] for i in route['nodes']]
     raw['infrastructure'] = {'route': route, 'model': 'incident mobility snapshot'}
     if 'ch_route' in raw['protocols']:
@@ -132,15 +147,22 @@ def run_one(density, run, protocols=config.PROTOCOLS, save=True, archive=True):
         updates = infrastructure.trust_after_event(raw['scenario']['vehicles'],
                     {tx['sender'] for tx in delivery['transmissions'] if tx['kind'] == 'ALERT'}, delivery['rsu_event'])
         raw['infrastructure']['trust_updates'] = updates
-        certificates = [(sc['alert'], delivery['corroboration']['certificate'])]
-        certificates.extend((sc['alert'], row['certificate']) for row in delivery['cluster_consensus'])
+        # Block G (ENFORCE_COMMITTEE): each certificate is checked against the committee the simulator rebuilt for it
+        # (the main committee, or a cluster round's voters), never against anything carried in the certificate
+        enforce, cor = config.ENFORCE_COMMITTEE, delivery['corroboration']
+        certificates = [(sc['alert'], cor['certificate'], cor['committee'] if enforce else None)]
+        certificates.extend((sc['alert'], row['certificate'], row['voters'] if enforce else None)
+                            for row in delivery['cluster_consensus'])
         authenticated, rejected = infrastructure.batch_authenticate(certificates,
-                           dict(zip(sc['ids'], sc['trust'])))
+                           dict(zip(sc['ids'], dec['trust'])))
         raw['infrastructure']['batch_authentication'] = {'certificates_checked': len(certificates),
             'accepted_event_ids': [item['event_id'] for item in authenticated], 'rejected': rejected,
             'method': 'per-event BLS aggregate verification; deduplicated batch API'}
         raw['infrastructure']['backhaul'] = infrastructure.persist(sc['run_id'], delivery['rsu_event'], updates, config.RESULTS_DIR,
                                                                  raw['scenario']) if save else {'storage': 'DISABLED'}
+    if 'ml_shadow' in sc:        # Block D shadow log, written after every decision above; nothing reads it back
+        import ml_trust
+        raw['ml_shadow'] = ml_trust.shadow_record(sc, net, role)
     if save:
         os.makedirs(RAW, exist_ok=True)
         raw['recorded_at'] = started_at.isoformat()
@@ -155,19 +177,22 @@ def run_one(density, run, protocols=config.PROTOCOLS, save=True, archive=True):
     return rows, forged_rows
 
 
-def forged_alert(sc, net, base):
+def forged_alert(sc, net, base, dec=None):
     """The same traffic snapshot, but the one alert is a lie: a misbehaving vehicle claims
-    an accident at its own position, and its misbehaving neighbours endorse it."""
+    an accident at its own position, and its misbehaving neighbours endorse it.
+    dec: the decision view of sc (Block G burst detector); records keep sc's Beta trust."""
     nv, names, is_rsu, malicious, dist, adj = net
     candidates = [v for v in range(nv) if malicious[v] and adj[v, :nv].any()]
     if not candidates:
         return [], None                                   # no misbehaving vehicle in this run
     forger = random.Random(sc["seed"] + 1).choice(candidates)
     alert = create_alert(sc["seed"], names[forger], sc["xy"][forger], sc["incident_time_s"])
-    schemes, _ = arms(sc, net, alert, forger, genuine=False)
+    schemes, _ = arms(sc if dec is None else dec, net, alert, forger, genuine=False)
     rows, variants = [], {}
-    for i, (variant, arm) in enumerate(zip(config.FORGERY, ("proposed", "no_reputation", "no_security"))):
-        make, roles = schemes[arm]
+    arm_of = {"voting_reputation": "proposed", "voting_only": "no_reputation", "no_voting": "no_security",
+              "voting_reputation_committee": "proposed_committee"}       # the last only with config.COMMITTEE_CHECK
+    for i, variant in enumerate(config.FORGERY):                          # order fixes each level's stream [seed, 100 + i]
+        make, roles = schemes[arm_of[variant]]
         m, record = run_arm(make, roles, sc, net, alert, forger, np.random.default_rng([sc["seed"], 100 + i]), genuine=False)
         variants[variant] = record
         rows.append({**base, "variant": variant, "forger": names[forger],
@@ -181,7 +206,7 @@ def forged_alert(sc, net, base):
 
 def scenario_record(sc, adj, role, labels):
     nv = len(sc["ids"])
-    return {
+    record = {
         **{k: sc[k] for k in ("run_id", "density", "run", "seed", "incident_time_s", "source_id",
                               "incident_xy", "incident_lane", "alert")},
         "rsus": [{"id": name, "x": x, "y": y, "vehicles_in_range": int(adj[nv + i, :nv].sum())}
@@ -192,6 +217,10 @@ def scenario_record(sc, adj, role, labels):
                      for i, (v, (x, y), s, m, tr) in enumerate(zip(sc["ids"], sc["xy"], sc["speed"],
                                                                      sc["malicious"], sc["trust"]))],
     }
+    if "burst_flagged" in sc:            # Block G: the burst detector's evidence, next to (not inside) the Beta trust
+        for v, run_, flag in zip(record["vehicles"], sc["burst_max_run"], sc["burst_flagged"]):
+            v.update(burst_max_run=int(run_), burst_flagged=bool(flag))
+    return record
 
 
 def corroboration_record(names, proto):
@@ -246,8 +275,9 @@ def _job(args):
     return run_one(*args, archive=False)
 
 
-def run_matrix(densities=config.DENSITIES, runs=config.RUNS_PER_DENSITY, workers=None, progress=print):
-    jobs = [(d, r) for d in densities for r in range(runs)]
+def run_matrix(densities=config.DENSITIES, runs=config.RUNS_PER_DENSITY, workers=None, progress=print, first=0):
+    """first > 0: runs first .. first + runs - 1 (runs >= 30 are held-out seeds, e.g. for calibrating a gate)."""
+    jobs = [(d, r) for d in densities for r in range(first, first + runs)]
     rows, forged = [], []
     with Pool(workers or min(len(jobs), os.cpu_count())) as pool:
         for i, (res, fres) in enumerate(pool.imap_unordered(_job, jobs), 1):

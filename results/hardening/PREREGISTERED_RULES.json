@@ -1,0 +1,8 @@
+{
+ "written": "before any Block G sweep was run",
+ "G3a_rule": "k = the smallest of 3, 4, 5, 6 for which, in every G3a setting (5 attackers) and at every density, the mean over runs of the share of honest vehicles flagged by the burst detector is <= 0.01. No such k: G3 is negative, G3b is not run and G4 has no detector.",
+ "G2_admissible": "criterion 1: in every G2 cell with a Block F reference (per-second 0.9 at 10/20/30 %; phased 0.9/30 s at 10/20 %), the default-level forgery acceptance rate is <= Block F's default-level rate at every density. Criterion 2: no seed where Block F accepted the genuine alert and G2 did not, unless G2 had >= m - q + 1 attackers on the committee (the withholding rule; reported); and no seed where both accepted and the proposed scheme's honest delivery is lower than in Block F (strict). Cells without a Block F reference (phased 0.9/30 s at 30 %) are reported but not used in either criterion.",
+ "G2_selection": "among admissible configurations (5/3 included): highest pooled genuine acceptance over all G2 runs; then lowest pooled default-level forgery acceptance; then the smallest committee.",
+ "G4": "the selected committee + ENFORCE_COMMITTEE=1 + the G3a k (if any) on the 18 B and 16 C settings, with MAX_COLLUDERS = max(setting value, committee size). If the selection is 5/3 without a detector, G4 equals G1 and is not run again.",
+ "adoption": "plan section 8: no weakening, genuine availability (paired), honest false alarm <= 1 %, everything reported, no default changed."
+}

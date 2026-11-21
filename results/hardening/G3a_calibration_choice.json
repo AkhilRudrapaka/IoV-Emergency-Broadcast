@@ -1,0 +1,17 @@
+{
+ "chosen_k": 4,
+ "candidates": [
+  3,
+  4,
+  5,
+  6
+ ],
+ "worst_mean_honest_flagged": {
+  "3": 0.06796296296296296,
+  "4": 0.007222222222222224,
+  "5": 0.0014814814814814816,
+  "6": 0.0002469135802469136
+ },
+ "rule": "k = the smallest of 3, 4, 5, 6 for which, in every G3a setting (5 attackers) and at every density, the mean over runs of the share of honest vehicles flagged by the burst detector is <= 0.01. No such k: G3 is negative, G3b is not run and G4 has no detector.",
+ "seeds": "runs 30-59 (held out)"
+}

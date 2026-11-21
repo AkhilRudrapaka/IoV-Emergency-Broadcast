@@ -1,0 +1,634 @@
+{
+ "dataset": "VeReMi NextGen (Zenodo 10.5281/zenodo.19665762, CC-BY 4.0), subset InTAS_highway_2; simulated data",
+ "status": "OK",
+ "processed_dir": "../../data/veremi_nextgen/InTAS_highway_2/processed/v2",
+ "schema": {
+  "file": "veremi/feature_schema.json",
+  "md5": "64731b0fca7173087dbbbd262312ac36",
+  "features": [
+   "spd",
+   "acl",
+   "dist_tx_rx_m",
+   "abs_rel_speed",
+   "heading_diff_rx_deg",
+   "delay_ms",
+   "has_prev",
+   "n_prev",
+   "rate_1s",
+   "dt_send_s",
+   "dt_rcv_s",
+   "dpos_m",
+   "implied_speed",
+   "speed_residual",
+   "dspd",
+   "implied_acl",
+   "acl_residual",
+   "dhed_deg",
+   "yaw_rate_dps",
+   "bearing_residual_deg",
+   "pos_pred_error_m",
+   "speed_residual_mean5",
+   "pos_pred_error_max5",
+   "dt_send_min5"
+  ]
+ },
+ "label_policy": "y = official per-reception `attacker` field, unchanged; no record relabelled or removed",
+ "split_policy": "official Train / Validation / Test kept separate; one file per archive and split",
+ "duplicates": {
+  "tx_key": "(sender_id, messageID, sendTime)",
+  "dup_flag": "dup_of_earlier_primary_archive",
+  "dup_key": "(receiver, sender_id, messageID, sendTime) + identical content and label",
+  "flagged_per_split": {
+   "Train": 329904,
+   "Validation": 148856,
+   "Test": 392178
+  },
+  "use": "per-attack evaluation keeps every row; pooled training/evaluation may drop flagged rows"
+ },
+ "cross_split_overlap": {
+  "Train&Validation": {
+   "tx": 0,
+   "message": 0
+  },
+  "Train&Test": {
+   "tx": 0,
+   "message": 0
+  },
+  "Validation&Test": {
+   "tx": 0,
+   "message": 0
+  }
+ },
+ "tracks": {
+  "primary": {
+   "purpose": "training, model selection and testing",
+   "archives": [
+    "accelerationMultiplication",
+    "constantPositionOffset",
+    "constantSpeedOffset",
+    "dataReplay",
+    "dosAttack",
+    "feignedBraking",
+    "positionMirroring",
+    "randomPositionOffset",
+    "randomSpeedOffset",
+    "reversedHeading",
+    "suddenStop",
+    "timeDelayAttack",
+    "trafficCongestionSybil",
+    "zeroSpeedReport"
+   ],
+   "rows": {
+    "Train": 581396,
+    "Validation": 276551,
+    "Test": 675720
+   },
+   "label_0": {
+    "Train": 441911,
+    "Validation": 210930,
+    "Test": 521887
+   },
+   "label_1": {
+    "Train": 139485,
+    "Validation": 65621,
+    "Test": 153833
+   },
+   "files": {
+    "accelerationMultiplication": {
+     "Train": {
+      "file": "primary/accelerationMultiplication__Train.npz",
+      "md5": "b2e8a1e032f024001a2308bd95169b88",
+      "rows": 37701,
+      "label_0": 33390,
+      "label_1": 4311,
+      "canonical_rows": 19186,
+      "dup_of_earlier_primary_archive": 0
+     },
+     "Validation": {
+      "file": "primary/accelerationMultiplication__Validation.npz",
+      "md5": "54f79c2788d7d1a16a9a930eba103d2e",
+      "rows": 17977,
+      "label_0": 15483,
+      "label_1": 2494,
+      "canonical_rows": 7023,
+      "dup_of_earlier_primary_archive": 0
+     },
+     "Test": {
+      "file": "primary/accelerationMultiplication__Test.npz",
+      "md5": "dd1e3278a43ff921da760297b17fccbf",
+      "rows": 44259,
+      "label_0": 40152,
+      "label_1": 4107,
+      "canonical_rows": 18892,
+      "dup_of_earlier_primary_archive": 0
+     },
+     "rule": "accelerationMultiplication",
+     "code": "Generator/attackGenerator/attackGenerator.py:369-374",
+     "semantics": "1 only if |original acceleration| > 0.5 m/s^2; smaller manipulations labelled 0 by design"
+    },
+    "constantPositionOffset": {
+     "Train": {
+      "file": "primary/constantPositionOffset__Train.npz",
+      "md5": "e5d6a52e096beb684e7fb2924bc3f5ee",
+      "rows": 37701,
+      "label_0": 29870,
+      "label_1": 7831,
+      "canonical_rows": 19186,
+      "dup_of_earlier_primary_archive": 24300
+     },
+     "Validation": {
+      "file": "primary/constantPositionOffset__Validation.npz",
+      "md5": "e092f050123f9d251090c580ea0bdd0a",
+      "rows": 17977,
+      "label_0": 14730,
+      "label_1": 3247,
+      "canonical_rows": 7023,
+      "dup_of_earlier_primary_archive": 11096
+     },
+     "Test": {
+      "file": "primary/constantPositionOffset__Test.npz",
+      "md5": "7ed168e8318511dbb6fa19b8b0e43c3e",
+      "rows": 44259,
+      "label_0": 35549,
+      "label_1": 8710,
+      "canonical_rows": 18892,
+      "dup_of_earlier_primary_archive": 29027
+     },
+     "rule": "always",
+     "code": "Generator/attackGenerator/attackGenerator.py:191-195"
+    },
+    "constantSpeedOffset": {
+     "Train": {
+      "file": "primary/constantSpeedOffset__Train.npz",
+      "md5": "39b5e93c23f3ad2120ab0870860fa7b1",
+      "rows": 37701,
+      "label_0": 30171,
+      "label_1": 7530,
+      "canonical_rows": 19186,
+      "dup_of_earlier_primary_archive": 24418
+     },
+     "Validation": {
+      "file": "primary/constantSpeedOffset__Validation.npz",
+      "md5": "3dc3766bdd5b6db32d2f2ade53c29a2c",
+      "rows": 17977,
+      "label_0": 13979,
+      "label_1": 3998,
+      "canonical_rows": 7023,
+      "dup_of_earlier_primary_archive": 10768
+     },
+     "Test": {
+      "file": "primary/constantSpeedOffset__Test.npz",
+      "md5": "6bfd833af1ed29943171437fbda12435",
+      "rows": 44259,
+      "label_0": 35359,
+      "label_1": 8900,
+      "canonical_rows": 18892,
+      "dup_of_earlier_primary_archive": 28615
+     },
+     "rule": "always",
+     "code": "Generator/attackGenerator/attackGenerator.py:238-241"
+    },
+    "dataReplay": {
+     "Train": {
+      "file": "primary/dataReplay__Train.npz",
+      "md5": "402783536311af8d29981ef7790e712b",
+      "rows": 37701,
+      "label_0": 31160,
+      "label_1": 6541,
+      "canonical_rows": 19186,
+      "dup_of_earlier_primary_archive": 25261
+     },
+     "Validation": {
+      "file": "primary/dataReplay__Validation.npz",
+      "md5": "d5053b7c358409ea65d93ec4f86b5622",
+      "rows": 17977,
+      "label_0": 14765,
+      "label_1": 3212,
+      "canonical_rows": 7023,
+      "dup_of_earlier_primary_archive": 12012
+     },
+     "Test": {
+      "file": "primary/dataReplay__Test.npz",
+      "md5": "a771f2d068cf5270da407b8c2d76a39a",
+      "rows": 44259,
+      "label_0": 35516,
+      "label_1": 8743,
+      "canonical_rows": 18892,
+      "dup_of_earlier_primary_archive": 28479
+     },
+     "rule": "always",
+     "code": "Generator/attackGenerator/attackGenerator.py:464-534"
+    },
+    "dosAttack": {
+     "Train": {
+      "file": "primary/dosAttack__Train.npz",
+      "md5": "a783e8071b8d19e14989c33c41dcb4d7",
+      "rows": 55290,
+      "label_0": 29569,
+      "label_1": 25721,
+      "canonical_rows": 27625,
+      "dup_of_earlier_primary_archive": 24103
+     },
+     "Validation": {
+      "file": "primary/dosAttack__Validation.npz",
+      "md5": "1a592794dd92fe0e5ba908d0d5eba831",
+      "rows": 26121,
+      "label_0": 14162,
+      "label_1": 11959,
+      "canonical_rows": 10153,
+      "dup_of_earlier_primary_archive": 10682
+     },
+     "Test": {
+      "file": "primary/dosAttack__Test.npz",
+      "md5": "672236ff61b7b0a1bf77b68bde907c95",
+      "rows": 60718,
+      "label_0": 36066,
+      "label_1": 24652,
+      "canonical_rows": 26286,
+      "dup_of_earlier_primary_archive": 29225
+     },
+     "rule": "dos",
+     "code": "Generator/attackGenerator/attackGenerator.py:377-397"
+    },
+    "feignedBraking": {
+     "Train": {
+      "file": "primary/feignedBraking__Train.npz",
+      "md5": "31f54156f104abea813a3f1ec7160275",
+      "rows": 37701,
+      "label_0": 35001,
+      "label_1": 2700,
+      "canonical_rows": 19186,
+      "dup_of_earlier_primary_archive": 27741
+     },
+     "Validation": {
+      "file": "primary/feignedBraking__Validation.npz",
+      "md5": "c86f7ac81a1d147b8b7c8a6609b16037",
+      "rows": 17977,
+      "label_0": 16218,
+      "label_1": 1759,
+      "canonical_rows": 7023,
+      "dup_of_earlier_primary_archive": 11992
+     },
+     "Test": {
+      "file": "primary/feignedBraking__Test.npz",
+      "md5": "d3055844498b17c8d2d0952ccb6e75cd",
+      "rows": 44259,
+      "label_0": 40763,
+      "label_1": 3496,
+      "canonical_rows": 18892,
+      "dup_of_earlier_primary_archive": 32713
+     },
+     "rule": "feignedBraking",
+     "code": "Generator/attackGenerator/attackGenerator.py:360-366",
+     "semantics": "1 only if original acceleration > 0.25 m/s^2; smaller manipulations labelled 0 by design"
+    },
+    "positionMirroring": {
+     "Train": {
+      "file": "primary/positionMirroring__Train.npz",
+      "md5": "7bd3e893a16d43fdc8d5f9bf3a453f05",
+      "rows": 37701,
+      "label_0": 29777,
+      "label_1": 7924,
+      "canonical_rows": 19186,
+      "dup_of_earlier_primary_archive": 24177
+     },
+     "Validation": {
+      "file": "primary/positionMirroring__Validation.npz",
+      "md5": "2b72478ee45a7146ff91100e73d5bccc",
+      "rows": 17977,
+      "label_0": 13972,
+      "label_1": 4005,
+      "canonical_rows": 7023,
+      "dup_of_earlier_primary_archive": 10600
+     },
+     "Test": {
+      "file": "primary/positionMirroring__Test.npz",
+      "md5": "4e93d01a9a6654240f0dad7f5a84446a",
+      "rows": 44259,
+      "label_0": 34641,
+      "label_1": 9618,
+      "canonical_rows": 18892,
+      "dup_of_earlier_primary_archive": 28922
+     },
+     "rule": "always",
+     "code": "Generator/attackGenerator/attackGenerator.py:228-235"
+    },
+    "randomPositionOffset": {
+     "Train": {
+      "file": "primary/randomPositionOffset__Train.npz",
+      "md5": "f55bcfc54b06b582c228842a054bf6ea",
+      "rows": 37701,
+      "label_0": 29867,
+      "label_1": 7834,
+      "canonical_rows": 19186,
+      "dup_of_earlier_primary_archive": 24076
+     },
+     "Validation": {
+      "file": "primary/randomPositionOffset__Validation.npz",
+      "md5": "314250803dde94d77b2c8affbb5d61d0",
+      "rows": 17977,
+      "label_0": 14813,
+      "label_1": 3164,
+      "canonical_rows": 7023,
+      "dup_of_earlier_primary_archive": 11706
+     },
+     "Test": {
+      "file": "primary/randomPositionOffset__Test.npz",
+      "md5": "aca14d9f4dd5c241b71fe1d811af9f7b",
+      "rows": 44259,
+      "label_0": 35979,
+      "label_1": 8280,
+      "canonical_rows": 18892,
+      "dup_of_earlier_primary_archive": 29255
+     },
+     "rule": "always",
+     "code": "Generator/attackGenerator/attackGenerator.py:205-225"
+    },
+    "randomSpeedOffset": {
+     "Train": {
+      "file": "primary/randomSpeedOffset__Train.npz",
+      "md5": "f4f470a004c7dd2c73bab85e3d68a2c4",
+      "rows": 37701,
+      "label_0": 30133,
+      "label_1": 7568,
+      "canonical_rows": 19186,
+      "dup_of_earlier_primary_archive": 24639
+     },
+     "Validation": {
+      "file": "primary/randomSpeedOffset__Validation.npz",
+      "md5": "4f6332bf981f44bcd73d2c01234147bb",
+      "rows": 17977,
+      "label_0": 14861,
+      "label_1": 3116,
+      "canonical_rows": 7023,
+      "dup_of_earlier_primary_archive": 10770
+     },
+     "Test": {
+      "file": "primary/randomSpeedOffset__Test.npz",
+      "md5": "1fd928edf38c84097c00663ce1abd637",
+      "rows": 44259,
+      "label_0": 35865,
+      "label_1": 8394,
+      "canonical_rows": 18892,
+      "dup_of_earlier_primary_archive": 29377
+     },
+     "rule": "always",
+     "code": "Generator/attackGenerator/attackGenerator.py:244-263"
+    },
+    "reversedHeading": {
+     "Train": {
+      "file": "primary/reversedHeading__Train.npz",
+      "md5": "10b69523c08c63cdc815604a485b4f88",
+      "rows": 37701,
+      "label_0": 31041,
+      "label_1": 6660,
+      "canonical_rows": 19186,
+      "dup_of_earlier_primary_archive": 24755
+     },
+     "Validation": {
+      "file": "primary/reversedHeading__Validation.npz",
+      "md5": "e19cbd2a5bcfdaac9113cbad285911dd",
+      "rows": 17977,
+      "label_0": 15046,
+      "label_1": 2931,
+      "canonical_rows": 7023,
+      "dup_of_earlier_primary_archive": 10954
+     },
+     "Test": {
+      "file": "primary/reversedHeading__Test.npz",
+      "md5": "7986d5396d8666a1968a75bffbf538d8",
+      "rows": 44259,
+      "label_0": 35991,
+      "label_1": 8268,
+      "canonical_rows": 18892,
+      "dup_of_earlier_primary_archive": 28698
+     },
+     "rule": "moving",
+     "code": "Generator/attackGenerator/attackGenerator.py:347-357",
+     "caveat": "same global sender_lookup defect as zeroSpeedReport",
+     "report_separately": true
+    },
+    "suddenStop": {
+     "Train": {
+      "file": "primary/suddenStop__Train.npz",
+      "md5": "7c464a1b7305d0210a8223368fa2443e",
+      "rows": 37701,
+      "label_0": 34309,
+      "label_1": 3392,
+      "canonical_rows": 19186,
+      "dup_of_earlier_primary_archive": 27638
+     },
+     "Validation": {
+      "file": "primary/suddenStop__Validation.npz",
+      "md5": "bb565243abb96a9791b298a49d4bb89b",
+      "rows": 17977,
+      "label_0": 15758,
+      "label_1": 2219,
+      "canonical_rows": 7023,
+      "dup_of_earlier_primary_archive": 11886
+     },
+     "Test": {
+      "file": "primary/suddenStop__Test.npz",
+      "md5": "b5ea43ae4c575e2811807d9738e8ee7a",
+      "rows": 44259,
+      "label_0": 40319,
+      "label_1": 3940,
+      "canonical_rows": 18892,
+      "dup_of_earlier_primary_archive": 32618
+     },
+     "rule": "suddenStop",
+     "code": "Generator/attackGenerator/attackGenerator.py:279-324",
+     "caveat": "stop state is global per sender and set in receiver-file processing order: one broadcast can be stopped at one receiver and normal at another; each reception's label follows its own content",
+     "report_separately": true
+    },
+    "timeDelayAttack": {
+     "Train": {
+      "file": "primary/timeDelayAttack__Train.npz",
+      "md5": "1866e26ba2f0697cf24a302b142cc2f4",
+      "rows": 37701,
+      "label_0": 30056,
+      "label_1": 7645,
+      "canonical_rows": 19186,
+      "dup_of_earlier_primary_archive": 24191
+     },
+     "Validation": {
+      "file": "primary/timeDelayAttack__Validation.npz",
+      "md5": "474509415ceb4ef30bee497d187247f5",
+      "rows": 17977,
+      "label_0": 14445,
+      "label_1": 3532,
+      "canonical_rows": 7023,
+      "dup_of_earlier_primary_archive": 11388
+     },
+     "Test": {
+      "file": "primary/timeDelayAttack__Test.npz",
+      "md5": "3508ed332c573e2efd49410adb14ccd4",
+      "rows": 44259,
+      "label_0": 35579,
+      "label_1": 8680,
+      "canonical_rows": 18892,
+      "dup_of_earlier_primary_archive": 29932
+     },
+     "rule": "always",
+     "code": "Generator/attackGenerator/attackGenerator.py:198-202"
+    },
+    "trafficCongestionSybil": {
+     "Train": {
+      "file": "primary/trafficCongestionSybil__Train.npz",
+      "md5": "ef63a0b267f337c1178a3c7d7f7e99eb",
+      "rows": 73694,
+      "label_0": 37701,
+      "label_1": 35993,
+      "canonical_rows": 37739,
+      "dup_of_earlier_primary_archive": 30575
+     },
+     "Validation": {
+      "file": "primary/trafficCongestionSybil__Validation.npz",
+      "md5": "5b33ec0ccbbec81e4f5e6136d58460da",
+      "rows": 34706,
+      "label_0": 17977,
+      "label_1": 16729,
+      "canonical_rows": 13835,
+      "dup_of_earlier_primary_archive": 13811
+     },
+     "Test": {
+      "file": "primary/trafficCongestionSybil__Test.npz",
+      "md5": "3384ebecf498f04f7d8896742a0fa49c",
+      "rows": 83894,
+      "label_0": 44259,
+      "label_1": 39635,
+      "canonical_rows": 35687,
+      "dup_of_earlier_primary_archive": 36105
+     },
+     "rule": "sybil",
+     "code": "Generator/attackGenerator/attackGenerator.py:400-461"
+    },
+    "zeroSpeedReport": {
+     "Train": {
+      "file": "primary/zeroSpeedReport__Train.npz",
+      "md5": "3db2dbe430d494fab6781c7b25514290",
+      "rows": 37701,
+      "label_0": 29866,
+      "label_1": 7835,
+      "canonical_rows": 19186,
+      "dup_of_earlier_primary_archive": 24030
+     },
+     "Validation": {
+      "file": "primary/zeroSpeedReport__Validation.npz",
+      "md5": "20072ac29603a5a8461270ef75bfc5b7",
+      "rows": 17977,
+      "label_0": 14721,
+      "label_1": 3256,
+      "canonical_rows": 7023,
+      "dup_of_earlier_primary_archive": 11191
+     },
+     "Test": {
+      "file": "primary/zeroSpeedReport__Test.npz",
+      "md5": "91446f391c4b35875972ce4729b9ab26",
+      "rows": 44259,
+      "label_0": 35849,
+      "label_1": 8410,
+      "canonical_rows": 18892,
+      "dup_of_earlier_primary_archive": 29212
+     },
+     "rule": "moving",
+     "code": "Generator/attackGenerator/attackGenerator.py:266-276",
+     "caveat": "label uses a global sender_lookup shared across receiver files: a few receptions miss the documented 'moved > 1 m since last message' rule and labels can differ between receivers",
+     "report_separately": true
+    }
+   }
+  },
+  "eval_only": {
+   "purpose": "separate evaluation only; never used for training or model selection",
+   "archives": [
+    "suddenConstantSpeed"
+   ],
+   "rows": {
+    "Train": 37701,
+    "Validation": 17977,
+    "Test": 44259
+   },
+   "label_0": {
+    "Train": 36173,
+    "Validation": 17412,
+    "Test": 42688
+   },
+   "label_1": {
+    "Train": 1528,
+    "Validation": 565,
+    "Test": 1571
+   },
+   "diagnostic_label": {
+    "column": "y_diag_documented_rule",
+    "rule": "|actual speed - frozen speed| > 1 m/s (Documentation/Post-Processing/Attack Generator/README.md lines 101-103)",
+    "derivation": "frozen = reported speed when it differs from the ground-truth speed of the same message; actual = ground-truth speed; 0 for unmodified receptions",
+    "use": "diagnostic evaluation only; derived from ground truth"
+   },
+   "files": {
+    "suddenConstantSpeed": {
+     "Train": {
+      "file": "eval_only/suddenConstantSpeed__Train.npz",
+      "md5": "44c7f78ce43ed98373e6c44c66bf292f",
+      "rows": 37701,
+      "label_0": 36173,
+      "label_1": 1528,
+      "canonical_rows": 19186,
+      "diag_label_1": 2837
+     },
+     "Validation": {
+      "file": "eval_only/suddenConstantSpeed__Validation.npz",
+      "md5": "fdceb780daf63bdd3e7e1e7fc3280854",
+      "rows": 17977,
+      "label_0": 17412,
+      "label_1": 565,
+      "canonical_rows": 7023,
+      "diag_label_1": 1248
+     },
+     "Test": {
+      "file": "eval_only/suddenConstantSpeed__Test.npz",
+      "md5": "96fe9cfcae35db12bfbcded8e3119d7b",
+      "rows": 44259,
+      "label_0": 42688,
+      "label_1": 1571,
+      "canonical_rows": 18892,
+      "diag_label_1": 2483
+     },
+     "rule": "suddenConstantSpeed",
+     "code": "Generator/attackGenerator/attackGenerator.py:327-344",
+     "caveat": "official label uses a one-sided test (actual - frozen > 1, line 332) where the documentation specifies |actual - frozen| > 1; freeze state set in processing order",
+     "report_separately": true
+    }
+   }
+  },
+  "unlabelled_baseline": {
+   "purpose": "attack-free reference traffic; no labels",
+   "rows": {
+    "Train": 37701,
+    "Validation": 17977,
+    "Test": 44259
+   },
+   "files": {
+    "baseline": {
+     "Train": {
+      "file": "unlabelled_baseline/baseline__Train.npz",
+      "md5": "03c27579a51a8531f0a52906347a874b",
+      "rows": 37701,
+      "canonical_rows": 19186
+     },
+     "Validation": {
+      "file": "unlabelled_baseline/baseline__Validation.npz",
+      "md5": "7a0c6dbb29e7975a02c5feee5df493a8",
+      "rows": 17977,
+      "canonical_rows": 7023
+     },
+     "Test": {
+      "file": "unlabelled_baseline/baseline__Test.npz",
+      "md5": "c04ef733f93bff37a63444b2a736a9cb",
+      "rows": 44259,
+      "canonical_rows": 18892
+     }
+    }
+   }
+  }
+ }
+}

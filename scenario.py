@@ -16,7 +16,8 @@ import numpy as np
 import sumo
 
 from config import (NET_FILE, BASE_SEED, DEPART_WINDOW_S, ROUTE_EDGES, INCIDENT_WINDOW_S,
-                    MALICIOUS_RATIO, WATCHDOG_MISS_PROB, MALICIOUS_COOPERATION, COMM_RANGE_M, HOP_LIMIT)
+                    MALICIOUS_RATIO, WATCHDOG_MISS_PROB, MALICIOUS_COOPERATION, COMM_RANGE_M, HOP_LIMIT, ML_TRUST_MODE,
+                    ONOFF_PERIOD_S, ONOFF_DUTY, TRUST_BURST_K)
 from clustering import beta_trust
 
 SUMO_BIN = os.path.join(sumo.SUMO_HOME, "bin", "sumo.exe" if os.name == "nt" else "sumo")
@@ -103,6 +104,16 @@ def create_alert(seed, source_id, position, time_s, sequence_number=1):
     }
 
 
+def decision_trust(sc):
+    """The trust every eligibility decision uses (cluster heads, committees, the endorsement gate, the CH route): the Beta
+    trust sc["trust"], except that a vehicle the burst detector flagged (TRUST_BURST_K, Block G) is capped at the
+    uninformed prior 0.5 (plan section 4.3), i.e. below every gate in use (> 0.5). sc["trust"] itself, the recorded
+    Beta trust, is never changed."""
+    if "burst_flagged" not in sc:
+        return sc["trust"]
+    return np.where(sc["burst_flagged"], np.minimum(sc["trust"], 0.5), sc["trust"])
+
+
 def build(density, run, workdir=None, history_s=0):
     """history_s > 0 also returns the last seconds of traffic (ids, positions, speeds and
     the reputation known at each second), which the SUMO-GUI demo uses to show clustering."""
@@ -111,6 +122,12 @@ def build(density, run, workdir=None, history_s=0):
     np_rng = np.random.default_rng(seed)
     malicious_ids = set(f"v{i}" for i in rng.sample(range(density), round(MALICIOUS_RATIO * density)))
     t_incident = rng.randint(*INCIDENT_WINDOW_S)
+    # Block F phased on-off attacker: each vehicle's own phase in its cycle, from a separate stream drawn only when enabled
+    phase = np.random.default_rng([seed, 400]).uniform(0, ONOFF_PERIOD_S, density) if ONOFF_PERIOD_S > 0 else None
+    observer = None
+    if ML_TRUST_MODE != "off":           # Block D (ml_trust.py): shadow scoring only; "off" runs exactly the original code
+        import ml_trust
+        observer = ml_trust.observer_for(ML_TRUST_MODE)
 
     with tempfile.TemporaryDirectory() as tmp:
         work = workdir or tmp
@@ -123,6 +140,7 @@ def build(density, run, workdir=None, history_s=0):
         # An honest relay is missed with WATCHDOG_MISS_PROB; a misbehaving one fails unless it cooperates
         # (MALICIOUS_COOPERATION > 0 models an on-off attacker that behaves well while watched).
         ok, bad, history = {}, {}, []
+        run_len, longest = {}, {}     # Block G burst detector: current and longest run of consecutive failed observations
         for t, ids, xy, speed, angle, lane in read_fcd(fcd):
             if len(ids) > 1:
                 d = np.hypot(xy[:, 0, None] - xy[None, :, 0], xy[:, 1, None] - xy[None, :, 1])
@@ -131,12 +149,20 @@ def build(density, run, workdir=None, history_s=0):
                 seen = np.zeros(len(ids), bool)
             miss = np_rng.random(len(ids)) < WATCHDOG_MISS_PROB
             # drawn only when enabled, so the default (0) keeps every earlier seed's random stream identical
-            coop = np_rng.random(len(ids)) < MALICIOUS_COOPERATION if MALICIOUS_COOPERATION > 0 else np.zeros(len(ids), bool)
+            if phase is not None:   # phased on-off: relays correctly in the first ONOFF_DUTY share of its own cycle
+                coop = (t + phase[[int(v[1:]) for v in ids]]) % ONOFF_PERIOD_S < ONOFF_DUTY * ONOFF_PERIOD_S
+            else:
+                coop = np_rng.random(len(ids)) < MALICIOUS_COOPERATION if MALICIOUS_COOPERATION > 0 else np.zeros(len(ids), bool)
             for i, vid in enumerate(ids):
                 if seen[i]:
                     failed = (vid in malicious_ids and not coop[i]) or miss[i]
                     bad[vid] = bad.get(vid, 0) + failed
                     ok[vid] = ok.get(vid, 0) + (not failed)
+                    if TRUST_BURST_K:             # draws nothing: a second without observation neither extends nor ends a run
+                        run_len[vid] = run_len.get(vid, 0) + 1 if failed else 0
+                        longest[vid] = max(longest.get(vid, 0), run_len[vid])
+            if observer is not None:         # draws no random numbers; reads the same positions, writes only its own log
+                observer.observe(t, ids, xy, speed, angle, seen, d if len(ids) > 1 else None)
             last = (t, ids, xy, speed, angle, lane)
             if t > t_incident - history_s:
                 history.append({"t": t, "ids": ids, "xy": xy, "speed": speed,
@@ -146,7 +172,7 @@ def build(density, run, workdir=None, history_s=0):
     assert t == t_incident, f"SUMO stopped at {t}, expected incident step {t_incident}"
     malicious = np.array([v in malicious_ids for v in ids])
     source = ids.index(rng.choice([v for v, m in zip(ids, malicious) if not m]))   # the ONE incident
-    return {
+    sc = {
         "run_id": f"d{density}_r{run:02d}", "density": density, "run": run, "seed": seed,
         "incident_time_s": t, "source": source, "source_id": ids[source],
         "incident_xy": [round(float(c), 2) for c in xy[source]], "incident_lane": lane[source],
@@ -155,3 +181,9 @@ def build(density, run, workdir=None, history_s=0):
         "alert": create_alert(seed, ids[source], xy[source], t),
         "history": history,
     }
+    if observer is not None:
+        sc["ml_shadow"] = observer.result(ids, ok, bad)     # separate what-if evidence; sc["trust"] is untouched
+    if TRUST_BURST_K:                                       # Block G: reported apart from the Beta trust (decision_trust)
+        sc["burst_max_run"] = np.array([longest.get(v, 0) for v in ids])
+        sc["burst_flagged"] = sc["burst_max_run"] >= TRUST_BURST_K
+    return sc
