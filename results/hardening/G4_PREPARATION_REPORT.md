@@ -1,6 +1,7 @@
 # G4 preparation: committee selection fix, CH-route quorum, proposed configuration
 
-**Scope:** preparation only. No G4 simulation was run, no default changed, and nothing is committed.
+**Scope:** preparation only. No G4 simulation was run and no default changed. This report and the changes it describes are committed in
+`81d416e` (published on `origin/akhil`).
 
 **Evidence used:**
 - G1 (`BLOCK_G_TABLES.md`);

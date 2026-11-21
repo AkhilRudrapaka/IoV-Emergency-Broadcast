@@ -1,6 +1,6 @@
 # Block F: adversarial security evaluation
 
-**Run:** 2026-11-19, 04:03–05:15 UTC. Branch `akhil`, uncommitted. SUMO 1.27.1, Python 3.11.4. **Simulation only:** synthetic 5x5 urban grid, synthetic demand, abstracted watchdog. The VeReMi ML model is not used anywhere in this block.
+**Run:** 2026-11-19, 04:03–05:15 UTC. Branch `akhil`, uncommitted at run time; this report and the summaries are committed in `81d416e` (published on `origin/akhil`). SUMO 1.27.1, Python 3.11.4. **Simulation only:** synthetic 5x5 urban grid, synthetic demand, abstracted watchdog. The VeReMi ML model is not used anywhere in this block.
 
 **Sources.** All numbers come from `results/adversarial/`:
 - per-run CSVs `<sweep>_{genuine,trust,forgery}_runs.csv`;
@@ -220,7 +220,9 @@ CIs are in `BLOCK_F_TABLES.md`, section C_gate; CH-route n = 8–15.
 
 **Code:** no implementation code was changed during the sweeps; the hashes match.
 
-**Outputs:** `results/adversarial/` (993 MB, untracked; nothing committed):
+**Outputs:** `results/adversarial/` (993 MB). Only the `<sweep>_*_summary.csv` files, `C_calibration_choice.json`,
+`sweep_log.txt`, `BLOCK_F_TABLES.md` and `analysis/blockf_tables.py` are committed (in `81d416e`, published on
+`origin/akhil`); the rest is untracked:
 - `<sweep>/<setting>/`, each with:
   - `raw/` (90 records);
   - `processed/` (runs, summary, paired and forgery CSVs);

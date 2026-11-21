@@ -56,7 +56,7 @@ Daily 15-min stand-up. Code freeze at end of Day 1. All results reproducible via
 - Update scenario generator to work with new net and produce the same incident + on-off attacker model.
 - Extend logging: per-vehicle windowed features (last 5–10 s): Beta trust history, speed/accel statistics, neighbour trust discrepancy, message consistency indicators.
 - Sanity runs + visualization in SUMO-GUI.
-- Document “real topology + synthetic calibrated demand” clearly.
+- The project uses a hand-built synthetic 5×5 grid with synthetic traffic demand. The OSM import was attempted but not completed.
 
 **Go / No-Go:** End-to-end simulation on new map succeeds; feature logs are generated.
 
@@ -89,7 +89,7 @@ Daily 15-min stand-up. Code freeze at end of Day 1. All results reproducible via
 **Outcomes:** Complete draft manuscript + all artefacts ready for faculty review.
 
 - Write / polish every section. Emphasise:
-  - Clear gap (broadcast suppression + event corroboration + ML detection of intermittent attackers on realistic topology).
+  - Clear gap (broadcast suppression + event corroboration + ML detection of intermittent attackers).
   - Honest limitations (simulation, synthetic demand, scale).
   - Reproducibility (seeds, SUMO version, code availability note).
 - Insert tables, figures, captions.

@@ -5,7 +5,8 @@ committee with BLS12-381 aggregate certificate, slotted/coverage broadcast suppr
 Design: `docs/SYSTEM_DESIGN.md`; past audit and decisions: `docs/AUDIT.md`; current report: `final_panel_review/`.
 
 ## Sprint goal (2026-11-17, 5-7 days): see `docs/sprint/`
-1. Realistic map: OSM extract -> netconvert, synthetic demand. Say "real topology, synthetic demand", never more.
+1. Realistic map: OSM extract -> netconvert, synthetic demand. OSM import not completed (downloads timed out); the map
+   is a hand-built synthetic 5×5 grid with synthetic traffic demand.
 2. Lightweight ML detector for on-off/intermittent attackers (scikit-learn only).
 3. Re-evaluation with the original baselines plus calibrated and ML variants, with CIs.
 4. IEEE two-column draft (IEEEtran .tex). There is no LaTeX toolchain here; compile elsewhere.

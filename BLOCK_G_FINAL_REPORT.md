@@ -1,8 +1,9 @@
 # Block G final report: security hardening of trust-aware emergency alerts
 
-**Status:** complete, nothing committed (2026-11-21).
+**Status:** complete (2026-11-21). Committed in `81d416e` and published on `origin/akhil`, except the per-run CSVs and
+raw records.
 
-**Scope:** simulation only. SUMO 1.27.1, Python 3.11.4, `network/urban.net.xml` (real topology, synthetic demand). No
+**Scope:** simulation only. SUMO 1.27.1, Python 3.11.4, `network/urban.net.xml` (hand-built synthetic 5×5 grid with synthetic traffic demand; an OSM import was attempted but not completed, so no OSM data is used). No
 result here is a real-world validation.
 
 **Labels used throughout:**

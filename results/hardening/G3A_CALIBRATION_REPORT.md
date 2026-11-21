@@ -1,6 +1,6 @@
 # G3a: burst detector calibration (Block G)
 
-Simulation only (SUMO 1.27.1, Python 3.11.4, `network/urban.net.xml`: real topology, synthetic demand).
+Simulation only (SUMO 1.27.1, Python 3.11.4, `network/urban.net.xml`: hand-built synthetic 5×5 grid with synthetic traffic demand).
 
 **Run conditions:**
 - Held-out runs 30–59; densities 100/200/300.
@@ -8,7 +8,7 @@ Simulation only (SUMO 1.27.1, Python 3.11.4, `network/urban.net.xml`: real topol
 - `COMMITTEE_CHECK=1`, committee 5/3, `ENFORCE_COMMITTEE=0`.
 - VeReMi ML off.
 
-**No default changed:** `TRUST_BURST_K=0`. Nothing is committed. G3b and G4 were not run.
+**No default changed:** `TRUST_BURST_K=0`. Committed in `81d416e` (published on `origin/akhil`), except the per-run CSVs and raw records. G3b and G4 were not run.
 
 **Sources:** every number is from `analysis/g3a_calibration.py` (output: `analysis/g3a_calibration_output.txt`) or the G3a
 section of `BLOCK_G_TABLES.md`. These are built from `results/hardening/G3a_*_runs.csv`, the raw records in

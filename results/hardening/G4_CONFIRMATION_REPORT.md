@@ -1,7 +1,7 @@
 # G4: combined confirmation (5/3 + committee enforcement + burst detector k = 4)
 
 **Conditions:**
-- Simulation only (SUMO 1.27.1, Python 3.11.4, `network/urban.net.xml`: real topology, synthetic demand).
+- Simulation only (SUMO 1.27.1, Python 3.11.4, `network/urban.net.xml`: hand-built synthetic 5×5 grid with synthetic traffic demand).
 - Runs 0–29, densities 100/200/300, seed = 10000 + 100·density + run; gate 0.70.
 - `COMMITTEE_CHECK=1`, VeReMi ML off (shadow only).
 

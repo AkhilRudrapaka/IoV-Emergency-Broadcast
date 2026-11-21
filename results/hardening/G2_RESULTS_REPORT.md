@@ -1,7 +1,7 @@
 # G2 results: committee size and quorum (Block G)
 
-Simulation only (SUMO 1.27.1, Python 3.11.4, `network/urban.net.xml`: real topology, synthetic demand). No default was
-changed (`COMMITTEE_SIZE` 5, `QUORUM` 3, `ENFORCE_COMMITTEE` 0). Nothing is committed. Every number below is produced by
+Simulation only (SUMO 1.27.1, Python 3.11.4, `network/urban.net.xml`: hand-built synthetic 5×5 grid with synthetic traffic demand). No default was
+changed (`COMMITTEE_SIZE` 5, `QUORUM` 3, `ENFORCE_COMMITTEE` 0). Committed in `81d416e` (published on `origin/akhil`), except the per-run CSVs and raw records. Every number below is produced by
 `results/hardening/analysis/g2_paired.py` (output saved in `analysis/g2_paired_output.txt`) or by
 `analysis/blockg_tables.py` (per-cell tables in `BLOCK_G_TABLES.md`) from `results/hardening/G2_*_runs.csv` and the Block F
 CSVs in `results/adversarial/`.

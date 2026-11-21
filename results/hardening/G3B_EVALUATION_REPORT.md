@@ -1,7 +1,7 @@
 # G3b: burst detector evaluation (k = 4)
 
-Simulation only (SUMO 1.27.1, Python 3.11.4, `network/urban.net.xml`: real topology, synthetic demand). No default was
-changed (`TRUST_BURST_K=0`, gate 0.70, committee 5/3, `ENFORCE_COMMITTEE=0`). Nothing is committed. G4 was not run.
+Simulation only (SUMO 1.27.1, Python 3.11.4, `network/urban.net.xml`: hand-built synthetic 5×5 grid with synthetic traffic demand). No default was
+changed (`TRUST_BURST_K=0`, gate 0.70, committee 5/3, `ENFORCE_COMMITTEE=0`). Committed in `81d416e` (published on `origin/akhil`), except the per-run CSVs and raw records. G4 was not run.
 
 **Why k = 4:** the G3a pre-registered rule caps the *mean* share of honest vehicles flagged per run at ≤ 1 % at every
 density, and k = 4 passes it. On the calibration seeds, **146 of 450 individual runs exceeded 1 %, with a maximum of
